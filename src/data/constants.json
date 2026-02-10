@@ -14,11 +14,11 @@
     "6": { "sanMax": 250, "cost": 80000, "name": "海景豪宅",   "description": "马里布山崖上的玻璃房子，落地窗外就是太平洋" }
   },
   "diet": {
-    "1": { "sanCost": 10, "healthChange": -10, "moneyCost": 200,  "name": "垃圾食品", "description": "一美元菜单和便利店微波炉食品" },
-    "2": { "sanCost": 9,  "healthChange": 0,   "moneyCost": 400,  "name": "勉强温饱", "description": "超市打折区的面包牛奶加罐头" },
-    "3": { "sanCost": 8,  "healthChange": 10,  "moneyCost": 600,  "name": "正常饮食", "description": "自己做饭，注意营养搭配" },
-    "4": { "sanCost": 5,  "healthChange": 25,  "moneyCost": 2000, "name": "精致餐食", "description": "Whole Foods有机食材加偶尔的外出就餐" },
-    "5": { "sanCost": 3,  "healthChange": 40,  "moneyCost": 5000, "name": "顶级膳食", "description": "私人营养师定制方案，牛排三文鱼管够" }
+    "1": { "sanCost": 5, "healthChange": -10, "moneyCost": 200,  "name": "垃圾食品", "description": "一美元菜单和便利店微波炉食品" },
+    "2": { "sanCost": 3,  "healthChange": 0,   "moneyCost": 400,  "name": "勉强温饱", "description": "超市打折区的面包牛奶加罐头" },
+    "3": { "sanCost": 0,  "healthChange": 10,  "moneyCost": 600,  "name": "正常饮食", "description": "自己做饭，注意营养搭配" },
+    "4": { "sanCost": -3, "healthChange": 25,  "moneyCost": 2000, "name": "精致餐食", "description": "Whole Foods有机食材加偶尔的外出就餐" },
+    "5": { "sanCost": -5, "healthChange": 40,  "moneyCost": 5000, "name": "顶级膳食", "description": "私人营养师定制方案，牛排三文鱼管够" }
   },
   "monsterDamage": {
     "1": 110, "2": 115, "3": 95, "4": 120, "5": 95, "6": 110,

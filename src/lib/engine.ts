@@ -260,10 +260,11 @@ export function executeSettlement(state: GameState): SettlementResult {
     state.attributes.health = clamp(state.attributes.health + dietData.healthChange, 0, 100);
     result.healthChange += dietData.healthChange;
 
-    // 饮食消耗SAN（吃得越差精神消耗越大）
-    if (dietData.sanCost) {
+    // 饮食影响SAN（正值消耗SAN，负值恢复SAN）
+    if (dietData.sanCost !== undefined && dietData.sanCost !== 0) {
+      const prevSan = state.attributes.san;
       state.attributes.san = clamp(state.attributes.san - dietData.sanCost, 0, state.maxSan);
-      result.sanChange -= dietData.sanCost;
+      result.sanChange += state.attributes.san - prevSan;
     }
   }
 
@@ -319,9 +320,9 @@ export function executeSettlement(state: GameState): SettlementResult {
     state.maxSan = housingData.sanMax;
 
     // 住房每月恢复SAN（住得越好恢复越多）
-    // 睡大街(sanMax=100)恢复5，地下室(110)恢复8，独立单间(130)恢复12
-    // 正经公寓(160)恢复18，郊区独栋(200)恢复25，海景豪宅(250)恢复35
-    const sanRecovery = Math.floor((housingData.sanMax - 80) * 0.2 + 5);
+    // 睡大街(sanMax=100)恢复4，地下室(110)恢复7，独立单间(130)恢复13
+    // 正经公寓(160)恢复21，郊区独栋(200)恢复31，海景豪宅(250)恢复43
+    const sanRecovery = Math.floor((housingData.sanMax - 80) * 0.25 + 4);
     const prevSan = state.attributes.san;
     state.attributes.san = clamp(state.attributes.san + sanRecovery, 0, state.maxSan);
     const actualRecovery = state.attributes.san - prevSan;
