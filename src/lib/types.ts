@@ -50,6 +50,8 @@ export interface ActiveDebuff {
   remainingDuration: number;
   canClearEarly: boolean;
   clearCost: number;
+  isDisease?: boolean;       // 是否为疾病（疾病不会被clearAllDebuffs清除，需要专门治疗）
+  isChronic?: boolean;       // 是否为长期/慢性疾病（不会自愈，必须去医院）
 }
 
 /** Buff效果 */
@@ -230,6 +232,7 @@ export interface ActionData {
   buff?: { id: string; duration: number };
   setCreditTo?: number;
   clearAllDebuffs?: boolean;
+  clearDisease?: boolean;     // 是否治疗疾病（清除一个疾病debuff）
   unlock: {
     type: 'default' | 'round' | 'condition';
     round?: number;

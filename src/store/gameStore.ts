@@ -9,7 +9,7 @@ import {
   executeSettlement, checkKillLines, getAllBehaviors, checkUnlockCondition,
 } from '@/lib/engine';
 import { checkMilestones } from '@/data/milestones';
-import { rollRandomEvent } from '@/data/randomEvents';
+import { rollRandomEvent, rollDisease } from '@/data/randomEvents';
 import { rollDilemma } from '@/data/dilemmaEvents';
 import { calculateClassLevel, calculateNetWorth } from '@/lib/classSystem';
 import { generateWorldNews } from '@/data/worldNews';
@@ -423,10 +423,36 @@ export const useGameStore = create<GameStore>()(
           effectSummary.push(`信用评分重置为${action.setCreditTo}`);
         }
 
-        // 应用clearAllDebuffs
+        // 应用clearAllDebuffs（不清除疾病）
         if (action.clearAllDebuffs) {
-          s.activeDebuffs = [];
+          s.activeDebuffs = s.activeDebuffs.filter(d => d.isDisease);
           effectSummary.push('移除全部负面状态');
+        }
+
+        // 治疗疾病（clearDisease）
+        if (action.clearDisease) {
+          const diseaseDebuffs = s.activeDebuffs.filter(d => d.isDisease);
+          if (diseaseDebuffs.length > 0) {
+            // 治疗所有疾病，费用 = 每个疾病的clearCost之和
+            const totalCost = diseaseDebuffs.reduce((sum, d) => sum + (d.clearCost || 0), 0);
+            if (s.money >= totalCost) {
+              s.money -= totalCost;
+              s.activeDebuffs = s.activeDebuffs.filter(d => !d.isDisease);
+              effectSummary.push(`治疗了${diseaseDebuffs.map(d => d.name).join('、')}${'('}$-${totalCost}${')'}`);
+            } else {
+              // 钱不够只治最便宜的一个
+              const cheapest = diseaseDebuffs.sort((a, b) => (a.clearCost || 0) - (b.clearCost || 0))[0];
+              if (cheapest && s.money >= (cheapest.clearCost || 0)) {
+                s.money -= cheapest.clearCost || 0;
+                s.activeDebuffs = s.activeDebuffs.filter(d => d.id !== cheapest.id);
+                effectSummary.push(`治疗了${cheapest.name}${'('}$-${cheapest.clearCost}${')'}`);
+              } else {
+                effectSummary.push('治疗费用不足，无法治疗');
+              }
+            }
+          } else {
+            effectSummary.push('你当前没有疾病');
+          }
         }
 
         // 应用debuff
@@ -675,6 +701,34 @@ export const useGameStore = create<GameStore>()(
           };
           s.feed.push(eventFeed);
           s.fullGameLog.push(eventFeed);
+        }
+
+        // === 疾病系统：每月随机检测是否生病 ===
+        const diseaseEvent = rollDisease(s);
+        if (diseaseEvent) {
+          // 找到疾病对应的debuff定义
+          const diseaseDebuffDef = ((actionsData as unknown) as { debuffs: Array<{ id: string; name: string; icon: string; effect: Record<string, number>; duration: number; canClearEarly: boolean; clearCost?: number; isDisease?: boolean; isChronic?: boolean }> }).debuffs.find(d => d.id === diseaseEvent.id);
+          if (diseaseDebuffDef) {
+            s.activeDebuffs.push({
+              id: diseaseDebuffDef.id,
+              name: diseaseDebuffDef.name,
+              icon: diseaseDebuffDef.icon,
+              effect: diseaseDebuffDef.effect,
+              remainingDuration: diseaseDebuffDef.duration,
+              canClearEarly: diseaseDebuffDef.canClearEarly,
+              clearCost: diseaseDebuffDef.clearCost || 0,
+              isDisease: true,
+              isChronic: diseaseEvent.isChronic,
+            });
+            const diseaseFeed: FeedEntry = {
+              id: uid(),
+              text: `【生病了】${diseaseEvent.text}${diseaseEvent.isChronic ? ' ⚠️这是长期疾病，不会自愈，必须去医院治疗！' : ''}`,
+              kind: 'danger',
+              timestamp: Date.now(),
+            };
+            s.feed.push(diseaseFeed);
+            s.fullGameLog.push(diseaseFeed);
+          }
         }
 
         // === 暗黑系统：世界新闻播报 ===

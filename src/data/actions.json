@@ -872,6 +872,116 @@
       },
       "duration": 3,
       "canClearEarly": false
+    },
+    {
+      "id": "disease_cold",
+      "name": "重感冒",
+      "icon": "🤧",
+      "isDisease": true,
+      "isChronic": false,
+      "effect": { "healthPerRound": -5 },
+      "duration": 2,
+      "canClearEarly": true,
+      "clearCost": 800
+    },
+    {
+      "id": "disease_flu",
+      "name": "流感",
+      "icon": "🤒",
+      "isDisease": true,
+      "isChronic": false,
+      "effect": { "healthPerRound": -8 },
+      "duration": 3,
+      "canClearEarly": true,
+      "clearCost": 1500
+    },
+    {
+      "id": "disease_food_poison",
+      "name": "食物中毒",
+      "icon": "🤮",
+      "isDisease": true,
+      "isChronic": false,
+      "effect": { "healthPerRound": -10 },
+      "duration": 2,
+      "canClearEarly": true,
+      "clearCost": 2000
+    },
+    {
+      "id": "disease_back_pain",
+      "name": "腰椎间盘突出",
+      "icon": "🦴",
+      "isDisease": true,
+      "isChronic": true,
+      "effect": { "healthPerRound": -4 },
+      "duration": 999,
+      "canClearEarly": true,
+      "clearCost": 8000
+    },
+    {
+      "id": "disease_gastritis",
+      "name": "慢性胃炎",
+      "icon": "🫁",
+      "isDisease": true,
+      "isChronic": true,
+      "effect": { "healthPerRound": -3 },
+      "duration": 999,
+      "canClearEarly": true,
+      "clearCost": 5000
+    },
+    {
+      "id": "disease_carpal",
+      "name": "腕管综合征",
+      "icon": "🖐️",
+      "isDisease": true,
+      "isChronic": true,
+      "effect": { "healthPerRound": -3 },
+      "duration": 999,
+      "canClearEarly": true,
+      "clearCost": 6000
+    },
+    {
+      "id": "disease_depression",
+      "name": "抑郁症",
+      "icon": "😶‍🌫️",
+      "isDisease": true,
+      "isChronic": true,
+      "effect": { "healthPerRound": -2, "sanPerRound": -5 },
+      "duration": 999,
+      "canClearEarly": true,
+      "clearCost": 10000
+    },
+    {
+      "id": "disease_hypertension",
+      "name": "高血压",
+      "icon": "💉",
+      "isDisease": true,
+      "isChronic": true,
+      "effect": { "healthPerRound": -3 },
+      "duration": 999,
+      "canClearEarly": true,
+      "clearCost": 4000
+    },
+    {
+      "id": "disease_pneumonia",
+      "name": "肺炎",
+      "icon": "🫁",
+      "isDisease": true,
+      "isChronic": false,
+      "effect": { "healthPerRound": -12 },
+      "duration": 3,
+      "canClearEarly": true,
+      "clearCost": 5000
+    },
+    {
+      "id": "disease_diabetes",
+      "name": "二型糖尿病",
+      "icon": "💊",
+      "isDisease": true,
+      "isChronic": true,
+      "effect": { "healthPerRound": -4 },
+      "duration": 999,
+      "canClearEarly": true,
+      "clearCost": 12000
     }
   ],
   "buffs": [
@@ -1121,6 +1231,31 @@
         "tags": [
           "reliable",
           "high_cost"
+        ],
+        "subGroup": "cure"
+      },
+      {
+        "id": "H10_TREAT",
+        "name": "专科门诊治病",
+        "nameEn": "Specialist Treatment",
+        "category": "heal",
+        "type": "fixed",
+        "description": "针对当前疾病进行专科治疗。费用取决于病情严重程度",
+        "quote": "医生翻着你的病历摇头叹气：'这些病早该治了。'账单让你叹气更深。",
+        "cost": {
+          "san": 10,
+          "money": 3000
+        },
+        "gain": {
+          "health": 20
+        },
+        "clearDisease": true,
+        "unlock": {
+          "type": "default"
+        },
+        "tags": [
+          "reliable",
+          "disease"
         ],
         "subGroup": "cure"
       },

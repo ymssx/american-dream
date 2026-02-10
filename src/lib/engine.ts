@@ -183,6 +183,14 @@ export function checkBehaviorExecutable(action: ActionData, state: GameState): {
     }
   }
 
+  // 检查治疗疾病行为：没有疾病时不可用
+  if (action.clearDisease) {
+    const hasDiseases = state.activeDebuffs.some(d => d.isDisease);
+    if (!hasDiseases) {
+      reasons.push('你当前没有疾病需要治疗');
+    }
+  }
+
   return { canExecute: reasons.length === 0, reasons };
 }
 
@@ -339,7 +347,7 @@ export function executeSettlement(state: GameState): SettlementResult {
     }
   }
 
-  // 3. 处理Debuff
+  // 3. 处理Debuff（包括疾病）
   const newDebuffs: ActiveDebuff[] = [];
   for (const debuff of state.activeDebuffs) {
     const effect = debuff.effect;
@@ -353,12 +361,20 @@ export function executeSettlement(state: GameState): SettlementResult {
       result.healthChange += effect.healthPerRound;
       result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 体力${effect.healthPerRound}`);
     }
+    if (effect.sanPerRound) {
+      state.attributes.san = clamp(state.attributes.san + effect.sanPerRound, 0, state.maxSan);
+      result.sanChange += effect.sanPerRound;
+      result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 精神${effect.sanPerRound}`);
+    }
     if (effect.creditPerRound) {
       state.attributes.credit += effect.creditPerRound;
       result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 评分${effect.creditPerRound}`);
     }
-    debuff.remainingDuration -= 1;
-    if (debuff.remainingDuration > 0) {
+    // 长期疾病(isChronic)不减duration，永远不会自愈
+    if (!debuff.isChronic) {
+      debuff.remainingDuration -= 1;
+    }
+    if (debuff.isChronic || debuff.remainingDuration > 0) {
       newDebuffs.push(debuff);
     }
   }

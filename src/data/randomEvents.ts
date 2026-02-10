@@ -1,6 +1,147 @@
 // 每月随机事件定义 — 暗黑资本家版
 import type { GameState, RandomEvent } from '@/lib/types';
 
+// === 疾病定义（用于随机生病） ===
+export interface DiseaseEvent {
+  id: string;         // 对应debuffs中的id
+  name: string;
+  icon: string;
+  text: string;       // 发病时的文案
+  isChronic: boolean; // 是否长期疾病
+  baseChance: number; // 基础触发概率
+  workRelated?: boolean; // 是否与工作相关（工作时间越长越容易触发）
+  relatedWorkTypes?: string[]; // 相关的工作subType
+}
+
+export const diseasePool: DiseaseEvent[] = [
+  {
+    id: 'disease_cold',
+    name: '重感冒',
+    icon: '🤧',
+    text: '🤧 感觉喉咙发紧、头昏脑胀。重感冒了。在这个国家，生病意味着要么花钱，要么硬扛到死。',
+    isChronic: false,
+    baseChance: 0.08,
+  },
+  {
+    id: 'disease_flu',
+    name: '流感',
+    icon: '🤒',
+    text: '🤒 高烧39度，全身酸痛。流感季来了，而你没有医保。去药店花了$50买了最便宜的退烧药。',
+    isChronic: false,
+    baseChance: 0.06,
+  },
+  {
+    id: 'disease_food_poison',
+    name: '食物中毒',
+    icon: '🤮',
+    text: '🤮 上吐下泻一整晚。不知道是路边摊的炒饭还是超市打折的鸡肉。穷人吃的东西，命贱价更贱。',
+    isChronic: false,
+    baseChance: 0.05,
+  },
+  {
+    id: 'disease_pneumonia',
+    name: '肺炎',
+    icon: '🫁',
+    text: '🫁 咳嗽了两周没管，现在发展成肺炎了。呼吸都疼。不去医院扛不住了。',
+    isChronic: false,
+    baseChance: 0.03,
+  },
+  {
+    id: 'disease_back_pain',
+    name: '腰椎间盘突出',
+    icon: '🦴',
+    text: '🦴 弯腰搬东西的瞬间，腰上"咔"了一声。站不起来了。这是长期劳损的总清算。不治不行了。',
+    isChronic: true,
+    baseChance: 0.02,
+    workRelated: true,
+  },
+  {
+    id: 'disease_gastritis',
+    name: '慢性胃炎',
+    icon: '🫁',
+    text: '🫁 吃什么吐什么，胃像被火烧。长期不规律饮食+压力终于把胃搞坏了。这病会跟你一辈子。',
+    isChronic: true,
+    baseChance: 0.02,
+    workRelated: true,
+  },
+  {
+    id: 'disease_carpal',
+    name: '腕管综合征',
+    icon: '🖐️',
+    text: '🖐️ 手指发麻，握不住东西。长时间重复劳动导致的腕管综合征。这个国家的工伤可不会赔你。',
+    isChronic: true,
+    baseChance: 0.015,
+    workRelated: true,
+  },
+  {
+    id: 'disease_depression',
+    name: '抑郁症',
+    icon: '😶‍🌫️',
+    text: '😶‍🌫️ 连续失眠两周了。对一切都提不起兴趣。你被确诊了抑郁症。在异国他乡，没人在乎你的精神死活。',
+    isChronic: true,
+    baseChance: 0.02,
+  },
+  {
+    id: 'disease_hypertension',
+    name: '高血压',
+    icon: '💉',
+    text: '💉 头晕目眩，太阳穴突突跳。量了血压吓一跳：180/120。长期高压生活的代价来了。',
+    isChronic: true,
+    baseChance: 0.02,
+  },
+  {
+    id: 'disease_diabetes',
+    name: '二型糖尿病',
+    icon: '💊',
+    text: '💊 总是口渴、频繁上厕所。验血结果：血糖爆表。二型糖尿病。在美国，胰岛素比黄金还贵。',
+    isChronic: true,
+    baseChance: 0.01,
+  },
+];
+
+/**
+ * 每月结算时检查是否生病
+ * 基于随机概率 + 工作时长加成
+ */
+export function rollDisease(state: GameState): DiseaseEvent | null {
+  // 已有的疾病ID列表
+  const existingDiseaseIds = state.activeDebuffs
+    .filter(d => d.isDisease)
+    .map(d => d.id);
+
+  // 工作月数（影响职业病概率）
+  const workItem = state.recurringItems.find(r => r.type === 'work');
+  const workMonths = workItem ? (state.currentRound - workItem.startRound) : 0;
+
+  // 住房等级影响生病概率（住得差更容易生病）
+  const housingLevel = parseInt(state.housingLevel);
+  const housingMultiplier = housingLevel <= 1 ? 2.0 : housingLevel <= 2 ? 1.5 : housingLevel <= 3 ? 1.2 : 1.0;
+
+  // 健康值低更容易生病
+  const healthMultiplier = state.attributes.health <= 20 ? 2.5 : state.attributes.health <= 40 ? 1.8 : state.attributes.health <= 60 ? 1.3 : 1.0;
+
+  // 饮食差更容易生病
+  const dietLevel = parseInt(state.dietLevel);
+  const dietMultiplier = dietLevel <= 1 ? 1.5 : dietLevel <= 2 ? 1.2 : 1.0;
+
+  for (const disease of diseasePool) {
+    // 跳过已有的疾病
+    if (existingDiseaseIds.includes(disease.id)) continue;
+
+    let chance = disease.baseChance * housingMultiplier * healthMultiplier * dietMultiplier;
+
+    // 工作相关疾病：工作越久概率越高
+    if (disease.workRelated && workMonths > 0) {
+      chance += Math.min(workMonths * 0.005, 0.08); // 每工作1个月+0.5%，最多+8%
+    }
+
+    if (Math.random() < chance) {
+      return disease;
+    }
+  }
+  return null;
+}
+
 // === 正面事件（暗黑版：你的获利往往建立在别人的损失上） ===
 const positiveEvents: RandomEvent[] = [
   {

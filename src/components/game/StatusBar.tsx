@@ -182,10 +182,31 @@ export function StatusBar() {
         <Tag color="slate" text={`🍜 ${dietData?.name || '省吃俭用'}`} />
       </div>
 
+      {/* 疾病状态 */}
+      {activeDebuffs.filter(d => d.isDisease).length > 0 && (
+        <div className="px-3 pb-1.5">
+          <div className="text-[10px] text-red-500/80 mb-1 font-bold">🏥 当前疾病（去专科门诊治疗）</div>
+          <div className="flex gap-1.5 flex-wrap">
+            {activeDebuffs.filter(d => d.isDisease).map(d => (
+              <span key={d.id} className={`px-2 py-0.5 rounded text-[10px] border ${
+                d.isChronic
+                  ? 'bg-red-950/80 text-red-300 border-red-700/60 animate-pulse font-bold'
+                  : 'bg-orange-950/60 text-orange-400 border-orange-800/50'
+              }`}>
+                {d.icon} {d.name}
+                {d.isChronic ? ' (慢性)' : ` (${d.remainingDuration}月)`}
+                <span className="text-red-500/70 ml-1">❤️{d.effect.healthPerRound || 0}/月</span>
+                {d.effect.sanPerRound ? <span className="text-purple-500/70 ml-1">🧠{d.effect.sanPerRound}/月</span> : null}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Buff / Debuff */}
-      {(activeDebuffs.length > 0 || activeBuffs.length > 0) && (
+      {(activeDebuffs.filter(d => !d.isDisease).length > 0 || activeBuffs.length > 0) && (
         <div className="flex gap-1.5 px-3 pb-2 flex-wrap">
-          {activeDebuffs.map(d => (
+          {activeDebuffs.filter(d => !d.isDisease).map(d => (
           <span key={d.id} className="bg-red-950/70 text-red-400 px-2 py-0.5 rounded text-[10px] border border-red-800/50 animate-pulse">
               {d.icon} {d.name} ({d.remainingDuration}月)
             </span>
