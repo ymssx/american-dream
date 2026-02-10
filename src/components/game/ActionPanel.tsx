@@ -220,44 +220,46 @@ export function ActionPanel() {
     setLastResult(null);
   }, []);
 
+  // === 结算阶段的数据（必须在条件分支之前调用 hooks） ===
+  const net = state.roundFinancials.income - state.roundFinancials.expense;
+  const classInfo = getClassInfo(state.classLevel);
+
+  // "新闻头条"风格的本月最大事件
+  const headline = useMemo(() => {
+    if (net >= 10000) return { text: '🩸 大丰收！别人在流血，你在数钱', color: 'text-red-400', bg: 'bg-red-950/60' };
+    if (net >= 3000) return { text: '🔪 又是赚钱的一个月。食物链往上爬了一格', color: 'text-red-300', bg: 'bg-red-950/40' };
+    if (net <= -5000) return { text: '💀 血亏严重！你快要从猎人变成猎物了', color: 'text-red-500', bg: 'bg-red-950/70' };
+    if (net <= -1000) return { text: '📉 在亏钱。弱肉强食的世界里，赔钱就是在流血', color: 'text-red-400', bg: 'bg-red-950/50' };
+    if (state.attributes.health <= 20) return { text: '☠️ 身体快崩了。别成为下一个被抖音播报的悲惨故事', color: 'text-red-500', bg: 'bg-red-950/60' };
+    if (state.attributes.san <= 20) return { text: '🌀 精神快崩了。别像那些人一样从天台上跳下去', color: 'text-purple-500', bg: 'bg-purple-950/60' };
+    if (state.roundBehaviors.length === 0) return { text: '🦴 什么都没做。而外面的人正在拼命。', color: 'text-gray-500', bg: 'bg-gray-900/60' };
+    return { text: '⚰️ 又一个月。有人发财，有人发丧。', color: 'text-gray-400', bg: 'bg-gray-900/60' };
+  }, [net, state.attributes.health, state.attributes.san, state.roundBehaviors.length]);
+
+  // AI 点评 — 暗黑资本家口吻
+  const aiComment = useMemo(() => {
+    const comments: string[] = [];
+    if (net >= 10000) comments.push('赚麻了。而外面有人正在为$500拼命。这就是资本的魅力。');
+    else if (net >= 3000) comments.push('不错的一个月。每一分钱都是踩着别人的影子赚来的。');
+    else if (net <= -5000) comments.push('赔成这样的人，通常下一步就是街头流浪。你不想成为他们吧？');
+    else if (net <= -1000) comments.push('花的比赚的多。在这个世界，赔钱的人会被吃掉。');
+
+    if (state.recurringItems.filter(r => r.type === 'work').length === 0 && state.currentRound > 3) {
+      comments.push('没有工作就是在消耗自己。而消耗完了的人，会变成新闻里的一行字。');
+    }
+    if (state.attributes.health <= 30) comments.push('身体在报警。这里没有免费医疗——没有钱就没有命。');
+    if (state.money < 0) comments.push('负债了。蓄奴制废除了，但债务没有。');
+    if (state.money > 50000 && state.recurringItems.filter(r => r.type === 'invest').length === 0) {
+      comments.push('这么多现金放着不用？让钱去工作。人会死，钱不会。');
+    }
+    if (state.money >= 100000) {
+      comments.push('十万美元。在这片土地上，这个数字意味着你可以决定别人的命运。');
+    }
+
+    return comments.length > 0 ? comments[Math.floor(Math.random() * comments.length)] : '美国梦的真相：有人做梦，有人不醒。而你，选择了叫醒别人。';
+  }, [net, state.recurringItems, state.currentRound, state.attributes.health, state.money]);
+
   if (state.roundPhase === 'result') {
-    const net = state.roundFinancials.income - state.roundFinancials.expense;
-    const classInfo = getClassInfo(state.classLevel);
-
-    // "新闻头条"风格的本月最大事件
-    const headline = useMemo(() => {
-      if (net >= 10000) return { text: '🩸 大丰收！别人在流血，你在数钱', color: 'text-red-400', bg: 'bg-red-950/60' };
-      if (net >= 3000) return { text: '🔪 又是赚钱的一个月。食物链往上爬了一格', color: 'text-red-300', bg: 'bg-red-950/40' };
-      if (net <= -5000) return { text: '💀 血亏严重！你快要从猎人变成猎物了', color: 'text-red-500', bg: 'bg-red-950/70' };
-      if (net <= -1000) return { text: '📉 在亏钱。弱肉强食的世界里，赔钱就是在流血', color: 'text-red-400', bg: 'bg-red-950/50' };
-      if (state.attributes.health <= 20) return { text: '☠️ 身体快崩了。别成为下一个被抖音播报的悲惨故事', color: 'text-red-500', bg: 'bg-red-950/60' };
-      if (state.attributes.san <= 20) return { text: '🌀 精神快崩了。别像那些人一样从天台上跳下去', color: 'text-purple-500', bg: 'bg-purple-950/60' };
-      if (state.roundBehaviors.length === 0) return { text: '🦴 什么都没做。而外面的人正在拼命。', color: 'text-gray-500', bg: 'bg-gray-900/60' };
-      return { text: '⚰️ 又一个月。有人发财，有人发丧。', color: 'text-gray-400', bg: 'bg-gray-900/60' };
-    }, [net, state.attributes.health, state.attributes.san, state.roundBehaviors.length]);
-    // AI 点评 — 暗黑资本家口吻
-    const aiComment = useMemo(() => {
-      const comments: string[] = [];
-      if (net >= 10000) comments.push('赚麻了。而外面有人正在为$500拼命。这就是资本的魅力。');
-      else if (net >= 3000) comments.push('不错的一个月。每一分钱都是踩着别人的影子赚来的。');
-      else if (net <= -5000) comments.push('赔成这样的人，通常下一步就是街头流浪。你不想成为他们吧？');
-      else if (net <= -1000) comments.push('花的比赚的多。在这个世界，赔钱的人会被吃掉。');
-
-      if (state.recurringItems.filter(r => r.type === 'work').length === 0 && state.currentRound > 3) {
-        comments.push('没有工作就是在消耗自己。而消耗完了的人，会变成新闻里的一行字。');
-      }
-      if (state.attributes.health <= 30) comments.push('身体在报警。这里没有免费医疗——没有钱就没有命。');
-      if (state.money < 0) comments.push('负债了。蓄奴制废除了，但债务没有。');
-      if (state.money > 50000 && state.recurringItems.filter(r => r.type === 'invest').length === 0) {
-        comments.push('这么多现金放着不用？让钱去工作。人会死，钱不会。');
-      }
-      if (state.money >= 100000) {
-        comments.push('十万美元。在这片土地上，这个数字意味着你可以决定别人的命运。');
-      }
-
-      return comments.length > 0 ? comments[Math.floor(Math.random() * comments.length)] : '美国梦的真相：有人做梦，有人不醒。而你，选择了叫醒别人。';
-    }, [net, state.recurringItems, state.currentRound, state.attributes.health, state.money]);
-
     return (
       <div className="h-full overflow-y-auto">
         <div className="p-5 pb-32">
