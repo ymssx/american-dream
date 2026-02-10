@@ -17,16 +17,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #111;
+  background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #2a1515;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #3a2020;
 }
 
 /* 隐藏水平滚动条 */

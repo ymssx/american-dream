@@ -17,16 +17,16 @@ export function GameScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('action');
 
   return (
-    <div className="h-dvh bg-gray-950 text-white flex flex-col overflow-hidden">
+    <div className="h-dvh bg-black text-white flex flex-col overflow-hidden">
       {/* 顶部状态栏 */}
       <StatusBar />
 
       {/* Tab 切换 */}
-      <div className="flex border-b border-gray-800 bg-gray-900/50">
+      <div className="flex border-b border-red-900/30 bg-black/60">
         {([
-          { key: 'action', label: '⚡ 行动', icon: '⚡' },
-          { key: 'recurring', label: '💼 持续', icon: '💼' },
-          { key: 'log', label: '📜 记录', icon: '📜' },
+          { key: 'action', label: '🔪 行动', icon: '🔪' },
+          { key: 'recurring', label: '🩸 持续', icon: '🩸' },
+          { key: 'log', label: '☠️ 记录', icon: '☠️' },
           { key: 'settings', label: '⚙️ 设置', icon: '⚙️' },
         ] as { key: Tab; label: string; icon: string }[]).map(tab => (
           <button
@@ -34,8 +34,8 @@ export function GameScreen() {
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 py-3 text-sm text-center transition-all ${
               activeTab === tab.key
-                ? 'text-white border-b-2 border-red-500'
-                : 'text-gray-500 hover:text-gray-300'
+                ? 'text-red-400 border-b-2 border-red-700'
+                : 'text-gray-600 hover:text-gray-400'
             }`}
           >
             {tab.label}

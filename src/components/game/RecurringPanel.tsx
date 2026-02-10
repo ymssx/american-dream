@@ -11,9 +11,9 @@ export function RecurringPanel() {
   if (items.length === 0) {
     return (
       <div className="p-4">
-        <h3 className="text-sm font-bold text-gray-400 mb-2">📋 持续性项目</h3>
+        <h3 className="text-sm font-bold text-red-400/70 mb-2">🩸 持续性项目</h3>
         {/* 教育/技能信息 */}
-        <div className="bg-gray-900 rounded-lg p-3 mb-3">
+        <div className="bg-gray-950 rounded-lg p-3 mb-3 border border-gray-800/40">
           <div className="text-xs text-gray-500 mb-1">🎓 教育与技能</div>
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="bg-purple-900/30 text-purple-400 px-1.5 py-0.5 rounded">
@@ -71,7 +71,7 @@ export function RecurringPanel() {
       </div>
 
       {/* 汇总条 */}
-      <div className="bg-gray-900 rounded-lg p-3 mb-3 flex justify-between items-center text-xs">
+      <div className="bg-gray-950 rounded-lg p-3 mb-3 flex justify-between items-center text-xs border border-gray-800/40">
         <div className="flex gap-3">
           {totalIncome > 0 && (
             <span className="text-green-400">月入 +${totalIncome.toLocaleString()}</span>
@@ -130,10 +130,10 @@ export function RecurringPanel() {
 
 function RecurringItemCard({ item, onRemove, onSell }: { item: RecurringItem; onRemove: (id: string) => void; onSell: (id: string) => { success: boolean; message: string } }) {
   const typeColors: Record<string, string> = {
-    work: 'border-green-800 bg-green-950/30',
-    invest: 'border-blue-800 bg-blue-950/30',
-    loan: 'border-red-800 bg-red-950/30',
-    education: 'border-purple-800 bg-purple-950/30',
+    work: 'border-red-900/50 bg-red-950/20',
+    invest: 'border-gray-700/50 bg-gray-950/40',
+    loan: 'border-red-800/50 bg-red-950/30',
+    education: 'border-gray-700/50 bg-gray-950/30',
   };
 
   return (
@@ -214,7 +214,7 @@ function RecurringItemCard({ item, onRemove, onSell }: { item: RecurringItem; on
       {item.canSell && (
         <button
           onClick={() => onSell(item.id)}
-          className="mt-2 w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-xs transition-colors border border-gray-700"
+          className="mt-2 w-full py-1.5 bg-red-950/40 hover:bg-red-900/50 text-red-300 rounded text-xs transition-colors border border-red-800/30"
         >
           {item.sellText || '终止'}
         </button>

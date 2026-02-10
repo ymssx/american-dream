@@ -5,14 +5,14 @@
       "name": "休整",
       "subtitle": "苟一天算一天",
       "icon": "🛋️",
-      "color": "#f1c40f"
+      "color": "#8b0000"
     },
     {
       "id": "earn",
       "name": "搞钱",
       "subtitle": "打工/零工/透支身体 一切为了活下去",
       "icon": "💰",
-      "color": "#2ecc71",
+      "color": "#6b1010",
       "subGroups": [
         {
           "id": "all",
@@ -41,7 +41,7 @@
       "name": "医疗",
       "subtitle": "治病保命 穷人最怕生病",
       "icon": "🏥",
-      "color": "#ff6b6b",
+      "color": "#7a0000",
       "subGroups": [
         {
           "id": "all",
@@ -65,7 +65,7 @@
       "name": "投资",
       "subtitle": "赌一把/用钱生钱 搏命一把",
       "icon": "📈",
-      "color": "#16a085",
+      "color": "#4a0e0e",
       "subGroups": [
         {
           "id": "all",
@@ -89,21 +89,21 @@
       "name": "学校",
       "subtitle": "学历改变命运 但学费也改变钱包",
       "icon": "🎓",
-      "color": "#8e44ad"
+      "color": "#3d0a2e"
     },
     {
       "id": "credit",
       "name": "信用",
       "subtitle": "数字牢笼",
       "icon": "💳",
-      "color": "#9b59b6"
+      "color": "#2d0a2d"
     },
     {
       "id": "luxury",
       "name": "翻盘",
       "subtitle": "阶层跃迁",
       "icon": "👑",
-      "color": "#DAA520"
+      "color": "#8b6914"
     }
   ],
   "recurringTemplates": {

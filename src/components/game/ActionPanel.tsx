@@ -226,14 +226,14 @@ export function ActionPanel() {
 
     // "新闻头条"风格的本月最大事件
     const headline = useMemo(() => {
-      if (net >= 10000) return { text: '💰 大丰收！别人在流血，你在数钱', color: 'text-green-400', bg: 'bg-green-950/50' };
-      if (net >= 3000) return { text: '📈 又是赚钱的一个月。食物链往上爬了一格', color: 'text-emerald-400', bg: 'bg-emerald-950/40' };
-      if (net <= -5000) return { text: '🚨 血亏严重！你快要从猎人变成猎物了', color: 'text-red-400', bg: 'bg-red-950/50' };
-      if (net <= -1000) return { text: '📉 在亏钱。弱肉强食的世界里，赔钱就是在流血', color: 'text-orange-400', bg: 'bg-orange-950/40' };
-      if (state.attributes.health <= 20) return { text: '⚠️ 身体快崩了。别成为下一个被抖音播报的悲惨故事', color: 'text-red-400', bg: 'bg-red-950/50' };
-      if (state.attributes.san <= 20) return { text: '🌀 精神快崩了。别像那些人一样从天台上跳下去', color: 'text-purple-400', bg: 'bg-purple-950/50' };
-      if (state.roundBehaviors.length === 0) return { text: '😴 什么都没做。而外面的人正在拼命。', color: 'text-gray-400', bg: 'bg-gray-800/50' };
-      return { text: '📅 又一个月。有人发财，有人发丧。', color: 'text-gray-400', bg: 'bg-gray-800/50' };
+      if (net >= 10000) return { text: '🩸 大丰收！别人在流血，你在数钱', color: 'text-red-400', bg: 'bg-red-950/60' };
+      if (net >= 3000) return { text: '🔪 又是赚钱的一个月。食物链往上爬了一格', color: 'text-red-300', bg: 'bg-red-950/40' };
+      if (net <= -5000) return { text: '💀 血亏严重！你快要从猎人变成猎物了', color: 'text-red-500', bg: 'bg-red-950/70' };
+      if (net <= -1000) return { text: '📉 在亏钱。弱肉强食的世界里，赔钱就是在流血', color: 'text-red-400', bg: 'bg-red-950/50' };
+      if (state.attributes.health <= 20) return { text: '☠️ 身体快崩了。别成为下一个被抖音播报的悲惨故事', color: 'text-red-500', bg: 'bg-red-950/60' };
+      if (state.attributes.san <= 20) return { text: '🌀 精神快崩了。别像那些人一样从天台上跳下去', color: 'text-purple-500', bg: 'bg-purple-950/60' };
+      if (state.roundBehaviors.length === 0) return { text: '🦴 什么都没做。而外面的人正在拼命。', color: 'text-gray-500', bg: 'bg-gray-900/60' };
+      return { text: '⚰️ 又一个月。有人发财，有人发丧。', color: 'text-gray-400', bg: 'bg-gray-900/60' };
     }, [net, state.attributes.health, state.attributes.san, state.roundBehaviors.length]);
     // AI 点评 — 暗黑资本家口吻
     const aiComment = useMemo(() => {
@@ -265,7 +265,7 @@ export function ActionPanel() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`${headline.bg} rounded-xl p-4 mb-4 border border-gray-800/60`}
+            className={`${headline.bg} rounded-xl p-4 mb-4 border border-red-900/40`}
           >
             <p className={`text-lg font-black text-center ${headline.color}`}>{headline.text}</p>
           </motion.div>
@@ -282,7 +282,7 @@ export function ActionPanel() {
             <span className="text-gray-500 text-xs">— {classInfo.description}</span>
           </motion.div>
 
-          <div className="bg-gray-900 rounded-xl p-4 mb-4 text-left">
+          <div className="bg-gray-950 rounded-xl p-4 mb-4 text-left border border-gray-800/40">
             {/* 行动摘要 */}
             <p className="text-gray-400 text-sm mb-2">本月执行了 {state.roundBehaviors.length} 个行动</p>
             <div className="flex flex-wrap gap-2">
@@ -354,11 +354,10 @@ export function ActionPanel() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="bg-gray-800/50 rounded-lg p-3 mb-4 border border-gray-700/40"
+            className="bg-red-950/20 rounded-lg p-3 mb-4 border border-red-900/30"
           >
-            <p className="text-gray-500 text-[10px] mb-1">🧠 内心独白</p>
-            <p className="text-gray-300 text-sm italic">“{aiComment}”</p>
-          </motion.div>
+            <p className="text-red-700 text-[10px] mb-1">🩸 内心独白</p>
+            <p className="text-red-200/80 text-sm italic">"{aiComment}"</p>          </motion.div>
 
           {/* 📰 世界新闻播报 — 核心暗黑系统 */}
           {state.currentWorldNews.length > 0 && (
@@ -369,17 +368,17 @@ export function ActionPanel() {
               className="mb-4"
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-red-500 font-bold tracking-wider">📰 本月世界新闻</span>
+            <span className="text-xs text-red-600 font-bold tracking-wider">☠️ 本月世界新闻</span>
                 <div className="flex-1 h-px bg-red-900/40" />
               </div>
               <div className="space-y-2">
                 {state.currentWorldNews.map((news, i) => {
                   const toneStyle: Record<string, string> = {
-                    death: 'border-l-red-600 bg-red-950/30',
-                    ruin: 'border-l-orange-600 bg-orange-950/20',
-                    deport: 'border-l-blue-600 bg-blue-950/20',
-                    misery: 'border-l-gray-600 bg-gray-800/30',
-                    irony: 'border-l-yellow-600 bg-yellow-950/20',
+                    death: 'border-l-red-700 bg-red-950/40',
+                    ruin: 'border-l-red-600 bg-red-950/25',
+                    deport: 'border-l-gray-500 bg-gray-900/40',
+                    misery: 'border-l-gray-700 bg-gray-950/40',
+                    irony: 'border-l-red-500 bg-red-950/20',
                   };
                   return (
                     <motion.div
@@ -410,10 +409,10 @@ export function ActionPanel() {
         </div>
 
         {/* 固定底部按钮 */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-950/95 border-t border-gray-800 backdrop-blur-sm">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm">
           <button
             onClick={nextRound}
-            className="w-full px-8 py-3 bg-red-700 hover:bg-red-600 text-white rounded-lg text-lg font-bold transition-colors"
+            className="w-full px-8 py-3 bg-red-900 hover:bg-red-800 text-red-100 rounded-lg text-lg font-bold transition-colors border border-red-700/50"
           >
             进入下个月 →
           </button>
@@ -441,12 +440,12 @@ export function ActionPanel() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="w-full max-w-sm rounded-2xl p-5 border border-yellow-700/60 bg-gradient-to-b from-gray-900 to-gray-950 shadow-2xl shadow-yellow-900/20"
+              className="w-full max-w-sm rounded-2xl p-5 border border-red-900/60 bg-gradient-to-b from-gray-950 to-black shadow-2xl shadow-red-900/30"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-center mb-4">
                 <span className="text-4xl">🛋️</span>
-                <p className="text-yellow-300 font-bold text-lg mt-2">一键休整</p>
+                <p className="text-red-300 font-bold text-lg mt-2">一键休整</p>
                 <p className="text-gray-500 text-xs mt-1">以下 {quickRestResults.length} 项休整可以执行</p>
               </div>
 
@@ -465,8 +464,8 @@ export function ActionPanel() {
               </div>
 
               {/* 汇总 */}
-              <div className="bg-yellow-900/20 border border-yellow-800/40 rounded-lg p-3 mb-4">
-                <p className="text-yellow-400 text-xs font-bold mb-1">📊 总计</p>
+              <div className="bg-red-950/30 border border-red-800/40 rounded-lg p-3 mb-4">
+                <p className="text-red-400 text-xs font-bold mb-1">📊 总计</p>
                 <div className="flex flex-wrap gap-2 text-xs">
                   {quickRestTotals.totalMoney > 0 && (
                     <span className="text-red-400">花费 💰${quickRestTotals.totalMoney}</span>
@@ -492,9 +491,9 @@ export function ActionPanel() {
                 </button>
                 <button
                   onClick={executeQuickRest}
-                  className="flex-1 py-2.5 bg-yellow-700 hover:bg-yellow-600 text-white rounded-lg text-sm font-bold transition-colors"
+                  className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors"
                 >
-                  🛋️ 全部执行
+                  🩸 全部执行
                 </button>
               </div>
             </motion.div>
@@ -578,10 +577,10 @@ export function ActionPanel() {
                 isError
                   ? 'bg-red-950 border-red-800'
                   : isBigWin
-                  ? 'bg-gradient-to-b from-yellow-950/95 to-amber-950/95 border-yellow-600 shadow-yellow-500/20'
+                  ? 'bg-gradient-to-b from-red-950/95 to-amber-950/80 border-amber-700 shadow-amber-500/20'
                   : isBigLoss
-                  ? 'bg-gradient-to-b from-red-950/95 to-gray-950/95 border-red-700 shadow-red-500/20'
-                  : 'bg-gray-900 border-gray-700'
+                  ? 'bg-gradient-to-b from-red-950 to-black border-red-800 shadow-red-500/30'
+                  : 'bg-gray-950 border-gray-700'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -628,10 +627,10 @@ export function ActionPanel() {
                   </p>
                   {lastResult.effectSummary && String(lastResult.effectSummary).trim() !== '' && (
                     <div className={`rounded-lg p-3 mb-3 ${
-                      isBigWin ? 'bg-yellow-900/40' : isBigLoss ? 'bg-red-900/40' : 'bg-gray-800'
+                    isBigWin ? 'bg-amber-950/40' : isBigLoss ? 'bg-red-950/40' : 'bg-gray-900'
                     }`}>
                       <p className={`text-sm text-center font-mono ${
-                        isBigWin ? 'text-yellow-300 font-bold' : isBigLoss ? 'text-red-300 font-bold' : 'text-yellow-400'
+              isBigWin ? 'text-amber-300 font-bold' : isBigLoss ? 'text-red-300 font-bold' : 'text-red-300'
                       }`}>
                         {String(lastResult.effectSummary)}
                       </p>
@@ -639,10 +638,10 @@ export function ActionPanel() {
                   )}
                   {/* 大额提示 */}
                   {isBigWin && (
-                    <p className="text-yellow-500/80 text-xs text-center mb-2 animate-pulse">✨ 大赚一笔！</p>
+                    <p className="text-amber-500/80 text-xs text-center mb-2 animate-pulse">🩸 大赚一笔！别人的血变成了你的金</p>
                   )}
                   {isBigLoss && (
-                    <p className="text-red-500/80 text-xs text-center mb-2 animate-pulse">💥 血亏严重…</p>
+                    <p className="text-red-500/80 text-xs text-center mb-2 animate-pulse">💀 血亏严重…这次被割的是你</p>
                   )}
                 </>
               )}
@@ -659,7 +658,7 @@ export function ActionPanel() {
       </AnimatePresence>
 
       {/* 类别选择器 */}
-      <div className="flex overflow-x-auto gap-1 px-3 py-2 bg-gray-900/50 border-b border-gray-800">
+      <div className="flex overflow-x-auto gap-1 px-3 py-2 bg-black/60 border-b border-red-900/30">
         {categories.map((cat) => {
           const count = behaviors.filter(b => b.category === cat.id && b.canExecute).length;
           return (
@@ -668,14 +667,14 @@ export function ActionPanel() {
               onClick={() => handleCategoryChange(cat.id)}
               className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs whitespace-nowrap transition-all ${
                 selectedCategory === cat.id
-                  ? 'bg-gray-700 text-white'
-                  : 'bg-gray-900 text-gray-500 hover:text-gray-300'
+                  ? 'bg-red-950/80 text-red-300 border border-red-800/60'
+                  : 'bg-gray-900/60 text-gray-600 hover:text-gray-400 border border-transparent'
               }`}
             >
               <span>{cat.icon}</span>
               <span className="ml-1">{cat.name}</span>
               {count > 0 && (
-                <span className="ml-1 bg-gray-600 text-gray-300 px-1.5 py-0.5 rounded-full text-[10px]">{count}</span>
+                <span className="ml-1 bg-red-900/50 text-red-400 px-1.5 py-0.5 rounded-full text-[10px]">{count}</span>
               )}
             </button>
           );
@@ -693,9 +692,9 @@ export function ActionPanel() {
             return restCount > 0 ? (
               <button
                 onClick={prepareQuickRest}
-                className="px-3 py-1 bg-yellow-800/60 hover:bg-yellow-700/80 text-yellow-300 rounded-lg text-xs font-bold transition-all border border-yellow-700/50 hover:border-yellow-600"
+                className="px-3 py-1 bg-red-900/60 hover:bg-red-800/80 text-red-300 rounded-lg text-xs font-bold transition-all border border-red-700/50 hover:border-red-600"
               >
-                🛋️ 一键休整 ({restCount})
+                🩸 一键休整 ({restCount})
               </button>
             ) : null;
           })()}
@@ -712,8 +711,8 @@ export function ActionPanel() {
                   onClick={() => setSelectedSubGroup(sg.id)}
                   className={`px-2 py-1 rounded text-[11px] transition-all ${
                     selectedSubGroup === sg.id
-                      ? 'bg-gray-600 text-white'
-                      : 'bg-gray-800/60 text-gray-500 hover:text-gray-300'
+                      ? 'bg-red-950/60 text-red-300 border border-red-800/50'
+                      : 'bg-gray-900/60 text-gray-600 hover:text-gray-400 border border-transparent'
                   }`}
                 >
                   {sg.icon} {sg.name}
@@ -745,16 +744,16 @@ export function ActionPanel() {
       </div>
 
       {/* 结算按钮 — 固定在底部 */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-800 bg-gray-900 z-10">
+      <div className="flex-shrink-0 p-4 border-t border-red-900/30 bg-black/80 z-10">
         <div className="flex gap-3">
-          <div className="flex-1 text-xs text-gray-500">
-            SAN: {state.attributes.san}/{state.maxSan} · 已执行 {state.roundBehaviors.length} 个行动
+          <div className="flex-1 text-xs text-gray-600">
+            🧠 {state.attributes.san}/{state.maxSan} · 已执行 {state.roundBehaviors.length} 个行动
           </div>
           <button
             onClick={() => endRound()}
-            className="px-6 py-2 bg-yellow-700 hover:bg-yellow-600 text-white rounded-lg text-sm"
+            className="px-6 py-2 bg-red-900/80 hover:bg-red-800 text-red-200 rounded-lg text-sm border border-red-700/50"
           >
-            结束本月
+            ⚰️ 结束本月
           </button>
         </div>
       </div>
@@ -812,10 +811,10 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
   return (
     <motion.div
       layout
-      className={`bg-gray-900 border rounded-xl p-4 transition-all ${
+      className={`bg-gray-950 border rounded-xl p-4 transition-all ${
         disabled
-          ? 'border-gray-800 opacity-50'
-          : 'border-gray-700 hover:border-gray-600 cursor-pointer'
+          ? 'border-gray-800/50 opacity-40'
+          : 'border-gray-800 hover:border-red-900/60 cursor-pointer hover:bg-gray-900/50'
       }`}
     >
       <div className="flex justify-between items-start mb-2">
@@ -910,9 +909,9 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => onExecute(action.id)}
-          className="w-full py-2 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white rounded-lg text-sm transition-all font-medium"
+          className="w-full py-2 bg-red-950/60 hover:bg-red-900/80 active:bg-red-800 text-red-200 rounded-lg text-sm transition-all font-medium border border-red-800/40 hover:border-red-700/60"
         >
-          ▶ 执行
+          🔪 执行
         </motion.button>
       )}
     </motion.div>

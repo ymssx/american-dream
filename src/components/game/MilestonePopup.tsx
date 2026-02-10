@@ -6,32 +6,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const toneColors = {
   great: {
-    bg: 'from-amber-950/95 to-yellow-950/95',
-    border: 'border-amber-600',
+    bg: 'from-red-950/95 to-amber-950/80',
+    border: 'border-red-700',
     text: 'text-amber-300',
-    glow: 'shadow-amber-500/30',
-    btn: 'bg-amber-700 hover:bg-amber-600',
+    glow: 'shadow-red-500/30',
+    btn: 'bg-red-800 hover:bg-red-700',
   },
   good: {
-    bg: 'from-emerald-950/95 to-green-950/95',
-    border: 'border-emerald-600',
-    text: 'text-emerald-300',
-    glow: 'shadow-emerald-500/30',
-    btn: 'bg-emerald-700 hover:bg-emerald-600',
+    bg: 'from-red-950/95 to-gray-950/95',
+    border: 'border-red-800',
+    text: 'text-red-300',
+    glow: 'shadow-red-500/20',
+    btn: 'bg-red-900 hover:bg-red-800',
   },
   neutral: {
-    bg: 'from-gray-900/95 to-gray-950/95',
-    border: 'border-gray-600',
+    bg: 'from-gray-950/95 to-black',
+    border: 'border-gray-700',
     text: 'text-gray-300',
-    glow: 'shadow-gray-500/20',
-    btn: 'bg-gray-700 hover:bg-gray-600',
+    glow: 'shadow-gray-500/10',
+    btn: 'bg-gray-800 hover:bg-gray-700',
   },
   warn: {
-    bg: 'from-red-950/95 to-orange-950/95',
-    border: 'border-red-600',
-    text: 'text-red-300',
-    glow: 'shadow-red-500/30',
-    btn: 'bg-red-700 hover:bg-red-600',
+    bg: 'from-red-950 to-black',
+    border: 'border-red-700',
+    text: 'text-red-400',
+    glow: 'shadow-red-500/40',
+    btn: 'bg-red-800 hover:bg-red-700',
   },
 };
 
@@ -79,7 +79,7 @@ export function MilestonePopup() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
           >
-            <p className="text-xs text-gray-500 text-center mb-1 tracking-widest uppercase">🩸 暗黑印记</p>
+            <p className="text-xs text-red-600/80 text-center mb-1 tracking-widest uppercase">🩸 暗黑印记</p>
             <h3 className={`text-2xl font-black text-center mb-2 ${colors.text}`}>
               {milestone.title}
             </h3>
@@ -89,7 +89,7 @@ export function MilestonePopup() {
           </motion.div>
 
           {/* 分隔装饰线 */}
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent mb-4" />
+          <div className="h-px bg-gradient-to-r from-transparent via-red-800/60 to-transparent mb-4" />
 
           {/* 按钮 */}
           <motion.button

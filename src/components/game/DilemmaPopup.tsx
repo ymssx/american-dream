@@ -48,7 +48,7 @@ export function DilemmaPopup() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ type: 'spring', damping: 18 }}
-            className="w-full max-w-sm rounded-2xl p-5 border border-gray-600 bg-gray-900/95 shadow-2xl"
+            className="w-full max-w-sm rounded-2xl p-5 border border-gray-700 bg-gray-950/95 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center mb-3">
@@ -73,10 +73,10 @@ export function DilemmaPopup() {
               </div>
             )}
             <button
-              onClick={handleDismiss}
-              className="w-full py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
-            >
-              继续
+            onClick={handleDismiss}
+            className="w-full py-2.5 bg-red-950/60 hover:bg-red-900/80 text-red-200 rounded-lg text-sm font-bold transition-colors border border-red-800/40"
+          >
+            继续
             </button>
           </motion.div>
         </motion.div>
@@ -101,13 +101,13 @@ export function DilemmaPopup() {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ type: 'spring', damping: 16, stiffness: 250 }}
-          className="w-full max-w-sm rounded-2xl p-5 border border-yellow-700/60 bg-gradient-to-b from-gray-900/95 to-yellow-950/30 shadow-2xl"
+          className="w-full max-w-sm rounded-2xl p-5 border border-red-800/60 bg-gradient-to-b from-gray-950 to-red-950/30 shadow-2xl shadow-red-900/20"
         >
           {/* 标题 */}
           <div className="text-center mb-3">
             <span className="text-4xl">{dilemma.icon}</span>
           </div>
-          <p className="text-xs text-yellow-500/80 text-center mb-1 tracking-widest">⚖️ 抉择时刻</p>
+          <p className="text-xs text-red-500/80 text-center mb-1 tracking-widest">☠️ 抉择时刻</p>
           <h3 className="text-xl font-black text-center text-white mb-2">{dilemma.title}</h3>
           <p className="text-gray-400 text-sm text-center leading-relaxed mb-5">{dilemma.description}</p>
 
@@ -115,12 +115,12 @@ export function DilemmaPopup() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => handleChoice('A')}
-            className="w-full mb-3 p-4 rounded-xl border border-blue-700/50 bg-blue-950/30 hover:bg-blue-900/40 transition-all text-left"
+            className="w-full mb-3 p-4 rounded-xl border border-red-800/40 bg-red-950/20 hover:bg-red-900/30 transition-all text-left"
           >
             <div className="flex justify-between items-center mb-1">
-              <span className="text-blue-400 font-bold text-sm">A. {dilemma.optionA.text}</span>
+              <span className="text-red-300 font-bold text-sm">A. {dilemma.optionA.text}</span>
               {dilemma.optionA.successChance && dilemma.optionA.successChance < 1 && (
-                <span className="text-[10px] text-blue-500">
+                <span className="text-[10px] text-red-500/70">
                   成功率 {Math.round(dilemma.optionA.successChance * 100)}%
                 </span>
               )}
@@ -139,10 +139,10 @@ export function DilemmaPopup() {
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={() => handleChoice('B')}
-            className="w-full p-4 rounded-xl border border-orange-700/50 bg-orange-950/30 hover:bg-orange-900/40 transition-all text-left"
+            className="w-full p-4 rounded-xl border border-gray-700/50 bg-gray-900/40 hover:bg-gray-800/50 transition-all text-left"
           >
             <div className="flex justify-between items-center mb-1">
-              <span className="text-orange-400 font-bold text-sm">B. {dilemma.optionB.text}</span>
+              <span className="text-gray-300 font-bold text-sm">B. {dilemma.optionB.text}</span>
             </div>
             <p className="text-gray-500 text-xs">{dilemma.optionB.description}</p>
             <div className="flex gap-1 mt-2 flex-wrap">

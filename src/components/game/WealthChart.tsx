@@ -63,15 +63,15 @@ export function WealthChart({ history, currentMoney }: WealthChartProps) {
     : 0;
 
   return (
-    <div className="mt-3 pt-3 border-t border-gray-800">
+    <div className="mt-3 pt-3 border-t border-red-900/20">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-gray-500 text-xs">📈 资产走势</span>
+        <span className="text-gray-600 text-xs">☠️ 资产走势</span>
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-mono font-bold ${trendUp ? 'text-green-400' : 'text-red-400'}`}>
+          <span className={`text-xs font-mono font-bold ${trendUp ? 'text-amber-400' : 'text-red-500'}`}>
             {trend >= 0 ? '↑' : '↓'} 近期{trendUp ? '上涨' : '下跌'}
           </span>
           {monthChange !== 0 && (
-            <span className={`text-[10px] ${monthChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <span className={`text-[10px] ${monthChange >= 0 ? 'text-amber-500/80' : 'text-red-500'}`}>
               较上月 {monthChange >= 0 ? '+' : ''}{monthChange.toLocaleString()}
             </span>
           )}
@@ -81,18 +81,18 @@ export function WealthChart({ history, currentMoney }: WealthChartProps) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-20 rounded-lg overflow-hidden"
-        style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+        style={{ backgroundColor: 'rgba(10,0,0,0.4)' }}
       >
         {/* 填充区域 */}
         <path
           d={areaPath}
-          fill={trendUp ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'}
+          fill={trendUp ? 'rgba(180, 83, 9, 0.15)' : 'rgba(220, 38, 38, 0.15)'}
         />
         {/* 折线 */}
         <path
           d={linePath}
           fill="none"
-          stroke={trendUp ? '#22c55e' : '#ef4444'}
+          stroke={trendUp ? '#b45309' : '#dc2626'}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -114,7 +114,7 @@ export function WealthChart({ history, currentMoney }: WealthChartProps) {
           cx={4 + ((history.length - 1) / (history.length - 1)) * (width - 8)}
           cy={4 + (height - 8) - ((currentMoney - (minVal || 0)) / ((maxVal - minVal) || 1)) * (height - 8)}
           r="3"
-          fill={trendUp ? '#22c55e' : '#ef4444'}
+          fill={trendUp ? '#b45309' : '#dc2626'}
         />
       </svg>
 

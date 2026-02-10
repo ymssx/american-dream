@@ -4,17 +4,17 @@ import { useGameStore } from '@/store/gameStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const toneBg: Record<string, string> = {
-  positive: 'from-emerald-950/95 to-green-950/95 border-emerald-700',
-  negative: 'from-red-950/95 to-orange-950/95 border-red-700',
-  extreme: 'from-purple-950/95 to-red-950/95 border-purple-700',
-  neutral: 'from-gray-900/95 to-gray-950/95 border-gray-700',
+  positive: 'from-red-950/95 to-amber-950/70 border-red-800',
+  negative: 'from-red-950 to-black border-red-700',
+  extreme: 'from-red-950 to-purple-950/80 border-red-600',
+  neutral: 'from-gray-950/95 to-black border-gray-700',
 };
 
 const toneLabel: Record<string, { text: string; color: string }> = {
-  positive: { text: '💰 别人的不幸，你的机会', color: 'text-emerald-400' },
-  negative: { text: '⚡ 这次是你', color: 'text-red-400' },
-  extreme: { text: '💥 命运的轮盘', color: 'text-purple-400' },
-  neutral: { text: '📌 世界新闻', color: 'text-gray-400' },
+  positive: { text: '🩸 别人的不幸，你的机会', color: 'text-red-400' },
+  negative: { text: '💀 这次是你', color: 'text-red-500' },
+  extreme: { text: '☠️ 命运的轮盘', color: 'text-red-400' },
+  neutral: { text: '⚰️ 世界新闻', color: 'text-gray-500' },
 };
 
 function formatEffects(effects: Record<string, number>): string[] {
@@ -99,7 +99,7 @@ export function RandomEventPopup() {
 
           <button
             onClick={dismissRandomEvent}
-            className="w-full py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
+            className="w-full py-2.5 bg-red-950/60 hover:bg-red-900/80 text-red-200 rounded-lg text-sm font-bold transition-colors border border-red-800/40"
           >
             知道了
           </button>

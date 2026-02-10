@@ -112,24 +112,24 @@ export function StatusBar() {
   }), [money, attributes, education, currentRound, recurringItems, housingLevel, dietLevel, activeDebuffs, monthlyCost, monthlyNet]);
 
   const toneStyles = {
-    danger: 'bg-red-950/70 text-red-300 border-red-800/50',
-    warn: 'bg-yellow-950/50 text-yellow-300 border-yellow-800/40',
-    neutral: 'bg-gray-800/60 text-gray-400 border-gray-700/40',
-    good: 'bg-emerald-950/50 text-emerald-300 border-emerald-800/40',
-    great: 'bg-amber-950/50 text-amber-300 border-amber-800/40',
+    danger: 'bg-red-950/80 text-red-400 border-red-800/60',
+    warn: 'bg-red-950/40 text-red-300/80 border-red-900/40',
+    neutral: 'bg-gray-950/80 text-gray-500 border-gray-800/40',
+    good: 'bg-red-950/30 text-amber-400/80 border-amber-900/30',
+    great: 'bg-red-950/40 text-amber-300 border-amber-800/40',
   };
 
   return (
-    <div className="bg-gray-900 border-b border-gray-700/50">
+    <div className="bg-black border-b border-red-900/30">
       {/* 实时点评 */}
       <div className={`px-3 py-1.5 text-xs border-b ${toneStyles[commentary.tone]} transition-all duration-500`}>
         {commentary.text}
       </div>
 
       {/* 头部：回合 + 金钱 */}
-      <div className="flex justify-between items-center px-3 py-2 border-b border-gray-800/60">
+      <div className="flex justify-between items-center px-3 py-2 border-b border-red-900/20">
         <div className="flex items-center gap-2">
-          <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-md font-mono font-medium">
+          <span className="text-xs bg-red-950/60 text-red-400 px-2 py-0.5 rounded-md font-mono font-medium border border-red-900/30">
             第{currentRound}月
           </span>
           <div>
@@ -153,7 +153,7 @@ export function StatusBar() {
       </div>
 
       {/* 四维属性 - 文字标签 */}
-      <div className="px-3 py-1.5 flex flex-wrap gap-x-3 gap-y-1 border-b border-gray-800/40">
+      <div className="px-3 py-1.5 flex flex-wrap gap-x-3 gap-y-1 border-b border-red-900/20">
         <StatText icon="❤️" label="生命" value={attributes.health} max={100} danger={attributes.health <= 20} color="text-red-400" />
         <StatText icon="🧠" label="精神" value={attributes.san} max={maxSan} danger={attributes.san <= 30} color="text-purple-400" />
         <StatText icon="💳" label="信用" value={attributes.credit} max={850} danger={attributes.credit < 500} color="text-blue-400" />
@@ -186,12 +186,12 @@ export function StatusBar() {
       {(activeDebuffs.length > 0 || activeBuffs.length > 0) && (
         <div className="flex gap-1.5 px-3 pb-2 flex-wrap">
           {activeDebuffs.map(d => (
-            <span key={d.id} className="bg-red-950/60 text-red-400 px-2 py-0.5 rounded text-[10px] border border-red-800/40 animate-pulse">
+          <span key={d.id} className="bg-red-950/70 text-red-400 px-2 py-0.5 rounded text-[10px] border border-red-800/50 animate-pulse">
               {d.icon} {d.name} ({d.remainingDuration}月)
             </span>
           ))}
           {activeBuffs.map(b => (
-            <span key={b.id} className="bg-green-950/60 text-green-400 px-2 py-0.5 rounded text-[10px] border border-green-800/40">
+          <span key={b.id} className="bg-green-950/40 text-green-500/80 px-2 py-0.5 rounded text-[10px] border border-green-900/40">
               {b.icon} {b.name} ({b.remainingDuration}月)
             </span>
           ))}
@@ -204,15 +204,15 @@ export function StatusBar() {
 /** 标签颜色预设 */
 function Tag({ color, text }: { color: string; text: string }) {
   const styles: Record<string, string> = {
-    indigo: 'bg-indigo-900/40 text-indigo-300 border-indigo-700/50',
-    yellow: 'bg-yellow-900/30 text-yellow-400 border-yellow-800/40',
-    pink: 'bg-pink-900/30 text-pink-400 border-pink-800/40',
-    gray: 'bg-gray-800 text-gray-400 border-gray-700',
-    dim: 'bg-gray-800/50 text-gray-600 border-gray-800',
-    slate: 'bg-gray-800/70 text-gray-400 border-gray-700/60',
-    amber: 'bg-amber-900/40 text-amber-300 border-amber-700/50',
-    blue: 'bg-blue-900/40 text-blue-300 border-blue-700/50',
-    orange: 'bg-orange-900/40 text-orange-300 border-orange-700/50',
+    indigo: 'bg-indigo-950/40 text-indigo-300/80 border-indigo-800/40',
+    yellow: 'bg-amber-950/30 text-amber-400/80 border-amber-800/40',
+    pink: 'bg-red-950/30 text-pink-400/80 border-pink-900/40',
+    gray: 'bg-gray-900 text-gray-500 border-gray-800',
+    dim: 'bg-gray-900/50 text-gray-600 border-gray-800/50',
+    slate: 'bg-gray-900/70 text-gray-500 border-gray-800/60',
+    amber: 'bg-red-950/40 text-amber-300 border-amber-800/40',
+    blue: 'bg-red-950/30 text-blue-300/80 border-blue-900/40',
+    orange: 'bg-red-950/30 text-orange-400/80 border-orange-900/40',
   };
   return (
     <span className={`text-[11px] px-2 py-0.5 rounded border ${styles[color] || styles.gray}`}>
