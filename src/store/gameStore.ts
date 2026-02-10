@@ -12,6 +12,7 @@ import { checkMilestones } from '@/data/milestones';
 import { rollRandomEvent } from '@/data/randomEvents';
 import { rollDilemma } from '@/data/dilemmaEvents';
 import { calculateClassLevel, calculateNetWorth } from '@/lib/classSystem';
+import { generateWorldNews } from '@/data/worldNews';
 import constantsData from '@/data/constants.json';
 import actionsData from '@/data/actions.json';
 import storiesIndex from '@/data/stories.json';
@@ -91,6 +92,11 @@ function createDefaultState(): GameState {
     classLevel: 0,
     pendingRandomEvent: null,
     pendingDilemma: null,
+    // 暗黑系统
+    currentWorldNews: [],
+    totalDeathsSeen: 0,
+    totalRuinsSeen: 0,
+    totalDeportsSeen: 0,
   };
 }
 
@@ -622,6 +628,35 @@ export const useGameStore = create<GameStore>()(
           s.fullGameLog.push(eventFeed);
         }
 
+        // === 暗黑系统：世界新闻播报 ===
+        const worldNews = generateWorldNews(s.classLevel, s.currentRound);
+        s.currentWorldNews = worldNews;
+        // 统计死亡/破产/遣返数
+        for (const n of worldNews) {
+          if (n.tone === 'death') s.totalDeathsSeen++;
+          else if (n.tone === 'ruin') s.totalRuinsSeen++;
+          else if (n.tone === 'deport') s.totalDeportsSeen++;
+          // 应用玩家收益
+          if (n.playerGain) {
+            for (const [key, val] of Object.entries(n.playerGain)) {
+              if (typeof val !== 'number' || val === 0) continue;
+              if (key === 'money') {
+                s.money += val;
+                s.roundFinancials.income += val;
+              } else if (key === 'skills') {
+                s.education.skills = clamp(s.education.skills + val, 0, 100);
+              } else if (key === 'influence') {
+                s.education.influence = clamp(s.education.influence + val, 0, 100);
+              } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
+                const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
+                (s.attributes as unknown as Record<string, number>)[key] = clamp(
+                  ((s.attributes as unknown as Record<string, number>)[key] || 0) + val, 0, maxV
+                );
+              }
+            }
+          }
+        }
+
         // === 爽感系统：里程碑检查 ===
         const newMilestones = checkMilestones(s);
         if (newMilestones.length > 0) {
@@ -665,6 +700,7 @@ export const useGameStore = create<GameStore>()(
             visibleBehaviorIds: generateVisibleBehaviors(newRound),
             pendingRandomEvent: null,
             pendingDilemma: null,
+            currentWorldNews: [],
           },
         };
       }),
@@ -861,11 +897,11 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'american-dream-game',
-      version: 5,
+      version: 6,
       partialize: (state) => ({ state: state.state }),
       migrate: (persistedState: unknown, version: number) => {
-        if (version < 5) {
-          // 旧版存档不兼容新系统，直接重置
+        if (version < 6) {
+          // 旧版存档不兼容暗黑系统，直接重置
           return { state: createDefaultState() };
         }
         return persistedState;

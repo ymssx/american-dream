@@ -1,55 +1,56 @@
-// 阶层系统 — 根据综合条件判定玩家所处的社会阶层
+// 阶层系统 — 暗黑资本家版
+// 不是"社会阶层"，而是"食物链位置"
 import type { GameState, ClassLevel } from '@/lib/types';
 
 export interface ClassInfo {
   level: ClassLevel;
   name: string;
   icon: string;
-  color: string;     // tailwind 文本颜色类
-  bgColor: string;   // tailwind 背景颜色类
+  color: string;
+  bgColor: string;
   description: string;
 }
 
 export const classDefinitions: ClassInfo[] = [
   {
     level: 0,
-    name: '流浪者',
-    icon: '🏚️',
+    name: '蝼蚁',
+    icon: '🐜',
     color: 'text-gray-500',
     bgColor: 'bg-gray-800',
-    description: '没有固定住所，食不果腹。社会的最底层。',
+    description: '随时会被踩死的存在。',
   },
   {
     level: 1,
-    name: '底层打工人',
-    icon: '🔧',
+    name: '耗材',
+    icon: '⚙️',
     color: 'text-orange-400',
     bgColor: 'bg-orange-900/40',
-    description: '有一份工作，勉强维持生存。但离安全还很远。',
+    description: '有用，但可替换。用完就扔。',
   },
   {
     level: 2,
-    name: '中产阶级',
-    icon: '🏠',
+    name: '食肉者',
+    icon: '🐺',
     color: 'text-blue-400',
     bgColor: 'bg-blue-900/40',
-    description: '有稳定收入和住所，生活开始正常化。',
+    description: '开始吃人了。不再是猎物，而是猎手。',
   },
   {
     level: 3,
-    name: '上流阶层',
-    icon: '🥂',
+    name: '收割者',
+    icon: '⚔️',
     color: 'text-purple-400',
     bgColor: 'bg-purple-900/40',
-    description: '高收入、高学历、有投资。你已经超过了大多数人。',
+    description: '别人的不幸就是你的商机。你已经学会了这个游戏的规则。',
   },
   {
     level: 4,
-    name: '顶层精英',
+    name: '食物链之巅',
     icon: '👑',
     color: 'text-amber-400',
     bgColor: 'bg-amber-900/40',
-    description: '百万身家，影响力和资源都在顶端。美国梦的终极形态。',
+    description: '你就是规则本身。蝼蚁们仰望着你，就像你曾经仰望别人。',
   },
 ];
 
@@ -61,7 +62,6 @@ export function calculateClassLevel(state: GameState): ClassLevel {
   const totalIncome = jobs.reduce((s, j) => s + j.monthlyIncome, 0);
   const hl = parseInt(housingLevel);
 
-  // 打分系统
   let score = 0;
 
   // 资金（0-40分）
@@ -94,11 +94,11 @@ export function calculateClassLevel(state: GameState): ClassLevel {
   // 投资（0-10分）
   score += Math.min(investments.length * 3, 10);
 
-  // 信用（惩罚/加分）
+  // 信用
   if (attributes.credit >= 750) score += 3;
   if (attributes.credit < 500) score -= 5;
 
-  // 影响力加分
+  // 影响力
   if (education.influence >= 60) score += 3;
 
   // 阶层判定
@@ -117,7 +117,6 @@ export function getClassInfo(level: ClassLevel): ClassInfo {
 /** 计算净资产 */
 export function calculateNetWorth(state: GameState): number {
   let netWorth = state.money;
-  // 加上投资估值
   for (const item of state.recurringItems) {
     if (item.subType === 'fund' && item.investPrincipal !== undefined && item.accumulatedGain !== undefined) {
       netWorth += item.investPrincipal + item.accumulatedGain;

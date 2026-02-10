@@ -79,7 +79,7 @@ export function MilestonePopup() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
           >
-            <p className="text-xs text-gray-500 text-center mb-1 tracking-widest uppercase">🏆 成就达成</p>
+            <p className="text-xs text-gray-500 text-center mb-1 tracking-widest uppercase">🩸 暗黑印记</p>
             <h3 className={`text-2xl font-black text-center mb-2 ${colors.text}`}>
               {milestone.title}
             </h3>

@@ -188,6 +188,12 @@ export interface GameState {
 
   // 抉择事件
   pendingDilemma: DilemmaEvent | null;
+
+  // 世界新闻（暗黑系统）
+  currentWorldNews: WorldNewsItem[];
+  totalDeathsSeen: number;    // 累计看到多少人死亡
+  totalRuinsSeen: number;     // 累计看到多少人破产
+  totalDeportsSeen: number;   // 累计看到多少人被遣返
 }
 
 /** 行为数据结构 */
@@ -306,4 +312,14 @@ export interface WealthRecord {
   money: number;
   netWorth: number; // 净资产 = 现金 + 投资估值
   classLevel: ClassLevel;
+}
+
+/** 世界新闻条目 */
+export interface WorldNewsItem {
+  id: string;
+  text: string;
+  icon: string;
+  tone: 'death' | 'ruin' | 'deport' | 'misery' | 'irony';
+  playerGain?: Record<string, number>;
+  gainText?: string;
 }

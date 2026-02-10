@@ -153,36 +153,38 @@ export function ActionPanel() {
     const net = state.roundFinancials.income - state.roundFinancials.expense;
     const classInfo = getClassInfo(state.classLevel);
 
-    // “新闻头条”风格的本月最大事件
+    // "新闻头条"风格的本月最大事件
     const headline = useMemo(() => {
-      if (net >= 10000) return { text: '💰 大丰收！本月净赚超万', color: 'text-green-400', bg: 'bg-green-950/50' };
-      if (net >= 3000) return { text: '📈 财务稳健，小有盈余', color: 'text-emerald-400', bg: 'bg-emerald-950/40' };
-      if (net <= -5000) return { text: '🚨 财务危机！本月严重亏损', color: 'text-red-400', bg: 'bg-red-950/50' };
-      if (net <= -1000) return { text: '📉 入不敷出，需要开源节流', color: 'text-orange-400', bg: 'bg-orange-950/40' };
-      if (state.attributes.health <= 20) return { text: '⚠️ 健康警报！身体即将崩溃', color: 'text-red-400', bg: 'bg-red-950/50' };
-      if (state.attributes.san <= 20) return { text: '🌀 精神危机！意志力消磨殆尽', color: 'text-purple-400', bg: 'bg-purple-950/50' };
-      if (state.roundBehaviors.length === 0) return { text: '😴 无所事事的一个月', color: 'text-gray-400', bg: 'bg-gray-800/50' };
-      return { text: '📅 又一个月过去了', color: 'text-gray-400', bg: 'bg-gray-800/50' };
+      if (net >= 10000) return { text: '💰 大丰收！别人在流血，你在数钱', color: 'text-green-400', bg: 'bg-green-950/50' };
+      if (net >= 3000) return { text: '📈 又是赚钱的一个月。食物链往上爬了一格', color: 'text-emerald-400', bg: 'bg-emerald-950/40' };
+      if (net <= -5000) return { text: '🚨 血亏严重！你快要从猎人变成猎物了', color: 'text-red-400', bg: 'bg-red-950/50' };
+      if (net <= -1000) return { text: '📉 在亏钱。弱肉强食的世界里，赔钱就是在流血', color: 'text-orange-400', bg: 'bg-orange-950/40' };
+      if (state.attributes.health <= 20) return { text: '⚠️ 身体快崩了。别成为下一个被抖音播报的悲惨故事', color: 'text-red-400', bg: 'bg-red-950/50' };
+      if (state.attributes.san <= 20) return { text: '🌀 精神快崩了。别像那些人一样从天台上跳下去', color: 'text-purple-400', bg: 'bg-purple-950/50' };
+      if (state.roundBehaviors.length === 0) return { text: '😴 什么都没做。而外面的人正在拼命。', color: 'text-gray-400', bg: 'bg-gray-800/50' };
+      return { text: '📅 又一个月。有人发财，有人发丧。', color: 'text-gray-400', bg: 'bg-gray-800/50' };
     }, [net, state.attributes.health, state.attributes.san, state.roundBehaviors.length]);
-
-    // AI 点评
+    // AI 点评 — 暗黑资本家口吻
     const aiComment = useMemo(() => {
       const comments: string[] = [];
-      if (net >= 10000) comments.push('赚麻了，再来几个这样的月你就财务自由了。');
-      else if (net >= 3000) comments.push('不错的一个月，继续保持。');
-      else if (net <= -5000) comments.push('流血严重，得想办法止血了。');
-      else if (net <= -1000) comments.push('花得比赚得多，不是长久之计。');
+      if (net >= 10000) comments.push('赚麻了。而外面有人正在为$500拼命。这就是资本的魅力。');
+      else if (net >= 3000) comments.push('不错的一个月。每一分钱都是踩着别人的影子赚来的。');
+      else if (net <= -5000) comments.push('赔成这样的人，通常下一步就是街头流浪。你不想成为他们吧？');
+      else if (net <= -1000) comments.push('花的比赚的多。在这个世界，赔钱的人会被吃掉。');
 
       if (state.recurringItems.filter(r => r.type === 'work').length === 0 && state.currentRound > 3) {
-        comments.push('还没有正式工作，考虑找一份？');
+        comments.push('没有工作就是在消耗自己。而消耗完了的人，会变成新闻里的一行字。');
       }
-      if (state.attributes.health <= 30) comments.push('身体是革命的本钱。');
-      if (state.money < 0) comments.push('负债中……每一分钱都得精打细算。');
+      if (state.attributes.health <= 30) comments.push('身体在报警。这里没有免费医疗——没有钱就没有命。');
+      if (state.money < 0) comments.push('负债了。蓄奴制废除了，但债务没有。');
       if (state.money > 50000 && state.recurringItems.filter(r => r.type === 'invest').length === 0) {
-        comments.push('有这么多现金，考虑投资一下？');
+        comments.push('这么多现金放着不用？让钱去工作。人会死，钱不会。');
+      }
+      if (state.money >= 100000) {
+        comments.push('十万美元。在这片土地上，这个数字意味着你可以决定别人的命运。');
       }
 
-      return comments.length > 0 ? comments[Math.floor(Math.random() * comments.length)] : '继续努力，美国梦不会辜负每一个努力的人。';
+      return comments.length > 0 ? comments[Math.floor(Math.random() * comments.length)] : '美国梦的真相：有人做梦，有人不醒。而你，选择了叫醒别人。';
     }, [net, state.recurringItems, state.currentRound, state.attributes.health, state.money]);
 
     return (
@@ -283,9 +285,57 @@ export function ActionPanel() {
             transition={{ delay: 0.3 }}
             className="bg-gray-800/50 rounded-lg p-3 mb-4 border border-gray-700/40"
           >
-            <p className="text-gray-500 text-[10px] mb-1">🤖 AI 点评</p>
+            <p className="text-gray-500 text-[10px] mb-1">🧠 内心独白</p>
             <p className="text-gray-300 text-sm italic">“{aiComment}”</p>
           </motion.div>
+
+          {/* 📰 世界新闻播报 — 核心暗黑系统 */}
+          {state.currentWorldNews.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-4"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs text-red-500 font-bold tracking-wider">📰 本月世界新闻</span>
+                <div className="flex-1 h-px bg-red-900/40" />
+              </div>
+              <div className="space-y-2">
+                {state.currentWorldNews.map((news, i) => {
+                  const toneStyle: Record<string, string> = {
+                    death: 'border-l-red-600 bg-red-950/30',
+                    ruin: 'border-l-orange-600 bg-orange-950/20',
+                    deport: 'border-l-blue-600 bg-blue-950/20',
+                    misery: 'border-l-gray-600 bg-gray-800/30',
+                    irony: 'border-l-yellow-600 bg-yellow-950/20',
+                  };
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 + i * 0.15 }}
+                      className={`border-l-2 pl-3 py-2 rounded-r-lg ${toneStyle[news.tone] || toneStyle.misery}`}
+                    >
+                      <p className="text-gray-300 text-xs leading-relaxed">{news.text}</p>
+                      {news.playerGain && news.gainText && (
+                        <p className="text-green-500/80 text-[10px] mt-1 font-mono">
+                          💰 {news.gainText}
+                        </p>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+              {/* 累计统计 */}
+              <div className="flex gap-3 mt-2 text-[10px] text-gray-600">
+                <span>☠️ 累计死亡: {state.totalDeathsSeen}</span>
+                <span>💸 累计破产: {state.totalRuinsSeen}</span>
+                <span>🚶 累计遣返: {state.totalDeportsSeen}</span>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* 固定底部按钮 */}

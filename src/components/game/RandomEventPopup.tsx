@@ -11,10 +11,10 @@ const toneBg: Record<string, string> = {
 };
 
 const toneLabel: Record<string, { text: string; color: string }> = {
-  positive: { text: '✨ 好事降临', color: 'text-emerald-400' },
-  negative: { text: '⚡ 意外发生', color: 'text-red-400' },
-  extreme: { text: '💥 重大事件', color: 'text-purple-400' },
-  neutral: { text: '📌 事件通知', color: 'text-gray-400' },
+  positive: { text: '💰 别人的不幸，你的机会', color: 'text-emerald-400' },
+  negative: { text: '⚡ 这次是你', color: 'text-red-400' },
+  extreme: { text: '💥 命运的轮盘', color: 'text-purple-400' },
+  neutral: { text: '📌 世界新闻', color: 'text-gray-400' },
 };
 
 function formatEffects(effects: Record<string, number>): string[] {
