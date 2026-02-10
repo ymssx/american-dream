@@ -13,6 +13,7 @@ export function ActionPanel() {
   const [selectedSubGroup, setSelectedSubGroup] = useState<string>('all');
   const [lastResult, setLastResult] = useState<Record<string, unknown> | null>(null);
   const [executingId, setExecutingId] = useState<string | null>(null);
+  const [pendingDangerAction, setPendingDangerAction] = useState<string | null>(null);
 
   const categories = actionsData.categories as Array<{ id: string; name: string; subtitle: string; icon: string; color: string; subGroups?: Array<{ id: string; name: string; icon: string }> }>;
   const behaviors = getAvailableBehaviors();
@@ -46,9 +47,57 @@ export function ActionPanel() {
     setSelectedSubGroup('all');
   }, []);
 
+  // 检查行为是否可能致命
+  const checkDanger = useCallback((actionId: string): { isDanger: boolean; warnings: string[] } => {
+    const action = categoryBehaviors.find(b => b.id === actionId) || behaviors.find(b => b.id === actionId);
+    if (!action) return { isDanger: false, warnings: [] };
+    const warnings: string[] = [];
+    const currentHealth = state.attributes.health;
+    const currentSan = state.attributes.san;
+    const costHealth = (action.cost as Record<string, number>)?.health || 0;
+    const costSan = (action.cost as Record<string, number>)?.san || 0;
+    const riskPenaltyHealth = Math.abs((action as unknown as Record<string, Record<string, Record<string, number>>>)?.risk?.penalty?.health || 0);
+    const riskPenaltySan = Math.abs((action as unknown as Record<string, Record<string, Record<string, number>>>)?.risk?.penalty?.san || 0);
+    const riskChance = (action as unknown as Record<string, Record<string, number>>)?.risk?.chance || 0;
+
+    // 直接消耗就会致命
+    if (costHealth > 0 && costHealth >= currentHealth) {
+      warnings.push(`❤️ 健康消耗(${costHealth}) ≥ 当前健康(${currentHealth})，执行后必定死亡！`);
+    }
+    if (costSan > 0 && costSan >= currentSan) {
+      warnings.push(`🧠 精神消耗(${costSan}) ≥ 当前SAN(${currentSan})，执行后必定崩溃！`);
+    }
+    // 加上风险惩罚后可能致命
+    if (!warnings.length && riskChance > 0) {
+      if (costHealth + riskPenaltyHealth >= currentHealth && riskPenaltyHealth > 0) {
+        warnings.push(`❤️ 消耗(${costHealth})+风险惩罚(${riskPenaltyHealth}) ≥ 当前健康(${currentHealth})，有${Math.round(riskChance * 100)}%概率致命！`);
+      }
+      if (costSan + riskPenaltySan >= currentSan && riskPenaltySan > 0) {
+        warnings.push(`🧠 消耗(${costSan})+风险惩罚(${riskPenaltySan}) ≥ 当前SAN(${currentSan})，有${Math.round(riskChance * 100)}%概率崩溃！`);
+      }
+    }
+    // 健康或SAN过低时的额外警告（不一定致命但很危险）
+    if (!warnings.length) {
+      if (costHealth > 0 && currentHealth - costHealth <= 15 && currentHealth - costHealth > 0) {
+        warnings.push(`⚠️ 执行后健康将仅剩 ${currentHealth - costHealth}，极度危险！`);
+      }
+      if (costSan > 0 && currentSan - costSan <= 10 && currentSan - costSan > 0) {
+        warnings.push(`⚠️ 执行后SAN将仅剩 ${currentSan - costSan}，精神濒临崩溃！`);
+      }
+    }
+    return { isDanger: warnings.length > 0, warnings };
+  }, [categoryBehaviors, behaviors, state.attributes.health, state.attributes.san]);
+
   const handleExecute = useCallback((actionId: string) => {
     // 防止重复点击
     if (executingId) return;
+
+    // 检查是否致命行为，弹出确认
+    const danger = checkDanger(actionId);
+    if (danger.isDanger) {
+      setPendingDangerAction(actionId);
+      return;
+    }
 
     setExecutingId(actionId);
 
@@ -66,7 +115,33 @@ export function ActionPanel() {
         });
       }
     }, 300);
-  }, [executingId, executeBehavior]);
+  }, [executingId, executeBehavior, checkDanger]);
+
+  // 确认执行致命行为
+  const confirmDangerExecute = useCallback(() => {
+    if (!pendingDangerAction || executingId) return;
+    const actionId = pendingDangerAction;
+    setPendingDangerAction(null);
+    setExecutingId(actionId);
+
+    setTimeout(() => {
+      const result = executeBehavior(actionId);
+      setExecutingId(null);
+
+      if (result.success && result.result) {
+        setLastResult(result.result as Record<string, unknown>);
+      } else if (!result.success) {
+        setLastResult({
+          _error: true,
+          errorMsg: result.error || '执行失败',
+        });
+      }
+    }, 300);
+  }, [pendingDangerAction, executingId, executeBehavior]);
+
+  const cancelDangerExecute = useCallback(() => {
+    setPendingDangerAction(null);
+  }, []);
 
   const dismissResult = useCallback(() => {
     setLastResult(null);
@@ -142,6 +217,58 @@ export function ActionPanel() {
     <div className="flex flex-col h-full relative">
       {/* 执行结果弹窗 — 醒目的模态遮罩 */}
       <AnimatePresence>
+        {/* 致命行为确认弹窗 */}
+        {pendingDangerAction && (() => {
+          const danger = checkDanger(pendingDangerAction);
+          const dangerAction = categoryBehaviors.find(b => b.id === pendingDangerAction) || behaviors.find(b => b.id === pendingDangerAction);
+          return (
+            <motion.div
+              key="danger-confirm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+              onClick={cancelDangerExecute}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                className="w-full max-w-sm rounded-2xl p-5 border border-red-700 bg-red-950/95 shadow-2xl shadow-red-900/30"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="text-center mb-3">
+                  <span className="text-4xl animate-pulse">💀</span>
+                </div>
+                <p className="text-red-300 font-bold text-center text-lg mb-1">致命警告</p>
+                <p className="text-red-400/80 text-sm text-center mb-3">
+                  执行「{dangerAction?.name || ''}」可能导致死亡！
+                </p>
+                <div className="bg-black/40 rounded-lg p-3 mb-4 space-y-1.5">
+                  {danger.warnings.map((w, i) => (
+                    <p key={i} className="text-red-300 text-sm leading-relaxed">{w}</p>
+                  ))}
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={cancelDangerExecute}
+                    className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={confirmDangerExecute}
+                    className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors animate-pulse"
+                  >
+                    赴死
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+
         {lastResult && (
           <motion.div
             initial={{ opacity: 0 }}
