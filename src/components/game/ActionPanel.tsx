@@ -561,6 +561,8 @@ export function ActionPanel() {
           const isBigWin = moneyGain >= 5000;
           const isBigLoss = moneyGain <= -3000;
           const isError = !!(lastResult as Record<string, unknown>)._error;
+          const outcomeSuccess = (lastResult as Record<string, unknown>).outcomeSuccess;
+          const isOutcomeFail = outcomeSuccess === false;
 
           return (
           <motion.div
@@ -578,6 +580,8 @@ export function ActionPanel() {
               className={`w-full max-w-sm rounded-2xl p-5 border shadow-2xl ${
                 isError
                   ? 'bg-red-950 border-red-800'
+                  : isOutcomeFail
+                  ? 'bg-gradient-to-b from-gray-950 to-red-950/50 border-red-800/60 shadow-red-500/20'
                   : isBigWin
                   ? 'bg-gradient-to-b from-red-950/95 to-amber-950/80 border-amber-700 shadow-amber-500/20'
                   : isBigLoss
@@ -596,8 +600,19 @@ export function ActionPanel() {
                 </>
               ) : (
                 <>
+                  {/* 失败标识 */}
+                  {isOutcomeFail && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: [0, 1.2, 1] }}
+                      transition={{ duration: 0.4 }}
+                      className="text-center mb-2"
+                    >
+                      <span className="text-5xl">❌</span>
+                    </motion.div>
+                  )}
                   {/* 大额收益特效 */}
-                  {isBigWin && (
+                  {isBigWin && !isOutcomeFail && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: [0, 1.3, 1] }}
@@ -622,7 +637,8 @@ export function ActionPanel() {
                     </span>
                   </div>
                   <p className="text-white font-bold text-center text-base mb-1">
-                    {String((lastResult.behavior as Record<string, string>)?.name || '')}
+                    {isOutcomeFail ? '❌ ' : ''}{String((lastResult.behavior as Record<string, string>)?.name || '')}
+                    {isOutcomeFail && <span className="text-red-400 text-sm font-normal"> — 失败了</span>}
                   </p>
                   <p className="text-gray-400 text-sm text-center mb-3 leading-relaxed">
                     {String(lastResult.narrative || '')}
@@ -639,11 +655,14 @@ export function ActionPanel() {
                     </div>
                   )}
                   {/* 大额提示 */}
-                  {isBigWin && (
+                  {isBigWin && !isOutcomeFail && (
                     <p className="text-amber-500/80 text-xs text-center mb-2 animate-pulse">🩸 大赚一笔！别人的血变成了你的金</p>
                   )}
                   {isBigLoss && (
                     <p className="text-red-500/80 text-xs text-center mb-2 animate-pulse">💀 血亏严重…这次被割的是你</p>
+                  )}
+                  {isOutcomeFail && !isBigLoss && (
+                    <p className="text-red-400/80 text-xs text-center mb-2">💔 这次没成功…钱和精力白费了</p>
                   )}
                 </>
               )}

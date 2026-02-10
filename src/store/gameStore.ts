@@ -578,6 +578,7 @@ export const useGameStore = create<GameStore>()(
             gain: outcome.gain,
             narrative: outcome.text || action.quote || '',
             effectSummary: effectSummary.join(' '),
+            outcomeSuccess: outcome.success,
           },
         };
       },
