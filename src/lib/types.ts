@@ -144,6 +144,9 @@ export interface GameState {
   behaviorUseCount: Record<string, number>;
   usedOneTimeBehaviors: string[];
 
+  // 已毕业的学校（recurring模板ID列表，如 'EDU_esl'、'EDU_community' 等）
+  graduatedSchools: string[];
+
   // 剧情状态
   tutorialStep: number;
   tutorialDone: boolean;

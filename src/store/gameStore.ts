@@ -72,6 +72,7 @@ function createDefaultState(): GameState {
     behaviorCooldowns: {},
     behaviorUseCount: {},
     usedOneTimeBehaviors: [],
+    graduatedSchools: [],
     recurringItems: [],
     tutorialStep: 0,
     tutorialDone: false,
@@ -934,11 +935,11 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'american-dream-game',
-      version: 6,
+      version: 7,
       partialize: (state) => ({ state: state.state }),
       migrate: (persistedState: unknown, version: number) => {
-        if (version < 6) {
-          // 旧版存档不兼容暗黑系统，直接重置
+        if (version < 7) {
+          // 旧版存档不兼容，直接重置
           return { state: createDefaultState() };
         }
         return persistedState;

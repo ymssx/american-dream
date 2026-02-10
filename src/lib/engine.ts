@@ -176,6 +176,13 @@ export function checkBehaviorExecutable(action: ActionData, state: GameState): {
     if (existingEdu) reasons.push(`已在就读[${existingEdu.name}]，需先退学`);
   }
 
+  // 检查教育类行为：已毕业的学校不能重复报考
+  if (action.category === 'education' && action.recurring && state.graduatedSchools?.length) {
+    if (state.graduatedSchools.includes(action.recurring)) {
+      reasons.push(`已从该校毕业，不能重复报考`);
+    }
+  }
+
   return { canExecute: reasons.length === 0, reasons };
 }
 
@@ -427,8 +434,14 @@ export function executeSettlement(state: GameState): SettlementResult {
           state.education.influence = clamp(state.education.influence + item.graduateBonus.influence, 0, 100);
           state.education.schoolName = item.name;
           state.education.graduated = true;
-          result.lostRecurring.push(`🎓 毕业了！${item.name} —— 学历提升，技能+${item.graduateBonus.skills}，影响力+${item.graduateBonus.influence}`);
-        } else {
+          // 记录已毕业的学校（通过sourceActionId反查action的recurring模板ID）
+          const sourceAction = getBehaviorById(item.sourceActionId);
+          const graduateTemplateId = sourceAction?.recurring;
+          if (!state.graduatedSchools) state.graduatedSchools = [];
+          if (graduateTemplateId && !state.graduatedSchools.includes(graduateTemplateId)) {
+            state.graduatedSchools.push(graduateTemplateId);
+          }
+          result.lostRecurring.push(`🎓 毕业了！${item.name} —— 学历提升，技能+${item.graduateBonus.skills}，影响力+${item.graduateBonus.influence}`);        } else {
           result.lostRecurring.push(`${item.icon} ${item.name} 已到期`);
         }
         continue; // 不保留
