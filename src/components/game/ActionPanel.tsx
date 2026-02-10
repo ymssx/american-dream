@@ -909,6 +909,9 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
           if (req.influence !== undefined) {
             tags.push({ label: `🌟影响力≥${req.influence}` });
           }
+          if (req.credit !== undefined) {
+            tags.push({ label: `💳信用≥${req.credit}` });
+          }
           return tags.map((t, i) => (
             <span key={`req_${i}`} className="bg-indigo-900/40 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-800/50">
               {t.label}

@@ -235,6 +235,7 @@ export interface ActionData {
     educationLevel?: number;  // 最低学历等级
     skills?: number;          // 最低技能值
     influence?: number;       // 最低影响力
+    credit?: number;          // 最低信用分
   };
   limit?: {
     usesPerGame?: number;

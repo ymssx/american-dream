@@ -131,6 +131,48 @@ export const milestones: Milestone[] = [
 
   // === 住房阶级 ===
   {
+    id: 'enrolled_school',
+    title: '录取通知书',
+    description: '🎉 被学校录取了！从社会底层爬出来的第一步——用知识武装自己。别人在打工，你在读书。',
+    icon: '📬',
+    tone: 'good',
+    check: (s) => s.recurringItems.some(r => r.type === 'education'),
+  },
+  {
+    id: 'first_graduate',
+    title: '🎓 毕业了！',
+    description: '拿到了美国学历！从此你不再只是一个偷渡客——你是一个有学历的偷渡客。这张纸能打开很多门。',
+    icon: '🎓',
+    tone: 'great',
+    check: (s) => s.education.graduated && s.education.level >= 1,
+  },
+  {
+    id: 'ivy_graduate',
+    title: '常春藤毕业',
+    description: '从常春藤名校毕业了。你的校友在白宫、华尔街和硅谷。你不再需要仰望任何人。',
+    icon: '🏛️',
+    tone: 'great',
+    check: (s) => s.education.graduated && s.education.level >= 4,
+  },
+  {
+    id: 'high_skills',
+    title: '技能满点',
+    description: '技能值突破80。你已经是这个领域的专家——在美国，有技术的人永远饿不死。',
+    icon: '⚡',
+    tone: 'good',
+    check: (s) => s.education.skills >= 80,
+  },
+  {
+    id: 'influencer',
+    title: '人脉通天',
+    description: '影响力突破60。你认识的人比你赚的钱更有价值。在美国，关系就是生产力。',
+    icon: '🌟',
+    tone: 'good',
+    check: (s) => s.education.influence >= 60,
+  },
+
+  // === 住房阶级 ===
+  {
     id: 'nice_apartment',
     title: '体面的伪装',
     description: '住进了正经公寓。你开始从外面看不出来曾经是个偷渡客了。',

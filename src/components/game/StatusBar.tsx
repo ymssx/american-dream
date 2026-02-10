@@ -128,16 +128,16 @@ export function StatusBar() {
 
       {/* 头部：回合 + 金钱 */}
       <div className="flex justify-between items-center px-3 py-2 border-b border-red-900/20">
-        <div className="flex items-center gap-2">
-          <span className="text-xs bg-red-950/60 text-red-400 px-2 py-0.5 rounded-md font-mono font-medium border border-red-900/30">
-            第{currentRound}月
+        <div className="flex items-center gap-1.5 min-w-0 flex-1 mr-2">
+          <span className="text-xs bg-red-950/60 text-red-400 px-1.5 py-0.5 rounded-md font-mono font-medium border border-red-900/30 flex-shrink-0 whitespace-nowrap">
+            {currentRound}月
           </span>
-          <div>
+          <div className="min-w-0 truncate">
             <span className="text-sm text-white font-bold">{getRoundTitle(currentRound)}</span>
-            <span className="text-[11px] text-gray-500 ml-1.5">{getYearPhaseText(currentRound)}</span>
+            <span className="text-[10px] text-gray-500 ml-1">{getYearPhaseText(currentRound)}</span>
           </div>
         </div>
-        <div className="text-right">
+        <div className="text-right flex-shrink-0">
           <div className={`font-mono font-bold text-lg leading-tight ${money >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             ${money.toLocaleString()}
           </div>

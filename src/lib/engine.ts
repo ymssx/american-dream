@@ -165,6 +165,9 @@ export function checkBehaviorExecutable(action: ActionData, state: GameState): {
     if (req.influence !== undefined && state.education.influence < req.influence) {
       reasons.push(`需要影响力≥${req.influence}（当前${state.education.influence}）`);
     }
+    if (req.credit !== undefined && state.attributes.credit < req.credit) {
+      reasons.push(`需要信用分≥${req.credit}（当前${state.attributes.credit}）`);
+    }
   }
 
   // 检查教育类行为：不能同时读两个学校

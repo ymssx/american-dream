@@ -364,9 +364,9 @@
     },
     "EDU_community": {
       "type": "education",
-      "name": "社区大学",
+      "name": "圣莫妮卡社区大学",
       "icon": "🏫",
-      "description": "两年制副学士学位，性价比最高的学历",
+      "description": "加州最好的社区大学之一",
       "monthlyIncome": 0,
       "monthlyCost": 2500,
       "monthlyHealthCost": 3,
@@ -385,9 +385,9 @@
     },
     "EDU_state_u": {
       "type": "education",
-      "name": "州立大学",
+      "name": "UCLA",
       "icon": "🎓",
-      "description": "四年制本科学位，打开中产阶级的门",
+      "description": "加州大学洛杉矶分校，公立名校TOP20",
       "monthlyIncome": 0,
       "monthlyCost": 5000,
       "monthlyHealthCost": 5,
@@ -406,9 +406,9 @@
     },
     "EDU_ivy": {
       "type": "education",
-      "name": "常春藤名校",
+      "name": "斯坦福大学",
       "icon": "🏛️",
-      "description": "哈佛耶鲁斯坦福，毕业就是人上人",
+      "description": "斯坦福大学，毕业就是人上人",
       "monthlyIncome": 0,
       "monthlyCost": 15000,
       "monthlyHealthCost": 8,
@@ -448,9 +448,9 @@
     },
     "EDU_mba": {
       "type": "education",
-      "name": "MBA商学院",
+      "name": "沃顿商学院MBA",
       "icon": "📋",
-      "description": "沃顿/哈佛商学院，学的不是知识是人脉",
+      "description": "宾大沃顿商学院，华尔街精英的摇篮",
       "monthlyIncome": 0,
       "monthlyCost": 12000,
       "monthlyHealthCost": 3,
@@ -465,6 +465,48 @@
         "educationLevel": 4,
         "skills": 30,
         "influence": 50
+      }
+    },
+    "EDU_nyu": {
+      "type": "education",
+      "name": "纽约大学",
+      "icon": "🗽",
+      "description": "曼哈顿中心的私立名校，人脉资源无敌",
+      "monthlyIncome": 0,
+      "monthlyCost": 8000,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 22,
+      "monthlyCreditChange": 10,
+      "loseChance": 0,
+      "loseText": "",
+      "remainingMonths": 10,
+      "canSell": true,
+      "sellText": "退学",
+      "graduateBonus": {
+        "educationLevel": 3,
+        "skills": 30,
+        "influence": 35
+      }
+    },
+    "EDU_caltech": {
+      "type": "education",
+      "name": "加州理工Caltech",
+      "icon": "🔬",
+      "description": "全球理工科最强，学到的东西能改变世界",
+      "monthlyIncome": 0,
+      "monthlyCost": 13000,
+      "monthlyHealthCost": 6,
+      "monthlySanCost": 28,
+      "monthlyCreditChange": 12,
+      "loseChance": 0,
+      "loseText": "",
+      "remainingMonths": 14,
+      "canSell": true,
+      "sellText": "退学",
+      "graduateBonus": {
+        "educationLevel": 4,
+        "skills": 55,
+        "influence": 30
       }
     },
     "WORK_cashier": {
@@ -1779,7 +1821,8 @@
         },
         "recurring": "WORK_office_clerk",
         "requirements": {
-          "educationLevel": 1
+          "educationLevel": 1,
+          "credit": 550
         },
         "risk": {
           "chance": 0.2,
@@ -1820,7 +1863,8 @@
         "recurring": "WORK_programmer",
         "requirements": {
           "educationLevel": 2,
-          "skills": 40
+          "skills": 40,
+          "credit": 650
         },
         "risk": {
           "chance": 0.6,
@@ -3867,11 +3911,11 @@
       },
       {
         "id": "EDU02",
-        "name": "考社区大学",
-        "nameEn": "Community College Application",
+        "name": "考圣莫妮卡社区大学",
+        "nameEn": "Santa Monica College Application",
         "category": "education",
         "type": "risky",
-        "description": "两年制副学士学位，性价比最高的美国学历。8个月课程",
+        "description": "加州最好的社区大学之一，两年制副学士学位。8个月课程",
         "quote": "申请表上的GPA栏写了N/A。招生官看了你一眼，你心虚地低下了头。",
         "cost": {
           "san": 30,
@@ -3882,7 +3926,8 @@
         },
         "recurring": "EDU_community",
         "requirements": {
-          "skills": 15
+          "skills": 15,
+          "credit": 500
         },
         "risk": {
           "chance": 0.25,
@@ -3906,12 +3951,12 @@
       },
       {
         "id": "EDU03",
-        "name": "申请州立大学",
-        "nameEn": "State University Application",
+        "name": "申请UCLA",
+        "nameEn": "UCLA Application",
         "category": "education",
         "type": "risky",
-        "description": "四年制本科学位，打开中产阶级的大门。12个月课程（加速）",
-        "quote": "面试的时候教授问你为什么想来这里读书。你说想改变命运。他点了点头。",
+        "description": "加州大学洛杉矶分校，公立名校TOP20。12个月课程（加速）",
+        "quote": "面试的时候教授问你为什么想来UCLA读书。你说想改变命运。他点了点头。",
         "cost": {
           "san": 40,
           "money": 8000
@@ -3922,7 +3967,8 @@
         "recurring": "EDU_state_u",
         "requirements": {
           "skills": 30,
-          "educationLevel": 1
+          "educationLevel": 1,
+          "credit": 580
         },
         "risk": {
           "chance": 0.4,
@@ -3946,12 +3992,12 @@
       },
       {
         "id": "EDU04",
-        "name": "冲刺常春藤",
-        "nameEn": "Ivy League Application",
+        "name": "冲刺斯坦福",
+        "nameEn": "Stanford University Application",
         "category": "education",
         "type": "risky",
-        "description": "哈佛耶鲁斯坦福，进去了就是人上人。16个月课程",
-        "quote": "申请文书改了二十遍。推荐信求了三个教授。SAT刷到了1500+。但录取率只有4%。",
+        "description": "斯坦福大学——硅谷的摇篮，进去了就是人上人。16个月课程",
+        "quote": "申请文书改了二十遍。推荐信求了三个教授。SAT刷到了1500+。Stanford录取率只有3.68%。",
         "cost": {
           "san": 60,
           "money": 20000
@@ -4027,11 +4073,11 @@
       },
       {
         "id": "EDU06",
-        "name": "申请MBA商学院",
-        "nameEn": "MBA Program Application",
+        "name": "申请沃顿商学院MBA",
+        "nameEn": "Wharton MBA Application",
         "category": "education",
         "type": "risky",
-        "description": "沃顿/哈佛商学院MBA，学的不是知识是人脉。12个月课程",
+        "description": "宾大沃顿商学院MBA，华尔街精英的摇篮。12个月课程",
         "quote": "GMAT考了720分。面试官问你五年规划。你说要改变世界。内心OS：先活过这个月再说。",
         "cost": {
           "san": 50,
@@ -4092,6 +4138,91 @@
         "tags": [
           "education",
           "free"
+        ]
+      },
+      {
+        "id": "EDU08",
+        "name": "申请纽约大学",
+        "nameEn": "NYU Application",
+        "category": "education",
+        "type": "risky",
+        "description": "纽约大学，曼哈顿中心的私立名校。学费贵但人脉无敌。10个月课程",
+        "quote": "华盛顿广场公园的拱门下走过无数名人。你希望自己是下一个。",
+        "cost": {
+          "san": 45,
+          "money": 15000
+        },
+        "baseGain": {
+          "credit": 12
+        },
+        "recurring": "EDU_nyu",
+        "requirements": {
+          "skills": 35,
+          "educationLevel": 1,
+          "credit": 600
+        },
+        "risk": {
+          "chance": 0.45,
+          "penalty": {
+            "san": -30,
+            "money": -3000
+          },
+          "text": "Waitlist三个月后最终被拒。招生办建议你先积累更多经验再申请。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 7
+        },
+        "limit": {
+          "cooldown": 12
+        },
+        "tags": [
+          "education",
+          "university",
+          "elite"
+        ]
+      },
+      {
+        "id": "EDU09",
+        "name": "申请加州理工",
+        "nameEn": "Caltech Application",
+        "category": "education",
+        "type": "risky",
+        "description": "Caltech——全球理工科最强。录取率6%，学到的东西能改变世界",
+        "quote": "面试官让你用20分钟推导一个物理公式。你手心全是汗。",
+        "cost": {
+          "san": 55,
+          "money": 18000
+        },
+        "baseGain": {
+          "credit": 15
+        },
+        "recurring": "EDU_caltech",
+        "requirements": {
+          "skills": 55,
+          "educationLevel": 2,
+          "influence": 15
+        },
+        "risk": {
+          "chance": 0.65,
+          "penalty": {
+            "san": -35,
+            "money": -4000
+          },
+          "text": "一封标准拒信。Caltech每年只招200人。你不在其中。"
+        },
+        "unlock": {
+          "type": "condition",
+          "condition": "credit > 700",
+          "conditionText": "信用评分700以上"
+        },
+        "limit": {
+          "cooldown": 16
+        },
+        "tags": [
+          "education",
+          "elite",
+          "tech"
         ]
       }
     ],
