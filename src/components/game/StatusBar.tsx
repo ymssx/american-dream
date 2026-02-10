@@ -165,12 +165,12 @@ export function StatusBar() {
         </div>
       </div>
 
-      {/* 四维属性 - 逐行排列 */}
-      <div className="px-3 py-2 space-y-1.5">
-        <StatBar icon="❤️" label="生命" value={attributes.health} max={100} color="bg-red-500" danger={attributes.health <= 20} />
-        <StatBar icon="🧠" label="精神" value={attributes.san} max={maxSan} color="bg-purple-500" danger={attributes.san <= 30} />
-        <StatBar icon="💳" label="信用" value={attributes.credit} max={850} color="bg-blue-500" danger={attributes.credit < 500} />
-        <StatBar icon="🍀" label="运气" value={attributes.luck} max={100} color="bg-emerald-500" />
+      {/* 四维属性 - 文字标签 */}
+      <div className="px-3 py-1.5 flex flex-wrap gap-x-3 gap-y-1 border-b border-gray-800/40">
+        <StatText icon="❤️" label="生命" value={attributes.health} max={100} danger={attributes.health <= 20} color="text-red-400" />
+        <StatText icon="🧠" label="精神" value={attributes.san} max={maxSan} danger={attributes.san <= 30} color="text-purple-400" />
+        <StatText icon="💳" label="信用" value={attributes.credit} max={850} danger={attributes.credit < 500} color="text-blue-400" />
+        <StatText icon="🍀" label="运气" value={attributes.luck} max={100} color="text-emerald-400" />
       </div>
 
       {/* 身份 + 生活水平 - 一行展示所有标签 */}
@@ -221,8 +221,8 @@ function Tag({ color, text }: { color: string; text: string }) {
   );
 }
 
-/** 迷你属性条 - 改为单行横向布局 */
-function StatBar({ icon, label, value, max, color, danger }: {
+/** 文字版属性显示 */
+function StatText({ icon, label, value, max, color, danger }: {
   icon: string;
   label: string;
   value: number;
@@ -230,19 +230,12 @@ function StatBar({ icon, label, value, max, color, danger }: {
   color: string;
   danger?: boolean;
 }) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <div className={`flex items-center gap-2 ${danger ? 'animate-pulse' : ''}`}>
-      <span className="text-[11px] text-gray-500 w-12 shrink-0">{icon} {label}</span>
-      <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-        <div
-          className={`h-full ${color} rounded-full transition-all duration-700 ease-out`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className={`text-[11px] font-mono font-bold w-10 text-right shrink-0 ${danger ? 'text-red-400' : 'text-gray-300'}`}>
+    <span className={`text-[11px] ${danger ? 'animate-pulse' : ''}`}>
+      <span className="text-gray-500">{icon}{label}</span>{' '}
+      <span className={`font-mono font-bold ${danger ? 'text-red-400' : color}`}>
         {value}{max > 100 ? `/${max}` : ''}
       </span>
-    </div>
+    </span>
   );
 }
