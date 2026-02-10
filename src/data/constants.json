@@ -10,8 +10,8 @@
     "2": { "sanMax": 110, "cost": 1600,  "name": "地下室床位", "description": "六人间的铁架子床，窗户开在天花板高度" },
     "3": { "sanMax": 130, "cost": 4500,  "name": "独立单间",   "description": "虽然只有十几平米但至少有一扇能关上的门" },
     "4": { "sanMax": 160, "cost": 12000, "name": "正经公寓",   "description": "有客厅有厨房有阳台，像个正常人住的地方" },
-    "5": { "sanMax": 200, "cost": 35000, "name": "郊区独栋",   "description": "带草坪和车库的House，白色栅栏美国梦标配" },
-    "6": { "sanMax": 250, "cost": 80000, "name": "海景豪宅",   "description": "马里布山崖上的玻璃房子，落地窗外就是太平洋" }
+    "5": { "sanMax": 200, "cost": 50000, "name": "郊区独栋",   "description": "带草坪和车库的House，白色栅栏美国梦标配" },
+    "6": { "sanMax": 250, "cost": 120000, "name": "海景豪宅",   "description": "马里布山崖上的玻璃房子，落地窗外就是太平洋" }
   },
   "diet": {
     "1": { "sanCost": 5, "healthChange": -10, "moneyCost": 200,  "name": "垃圾食品", "description": "一美元菜单和便利店微波炉食品" },

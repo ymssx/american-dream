@@ -7,18 +7,18 @@ export const milestones: Milestone[] = [
   {
     id: 'first_10k',
     title: '第一桶血',
-    description: '存款突破$10,000。在这片土地上，有钱就是有命。',
+    description: '存款突破$25,000。你终于摸到了在这片土地上生存下去的底气。',
     icon: '🩸',
     tone: 'good',
-    check: (s) => s.money >= 10000,
+    check: (s) => s.money >= 25000,
   },
   {
     id: 'first_50k',
     title: '有钱人的门票',
-    description: '存款突破$50,000。底层人还在为$500争得头破血流，而你已经不屑于看他们了。',
+    description: '存款突破$80,000。底层人还在为$500争得头破血流，而你已经不屑于看他们了。',
     icon: '🎟️',
     tone: 'good',
-    check: (s) => s.money >= 50000,
+    check: (s) => s.money >= 80000,
   },
   {
     id: 'first_100k',
@@ -165,10 +165,10 @@ export const milestones: Milestone[] = [
   {
     id: 'influencer',
     title: '人脉通天',
-    description: '影响力突破60。你认识的人比你赚的钱更有价值。在美国，关系就是生产力。',
+    description: '影响力突破80。你认识的人比你赚的钱更有价值。在美国，关系就是生产力。',
     icon: '🌟',
     tone: 'good',
-    check: (s) => s.education.influence >= 60,
+    check: (s) => s.education.influence >= 80,
   },
 
   // === 住房阶级 ===
@@ -293,10 +293,10 @@ export const milestones: Milestone[] = [
   {
     id: 'influence_maxed',
     title: '呼风唤雨',
-    description: '影响力突破90。你一句话能让股价波动，一个电话能让政策改变方向。',
+    description: '影响力突破150。你一句话能让股价波动，一个电话能让政策改变方向。',
     icon: '🌊',
     tone: 'great',
-    check: (s) => s.education.influence >= 90,
+    check: (s) => s.education.influence >= 150,
   },
   {
     id: 'ultimate_american_dream',
@@ -304,7 +304,7 @@ export const milestones: Milestone[] = [
     description: '百万富翁、社会名流、政界人物。一个偷渡客写出了最荒诞也最真实的美国故事。',
     icon: '🗽',
     tone: 'great',
-    check: (s) => s.money >= 1000000 && s.education.influence >= 70 && parseInt(s.housingLevel) >= 5,
+    check: (s) => s.money >= 1000000 && s.education.influence >= 120 && parseInt(s.housingLevel) >= 5,
   },
 ];
 

@@ -288,11 +288,19 @@ export function executeSettlement(state: GameState): SettlementResult {
     killLine: null,
   };
 
-  // 1. 扣房租
+  // 1. 扣房租（拥有房产则免租）
   const housingData = constantsData.housing[state.housingLevel as keyof typeof constantsData.housing];
+  // 检查是否拥有房产：购买过投资公寓/曼哈顿公寓/比弗利别墅
+  const ownedPropertyIds = ['LUX20', 'LUX21', 'LUX22'];
+  const ownsProperty = ownedPropertyIds.some(id => 
+    state.usedOneTimeBehaviors.includes(id) || (state.behaviorUseCount[id] || 0) > 0
+  );
   if (housingData) {
     const rent = housingData.cost;
-    if (state.money >= rent) {
+    if (ownsProperty && rent > 0) {
+      // 拥有房产，免除房租
+      result.rentPaid = 0;
+    } else if (state.money >= rent) {
       state.money -= rent;
       result.rentPaid = rent;
       result.moneyChange -= rent;
@@ -300,6 +308,15 @@ export function executeSettlement(state: GameState): SettlementResult {
       // 付不起房租，降级为露宿
       state.housingLevel = '1';
       state.housing = { type: '睡大街', rent: 0 };
+    }
+
+    // 高级住房每月增加影响力（住得越好社会地位越高）
+    // 正经公寓(4)+1, 郊区独栋(5)+3, 海景豪宅(6)+5
+    const housingLevel = parseInt(state.housingLevel);
+    if (housingLevel >= 4) {
+      const influenceGain = housingLevel === 4 ? 1 : housingLevel === 5 ? 3 : 5;
+      state.education.influence = Math.min(state.education.influence + influenceGain, 999);
+      result.recurringEffects.push(`🏠住房影响力+${influenceGain}`);
     }
   }
 

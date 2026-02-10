@@ -597,6 +597,14 @@ export const useGameStore = create<GameStore>()(
         // 添加结算日志
         const summaryParts: string[] = [];
         if (result.rentPaid > 0) summaryParts.push(`租金-$${result.rentPaid}`);
+        else if (parseInt(s.housingLevel) >= 2) {
+          // 不是睡大街但租金为0，说明有房产免租
+          const ownedPropertyIds = ['LUX20', 'LUX21', 'LUX22'];
+          const ownsProperty = ownedPropertyIds.some(id => 
+            s.usedOneTimeBehaviors.includes(id) || (s.behaviorUseCount[id] || 0) > 0
+          );
+          if (ownsProperty) summaryParts.push('🏠自有房产免租');
+        }
         if (result.dietCost > 0) summaryParts.push(`伙食-$${result.dietCost}`);
 
         // 持续性项目结算日志
