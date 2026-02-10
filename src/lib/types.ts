@@ -193,6 +193,9 @@ export interface GameState {
   // 随机事件
   pendingRandomEvent: RandomEvent | null;
 
+  // 疾病事件弹窗
+  pendingDiseaseEvent: PendingDiseaseEvent | null;
+
   // 抉择事件
   pendingDilemma: DilemmaEvent | null;
 
@@ -321,6 +324,16 @@ export interface WealthRecord {
   money: number;
   netWorth: number; // 净资产 = 现金 + 投资估值
   classLevel: ClassLevel;
+}
+
+/** 待展示的疾病事件（弹窗用） */
+export interface PendingDiseaseEvent {
+  id: string;
+  name: string;
+  icon: string;
+  text: string;
+  isChronic: boolean;
+  effects: Record<string, number>; // 每月效果，用于弹窗展示
 }
 
 /** 世界新闻条目 */

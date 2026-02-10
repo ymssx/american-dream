@@ -93,6 +93,7 @@ function createDefaultState(): GameState {
     wealthHistory: [],
     classLevel: 0,
     pendingRandomEvent: null,
+    pendingDiseaseEvent: null,
     pendingDilemma: null,
     // 暗黑系统
     currentWorldNews: [],
@@ -158,6 +159,7 @@ interface GameStore {
   flushDeferredMilestones: () => void;
   resolveDilemma: (choice: 'A' | 'B') => { text: string; effects: Record<string, number> };
   dismissRandomEvent: () => void;
+  dismissDiseaseEvent: () => void;
   applyEffects: (effects: Record<string, number>) => void;
 }
 
@@ -728,6 +730,15 @@ export const useGameStore = create<GameStore>()(
             };
             s.feed.push(diseaseFeed);
             s.fullGameLog.push(diseaseFeed);
+            // 设置待显示的疾病弹窗
+            s.pendingDiseaseEvent = {
+              id: diseaseEvent.id,
+              name: diseaseEvent.name,
+              icon: diseaseEvent.icon,
+              text: diseaseEvent.text,
+              isChronic: diseaseEvent.isChronic,
+              effects: diseaseDebuffDef.effect,
+            };
           }
         }
 
@@ -802,6 +813,7 @@ export const useGameStore = create<GameStore>()(
             roundFinancials: { income: 0, expense: 0 },
             visibleBehaviorIds: generateVisibleBehaviors(newRound),
             pendingRandomEvent: null,
+            pendingDiseaseEvent: null,
             pendingDilemma: null,
             currentWorldNews: [],
           },
@@ -934,6 +946,10 @@ export const useGameStore = create<GameStore>()(
 
       dismissRandomEvent: () => set((s) => ({
         state: { ...s.state, pendingRandomEvent: null },
+      })),
+
+      dismissDiseaseEvent: () => set((s) => ({
+        state: { ...s.state, pendingDiseaseEvent: null },
       })),
 
       resolveDilemma: (choice) => {

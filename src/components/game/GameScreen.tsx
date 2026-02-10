@@ -10,6 +10,7 @@ import { AssetPanel } from './AssetPanel';
 import { MilestonePopup } from './MilestonePopup';
 import { RandomEventPopup } from './RandomEventPopup';
 import { DilemmaPopup } from './DilemmaPopup';
+import { DiseasePopup } from './DiseasePopup';
 
 type Tab = 'action' | 'recurring' | 'asset' | 'log' | 'settings';
 
@@ -55,10 +56,10 @@ export function GameScreen() {
       </div>
 
       {/* === 爽感系统弹窗层 === */}
-      {/* 优先级: 里程碑 > 随机事件 > 抉择事件 */}
+      {/* 优先级: 里程碑 > 随机事件 > 疾病事件 > 拉择事件 */}
       <MilestonePopup />
       <RandomEventPopup />
-      <DilemmaPopup />
-    </div>
+      <DiseasePopup />
+      <DilemmaPopup />    </div>
   );
 }
