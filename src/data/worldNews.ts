@@ -1,15 +1,7 @@
 // 世界新闻播报系统 — 每月生成NPC的悲惨遭遇
 // 玩家的爽感来自旁观他人的痛苦
 
-export interface WorldNews {
-  id: string;
-  text: string;
-  icon: string;
-  tone: 'death' | 'ruin' | 'deport' | 'misery' | 'irony';
-  // 可选：玩家因此获得的收益（别人的不幸就是你的机会）
-  playerGain?: Record<string, number>;
-  gainText?: string;
-}
+import type { WorldNewsItem } from '@/lib/types';
 
 // NPC名字池
 const NAMES = [
@@ -33,7 +25,7 @@ function randomMoney(): string {
 }
 
 // === 死亡新闻 ===
-const deathTemplates: (() => WorldNews)[] = [
+const deathTemplates: (() => WorldNewsItem)[] = [
   () => {
     const name = randomName();
     return {
@@ -109,7 +101,7 @@ const deathTemplates: (() => WorldNews)[] = [
 ];
 
 // === 破产/倾家荡产新闻 ===
-const ruinTemplates: (() => WorldNews)[] = [
+const ruinTemplates: (() => WorldNewsItem)[] = [
   () => {
     const name = randomName();
     return {
@@ -171,7 +163,7 @@ const ruinTemplates: (() => WorldNews)[] = [
 ];
 
 // === 被遣返/被抓新闻 ===
-const deportTemplates: (() => WorldNews)[] = [
+const deportTemplates: (() => WorldNewsItem)[] = [
   () => {
     const name = randomName();
     return {
@@ -224,7 +216,7 @@ const deportTemplates: (() => WorldNews)[] = [
 ];
 
 // === 惨况/苦难新闻 ===
-const miseryTemplates: (() => WorldNews)[] = [
+const miseryTemplates: (() => WorldNewsItem)[] = [
   () => {
     const name = randomName();
     return {
@@ -293,7 +285,7 @@ const miseryTemplates: (() => WorldNews)[] = [
 ];
 
 // === 讽刺/黑色幽默新闻 ===
-const ironyTemplates: (() => WorldNews)[] = [
+const ironyTemplates: (() => WorldNewsItem)[] = [
   () => ({
     id: 'irony_dream',
     text: '🗽 今天是美国独立日。唐人街的烟花很美，照亮了地下室里打工者的脸。他们没有假期。',
@@ -336,8 +328,8 @@ const ironyTemplates: (() => WorldNews)[] = [
  * 每月生成1~3条世界新闻
  * 随着玩家阶层越高，看到的惨况越多（站得越高看得越远）
  */
-export function generateWorldNews(classLevel: number, round: number): WorldNews[] {
-  const news: WorldNews[] = [];
+export function generateWorldNews(classLevel: number, round: number): WorldNewsItem[] {
+  const news: WorldNewsItem[] = [];
 
   // 基础1条新闻
   const count = classLevel >= 3 ? 3 : classLevel >= 1 ? 2 : 1;
