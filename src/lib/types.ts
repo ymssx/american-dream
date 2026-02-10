@@ -180,6 +180,7 @@ export interface GameState {
   // 里程碑
   achievedMilestones: string[];       // 已达成的里程碑ID
   pendingMilestones: string[];        // 待显示的里程碑ID队列
+  deferredMilestones: string[];       // 暂存的里程碑（等操作结果弹窗关闭后再展示）
 
   // 资产历史
   wealthHistory: WealthRecord[];

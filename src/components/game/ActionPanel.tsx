@@ -10,11 +10,14 @@ import { WealthChart } from './WealthChart';
 
 /** 行为面板 */
 export function ActionPanel() {
-  const { state, getAvailableBehaviors, executeBehavior, endRound, nextRound } = useGameStore();
+  const { state, getAvailableBehaviors, executeBehavior, endRound, nextRound, flushDeferredMilestones } = useGameStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('special');
   const [showQuickRest, setShowQuickRest] = useState(false);
   const [quickRestResults, setQuickRestResults] = useState<Array<{ name: string; icon: string; costText: string; gainText: string }>>([]);
   const [quickRestTotals, setQuickRestTotals] = useState<{ totalMoney: number; gains: Record<string, number> }>({ totalMoney: 0, gains: {} });
+  const [showQuickEarn, setShowQuickEarn] = useState(false);
+  const [quickEarnResults, setQuickEarnResults] = useState<Array<{ name: string; icon: string; costText: string; gainText: string }>>([]);
+  const [quickEarnTotals, setQuickEarnTotals] = useState<{ totalMoney: number; gains: Record<string, number> }>({ totalMoney: 0, gains: {} });
   const [selectedSubGroup, setSelectedSubGroup] = useState<string>('all');
   const [lastResult, setLastResult] = useState<Record<string, unknown> | null>(null);
   const [executingId, setExecutingId] = useState<string | null>(null);
@@ -216,9 +219,107 @@ export function ActionPanel() {
     }
   }, [behaviors, executeBehavior, quickRestTotals]);
 
+  // ====== 一键搞钱 ======
+  // 筛选 earn 分类下 type=fixed、能执行的行为，排除可能致死的
+  const prepareQuickEarn = useCallback(() => {
+    const earnActions = behaviors
+      .filter(b => b.category === 'earn' && b.type === 'fixed' && b.canExecute && b.unlocked)
+      .filter(b => {
+        // 排除可能致死的行为
+        const costHealth = (b.cost as Record<string, number>)?.health || 0;
+        const costSan = (b.cost as Record<string, number>)?.san || 0;
+        if (costHealth > 0 && costHealth >= state.attributes.health) return false;
+        if (costSan > 0 && costSan >= state.attributes.san) return false;
+        // 排除健康或SAN消耗过大的（剩余低于20就跳过）
+        if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
+        if (costSan > 0 && state.attributes.san - costSan < 15) return false;
+        return true;
+      });
+    if (earnActions.length === 0) return;
+
+    const items: Array<{ id: string; name: string; icon: string; costText: string; gainText: string }> = [];
+    let totalMoney = 0;
+    const totalGains: Record<string, number> = {};
+
+    for (const action of earnActions) {
+      const moneyCost = action.cost?.money || 0;
+      const sanCost = action.cost?.san || 0;
+      const healthCost = (action.cost as Record<string, number>)?.health || 0;
+      const costParts: string[] = [];
+      if (moneyCost > 0) costParts.push(`💰$${moneyCost}`);
+      if (sanCost > 0) costParts.push(`🧠${sanCost}`);
+      if (healthCost > 0) costParts.push(`❤️${healthCost}`);
+
+      const gainParts: string[] = [];
+      const gains = action.gain || {};
+      const names: Record<string, string> = { health: '❤️', san: '🧠', credit: '💳', money: '💰', skills: '⚡', influence: '🌟' };
+      for (const [k, v] of Object.entries(gains)) {
+        if (typeof v === 'number' && v > 0) {
+          gainParts.push(`${names[k] || k}+${k === 'money' ? `$${v}` : v}`);
+          totalGains[k] = (totalGains[k] || 0) + v;
+        }
+      }
+      if (moneyCost > 0) totalMoney += moneyCost;
+
+      items.push({
+        id: action.id,
+        name: action.name,
+        icon: '💵',
+        costText: costParts.join(' ') || '免费',
+        gainText: gainParts.join(' ') || '—',
+      });
+    }
+
+    setQuickEarnResults(items);
+    setQuickEarnTotals({ totalMoney, gains: totalGains });
+    setShowQuickEarn(true);
+  }, [behaviors, state.attributes.health, state.attributes.san]);
+
+  const executeQuickEarn = useCallback(() => {
+    const earnActions = behaviors
+      .filter(b => b.category === 'earn' && b.type === 'fixed' && b.canExecute && b.unlocked)
+      .filter(b => {
+        const costHealth = (b.cost as Record<string, number>)?.health || 0;
+        const costSan = (b.cost as Record<string, number>)?.san || 0;
+        if (costHealth > 0 && costHealth >= state.attributes.health) return false;
+        if (costSan > 0 && costSan >= state.attributes.san) return false;
+        if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
+        if (costSan > 0 && state.attributes.san - costSan < 15) return false;
+        return true;
+      });
+    const results: string[] = [];
+    for (const action of earnActions) {
+      // 每次执行前再次检查状态，防止连续执行中状态变化导致死亡
+      const currentState = useGameStore.getState().state;
+      const costHealth = (action.cost as Record<string, number>)?.health || 0;
+      const costSan = (action.cost as Record<string, number>)?.san || 0;
+      if (costHealth > 0 && currentState.attributes.health - costHealth < 15) break;
+      if (costSan > 0 && currentState.attributes.san - costSan < 10) break;
+      const result = executeBehavior(action.id);
+      if (result.success) {
+        results.push(action.name);
+      }
+    }
+    setShowQuickEarn(false);
+    if (results.length > 0) {
+      setLastResult({
+        behavior: { name: '一键搞钱', icon: '💵' },
+        narrative: `完成了 ${results.length} 项工作：${results.join('、')}`,
+        effectSummary: Object.entries(quickEarnTotals.gains)
+          .map(([k, v]) => {
+            const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
+            return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
+          }).join(' '),
+        gain: quickEarnTotals.gains,
+      });
+    }
+  }, [behaviors, executeBehavior, quickEarnTotals, state.attributes.health, state.attributes.san]);
+
   const dismissResult = useCallback(() => {
     setLastResult(null);
-  }, []);
+    // 操作结果弹窗关闭后，再展示暂存的里程碑
+    flushDeferredMilestones();
+  }, [flushDeferredMilestones]);
 
   // === 结算阶段的数据（必须在条件分支之前调用 hooks） ===
   const net = state.roundFinancials.income - state.roundFinancials.expense;
@@ -502,6 +603,78 @@ export function ActionPanel() {
           </motion.div>
         )}
 
+        {/* 一键搞钱预览弹窗 */}
+        {showQuickEarn && (
+          <motion.div
+            key="quick-earn"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setShowQuickEarn(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+              className="w-full max-w-sm rounded-2xl p-5 border border-green-900/60 bg-gradient-to-b from-gray-950 to-green-950/20 shadow-2xl shadow-green-900/20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-4">
+                <span className="text-4xl">💵</span>
+                <p className="text-green-300 font-bold text-lg mt-2">一键搞钱</p>
+                <p className="text-gray-500 text-xs mt-1">以下 {quickEarnResults.length} 项工作可以安全执行（不会致死）</p>
+              </div>
+
+              {/* 项目列表 */}
+              <div className="space-y-2 mb-4 max-h-60 overflow-y-auto">
+                {quickEarnResults.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between bg-gray-800/60 rounded-lg px-3 py-2">
+                    <span className="text-white text-sm font-medium">{item.name}</span>
+                    <div className="flex gap-2 text-xs">
+                      <span className="text-red-400">{item.costText}</span>
+                      <span className="text-gray-600">→</span>
+                      <span className="text-green-400">{item.gainText}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 汇总 */}
+              <div className="bg-green-950/30 border border-green-800/40 rounded-lg p-3 mb-4">
+                <p className="text-green-400 text-xs font-bold mb-1">💰 预估收益</p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {Object.entries(quickEarnTotals.gains).map(([k, v]) => {
+                    const names: Record<string, string> = { health: '❤️体力', san: '🧠SAN', credit: '💳信用', money: '💰资金', skills: '⚡技能', influence: '🌟影响力' };
+                    return (
+                      <span key={k} className="text-green-400">
+                        {names[k] || k}+{k === 'money' ? `$${v}` : v}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 按钮 */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowQuickEarn(false)}
+                  className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={executeQuickEarn}
+                  className="flex-1 py-2.5 bg-green-800 hover:bg-green-700 text-white rounded-lg text-sm font-bold transition-colors"
+                >
+                  💵 全部搞钱
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* 致命行为确认弹窗 */}
         {pendingDangerAction && (() => {
           const danger = checkDanger(pendingDangerAction);
@@ -716,6 +889,24 @@ export function ActionPanel() {
                 className="px-3 py-1 bg-red-900/60 hover:bg-red-800/80 text-red-300 rounded-lg text-xs font-bold transition-all border border-red-700/50 hover:border-red-600"
               >
                 🩸 一键休整 ({restCount})
+              </button>
+            ) : null;
+          })()}
+          {selectedCategory === 'earn' && (() => {
+            const earnCount = behaviors.filter(b => {
+              if (b.category !== 'earn' || b.type !== 'fixed' || !b.canExecute || !b.unlocked) return false;
+              const costHealth = (b.cost as Record<string, number>)?.health || 0;
+              const costSan = (b.cost as Record<string, number>)?.san || 0;
+              if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
+              if (costSan > 0 && state.attributes.san - costSan < 15) return false;
+              return true;
+            }).length;
+            return earnCount > 0 ? (
+              <button
+                onClick={prepareQuickEarn}
+                className="px-3 py-1 bg-green-900/60 hover:bg-green-800/80 text-green-300 rounded-lg text-xs font-bold transition-all border border-green-700/50 hover:border-green-600"
+              >
+                💵 一键搞钱 ({earnCount})
               </button>
             ) : null;
           })()}

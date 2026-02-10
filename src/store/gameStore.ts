@@ -89,6 +89,7 @@ function createDefaultState(): GameState {
     // 爽感系统
     achievedMilestones: [],
     pendingMilestones: [],
+    deferredMilestones: [],
     wealthHistory: [],
     classLevel: 0,
     pendingRandomEvent: null,
@@ -154,6 +155,7 @@ interface GameStore {
 
   // 爽感系统
   dismissMilestone: () => void;
+  flushDeferredMilestones: () => void;
   resolveDilemma: (choice: 'A' | 'B') => { text: string; effects: Record<string, number> };
   dismissRandomEvent: () => void;
   applyEffects: (effects: Record<string, number>) => void;
@@ -561,11 +563,11 @@ export const useGameStore = create<GameStore>()(
           s.stage = 'DEATH';
         }
 
-        // 检查里程碑（行为执行后实时检查）
+        // 检查里程碑（行为执行后暂存，等操作结果弹窗关闭后再展示）
         const newMs = checkMilestones(s);
         if (newMs.length > 0) {
           s.achievedMilestones = [...s.achievedMilestones, ...newMs];
-          s.pendingMilestones = [...s.pendingMilestones, ...newMs];
+          s.deferredMilestones = [...(s.deferredMilestones || []), ...newMs];
         }
 
         // 更新阶层
@@ -855,6 +857,19 @@ export const useGameStore = create<GameStore>()(
         },
       })),
 
+      // 将暂存的里程碑推入待显示队列（在操作结果弹窗关闭后调用）
+      flushDeferredMilestones: () => set((s) => {
+        const deferred = s.state.deferredMilestones || [];
+        if (deferred.length === 0) return { state: s.state };
+        return {
+          state: {
+            ...s.state,
+            pendingMilestones: [...s.state.pendingMilestones, ...deferred],
+            deferredMilestones: [],
+          },
+        };
+      }),
+
       dismissRandomEvent: () => set((s) => ({
         state: { ...s.state, pendingRandomEvent: null },
       })),
@@ -936,10 +951,10 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'american-dream-game',
-      version: 7,
+      version: 8,
       partialize: (state) => ({ state: state.state }),
       migrate: (persistedState: unknown, version: number) => {
-        if (version < 7) {
+        if (version < 8) {
           // 旧版存档不兼容，直接重置
           return { state: createDefaultState() };
         }

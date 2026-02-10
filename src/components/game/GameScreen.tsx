@@ -6,11 +6,12 @@ import { ActionPanel } from './ActionPanel';
 import { FeedPanel } from './FeedPanel';
 import { SettingsPanel } from './SettingsPanel';
 import { RecurringPanel } from './RecurringPanel';
+import { AssetPanel } from './AssetPanel';
 import { MilestonePopup } from './MilestonePopup';
 import { RandomEventPopup } from './RandomEventPopup';
 import { DilemmaPopup } from './DilemmaPopup';
 
-type Tab = 'action' | 'recurring' | 'log' | 'settings';
+type Tab = 'action' | 'recurring' | 'asset' | 'log' | 'settings';
 
 /** 游戏主界面 */
 export function GameScreen() {
@@ -26,6 +27,7 @@ export function GameScreen() {
         {([
           { key: 'action', label: '🔪 行动', icon: '🔪' },
           { key: 'recurring', label: '🩸 持续', icon: '🩸' },
+          { key: 'asset', label: '👑 资产', icon: '👑' },
           { key: 'log', label: '☠️ 记录', icon: '☠️' },
           { key: 'settings', label: '⚙️ 设置', icon: '⚙️' },
         ] as { key: Tab; label: string; icon: string }[]).map(tab => (
@@ -47,6 +49,7 @@ export function GameScreen() {
       <div className="flex-1 overflow-hidden">
         {activeTab === 'action' && <ActionPanel />}
         {activeTab === 'recurring' && <RecurringPanel />}
+        {activeTab === 'asset' && <AssetPanel />}
         {activeTab === 'log' && <FeedPanel />}
         {activeTab === 'settings' && <SettingsPanel />}
       </div>
