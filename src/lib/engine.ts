@@ -414,6 +414,11 @@ export function executeSettlement(state: GameState): SettlementResult {
       state.attributes.credit += item.monthlyCreditChange;
     }
 
+    // 处理影响力变化（慈善/政治类持续项目）
+    if (item.monthlyInfluenceChange && item.monthlyInfluenceChange !== 0) {
+      state.education.influence = clamp(state.education.influence + item.monthlyInfluenceChange, 0, 100);
+    }
+
     // 生成日志
     const parts: string[] = [];
     if (item.monthlyIncome > 0) parts.push(`+$${item.monthlyIncome}`);
@@ -421,6 +426,7 @@ export function executeSettlement(state: GameState): SettlementResult {
     if (item.monthlyCost > 0) parts.push(`成本-$${item.monthlyCost}`);
     if (item.monthlyHealthCost > 0) parts.push(`❤️-${item.monthlyHealthCost}`);
     if (item.monthlySanCost > 0) parts.push(`🧠-${item.monthlySanCost}`);
+    if (item.monthlyInfluenceChange && item.monthlyInfluenceChange > 0) parts.push(`🌟+${item.monthlyInfluenceChange}`);
     result.recurringEffects.push(`${item.icon} ${item.name}: ${parts.join(' ')}`);
 
     // 处理剩余月数

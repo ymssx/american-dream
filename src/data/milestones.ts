@@ -256,6 +256,56 @@ export const milestones: Milestone[] = [
     tone: 'great',
     check: (s) => s.money >= 100000 && parseInt(s.housingLevel) >= 5 && parseInt(s.dietLevel) >= 4,
   },
+
+  // === 后期消费 & 政治路线 ===
+  {
+    id: 'car_collector',
+    title: '车库满了',
+    description: '买了不止一辆豪车。你车库里的车比很多人一辈子赚的钱还多。',
+    icon: '🏎️',
+    tone: 'great',
+    check: (s) => (s.behaviorUseCount['LUX04'] || 0) + (s.behaviorUseCount['LUX11'] || 0) + (s.behaviorUseCount['LUX12'] || 0) + (s.behaviorUseCount['LUX13'] || 0) >= 2,
+  },
+  {
+    id: 'philanthropist',
+    title: '慈善家',
+    description: '你开始把钱洒向社会。不是因为善良——是因为你终于有资格善良了。',
+    icon: '🤝',
+    tone: 'good',
+    check: (s) => s.recurringItems.some(r => r.id.includes('charity_fund') || r.sourceActionId === 'LUX32'),
+  },
+  {
+    id: 'political_player',
+    title: '政治新星',
+    description: '你的名字开始出现在政治版面上。从偷渡客到政界人物——这个故事本身就是一种武器。',
+    icon: '🏛️',
+    tone: 'great',
+    check: (s) => s.education.influence >= 50 && (s.behaviorUseCount['LUX10'] || 0) + (s.behaviorUseCount['LUX42'] || 0) + (s.behaviorUseCount['LUX43'] || 0) >= 1,
+  },
+  {
+    id: 'real_estate_mogul',
+    title: '地产大亨',
+    description: '在美国拥有多处房产。你终于从被房租压垮的人变成了收房租的人。',
+    icon: '🏘️',
+    tone: 'great',
+    check: (s) => (s.behaviorUseCount['LUX20'] || 0) + (s.behaviorUseCount['LUX21'] || 0) + (s.behaviorUseCount['LUX22'] || 0) >= 2,
+  },
+  {
+    id: 'influence_maxed',
+    title: '呼风唤雨',
+    description: '影响力突破90。你一句话能让股价波动，一个电话能让政策改变方向。',
+    icon: '🌊',
+    tone: 'great',
+    check: (s) => s.education.influence >= 90,
+  },
+  {
+    id: 'ultimate_american_dream',
+    title: '美国梦·终章',
+    description: '百万富翁、社会名流、政界人物。一个偷渡客写出了最荒诞也最真实的美国故事。',
+    icon: '🗽',
+    tone: 'great',
+    check: (s) => s.money >= 1000000 && s.education.influence >= 70 && parseInt(s.housingLevel) >= 5,
+  },
 ];
 
 /** 检查是否有新里程碑达成 */

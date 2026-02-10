@@ -75,6 +75,7 @@ export interface RecurringItem {
   monthlyHealthCost: number;  // 每月健康消耗
   monthlySanCost: number;     // 每月SAN消耗
   monthlyCreditChange: number; // 每月信用变化
+  monthlyInfluenceChange?: number; // 每月影响力变化（慈善/政治类）
   // 风险
   loseChance: number;      // 每月失去概率（被裁员/投资失败/等）
   loseText: string;        // 失去时的文案

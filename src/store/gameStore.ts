@@ -518,6 +518,7 @@ export const useGameStore = create<GameStore>()(
               monthlyHealthCost: template.monthlyHealthCost as number || 0,
               monthlySanCost: template.monthlySanCost as number || 0,
               monthlyCreditChange: template.monthlyCreditChange as number || 0,
+              monthlyInfluenceChange: (template.monthlyInfluenceChange as number) || undefined,
               loseChance: template.loseChance as number || 0,
               loseText: template.loseText as string || '',
               permanent: template.type === 'work',
