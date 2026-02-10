@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import actionsData from '@/data/actions.json';
 import type { ActionData } from '@/lib/types';
@@ -10,14 +10,41 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function ActionPanel() {
   const { state, getAvailableBehaviors, executeBehavior, endRound, nextRound } = useGameStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('earn');
+  const [selectedSubGroup, setSelectedSubGroup] = useState<string>('all');
   const [lastResult, setLastResult] = useState<Record<string, unknown> | null>(null);
   const [executingId, setExecutingId] = useState<string | null>(null);
 
-  const categories = actionsData.categories;
+  const categories = actionsData.categories as Array<{ id: string; name: string; subtitle: string; icon: string; color: string; subGroups?: Array<{ id: string; name: string; icon: string }> }>;
   const behaviors = getAvailableBehaviors();
 
-  // 按类别分组
-  const categoryBehaviors = behaviors.filter(b => b.category === selectedCategory);
+  // 当前分类的子分组定义
+  const currentCat = categories.find(c => c.id === selectedCategory);
+  const subGroups = currentCat?.subGroups;
+
+  // 按类别和子分组过滤，然后排序：能执行的在前
+  const categoryBehaviors = behaviors
+    .filter(b => {
+      if (b.category !== selectedCategory) return false;
+      if (subGroups && selectedSubGroup !== 'all') {
+        return b.subGroup === selectedSubGroup;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      // 能执行的排前面
+      if (a.canExecute && !b.canExecute) return -1;
+      if (!a.canExecute && b.canExecute) return 1;
+      // 已解锁但不能执行 > 未解锁
+      if (a.unlocked && !b.unlocked) return -1;
+      if (!a.unlocked && b.unlocked) return 1;
+      return 0;
+    });
+
+  // 切换分类时重置子分组
+  const handleCategoryChange = useCallback((catId: string) => {
+    setSelectedCategory(catId);
+    setSelectedSubGroup('all');
+  }, []);
 
   const handleExecute = useCallback((actionId: string) => {
     // 防止重复点击
@@ -183,7 +210,7 @@ export function ActionPanel() {
           return (
             <button
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
+              onClick={() => handleCategoryChange(cat.id)}
               className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs whitespace-nowrap transition-all ${
                 selectedCategory === cat.id
                   ? 'bg-gray-700 text-white'
@@ -200,9 +227,34 @@ export function ActionPanel() {
         })}
       </div>
 
-      {/* 类别描述 */}
-      <div className="px-4 py-2 text-xs text-gray-500">
-        {categories.find(c => c.id === selectedCategory)?.subtitle}
+      {/* 类别描述 + 子分组筛选 */}
+      <div className="px-4 py-2">
+        <div className="text-xs text-gray-500">
+          {currentCat?.subtitle}
+        </div>
+        {subGroups && subGroups.length > 1 && (
+          <div className="flex gap-1 mt-1.5">
+            {subGroups.map((sg) => {
+              const sgCount = sg.id === 'all'
+                ? behaviors.filter(b => b.category === selectedCategory).length
+                : behaviors.filter(b => b.category === selectedCategory && b.subGroup === sg.id).length;
+              return (
+                <button
+                  key={sg.id}
+                  onClick={() => setSelectedSubGroup(sg.id)}
+                  className={`px-2 py-1 rounded text-[11px] transition-all ${
+                    selectedSubGroup === sg.id
+                      ? 'bg-gray-600 text-white'
+                      : 'bg-gray-800/60 text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {sg.icon} {sg.name}
+                  <span className="ml-0.5 text-[10px] opacity-60">{sgCount}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* 行为列表 */}
@@ -251,18 +303,27 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
   useCounts: Record<string, number>;
 }) {
   // 辅助函数：渲染收益/消耗标签
-  function renderGainTags(obj: Record<string, number> | undefined, prefix: string) {
-    if (!obj) return null;
+  function renderGainTags(obj: Record<string, number>, prefix: string) {
     return Object.entries(obj)
       .filter(([, val]) => val !== 0)
       .map(([key, val]) => (
         <span key={`${prefix}_${key}`} className={`px-1.5 py-0.5 rounded ${
           val > 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
         }`}>
-          {key === 'money' ? '💰' : key === 'health' ? '❤️' : key === 'san' ? '🧠' : key === 'credit' ? '💳' : ''}
+          {key === 'money' ? '💰' : key === 'health' ? '❤️' : key === 'san' ? '🧠' : key === 'credit' ? '💳' : key === 'skills' ? '⚡' : key === 'influence' ? '🌟' : ''}
           {val > 0 ? '+' : ''}{key === 'money' ? `$${val}` : String(val)}
         </span>
       ));
+  }
+  function renderGainSection() {
+    const elements: React.ReactNode[] = [];
+    if (action.gain) {
+      elements.push(...renderGainTags(action.gain, 'g'));
+    }
+    if (action.baseGain) {
+      elements.push(...renderGainTags(action.baseGain, 'bg'));
+    }
+    return <>{elements}</>;
   }
   const typeLabels: Record<string, { text: string; color: string }> = {
     fixed: { text: '确定', color: 'text-green-400' },
@@ -333,16 +394,34 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
         {action.cost?.health && action.cost.health > 0 && (
           <span className="bg-red-900/30 text-red-400 px-1.5 py-0.5 rounded">❤️-{action.cost.health}</span>
         )}
-        {/* 固定收益 */}
-        {renderGainTags(action.gain, 'g')}
-        {/* 基础收益（risky类型） */}
-        {renderGainTags(action.baseGain, 'bg')}
+        {/* 收益标签 */}
+        {renderGainSection()}
         {/* 持续性收入标签 */}
-        {'recurring' in (action as unknown as Record<string, unknown>) ? (
+        {action.recurring ? (
           <span className="bg-yellow-900/40 text-yellow-300 px-1.5 py-0.5 rounded animate-pulse">
             ✨ 成功后获得持续收入
           </span>
         ) : null}
+        {/* 门槛要求 */}
+        {action.requirements ? (() => {
+          const req = action.requirements;
+          const tags: Array<{ label: string }> = [];
+          if (req.educationLevel !== undefined) {
+            const names = ['无', '语言学校', '社区大学', '州立大学', '常春藤'];
+            tags.push({ label: `📚≥${names[req.educationLevel]}` });
+          }
+          if (req.skills !== undefined) {
+            tags.push({ label: `⚡技能≥${req.skills}` });
+          }
+          if (req.influence !== undefined) {
+            tags.push({ label: `🌟影响力≥${req.influence}` });
+          }
+          return tags.map((t, i) => (
+            <span key={`req_${i}`} className="bg-indigo-900/40 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-800/50">
+              {t.label}
+            </span>
+          ));
+        })() : null}
       </div>
 
       {/* 按钮 */}

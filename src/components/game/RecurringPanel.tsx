@@ -5,15 +5,30 @@ import type { RecurringItem } from '@/lib/types';
 
 /** 持续性项目面板 */
 export function RecurringPanel() {
-  const { state, removeRecurringItem } = useGameStore();
+  const { state, removeRecurringItem, sellRecurringItem } = useGameStore();
   const items = state.recurringItems;
 
   if (items.length === 0) {
     return (
       <div className="p-4">
         <h3 className="text-sm font-bold text-gray-400 mb-2">📋 持续性项目</h3>
+        {/* 教育/技能信息 */}
+        <div className="bg-gray-900 rounded-lg p-3 mb-3">
+          <div className="text-xs text-gray-500 mb-1">🎓 教育与技能</div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="bg-purple-900/30 text-purple-400 px-1.5 py-0.5 rounded">
+              📚 学历: {['无', 'ESL语言', '社区大学', '州立大学', '常春藤'][state.education.level]}
+            </span>
+            <span className="bg-blue-900/30 text-blue-400 px-1.5 py-0.5 rounded">
+              ⚡ 技能: {state.education.skills}
+            </span>
+            <span className="bg-yellow-900/30 text-yellow-400 px-1.5 py-0.5 rounded">
+              🌟 影响力: {state.education.influence}
+            </span>
+          </div>
+        </div>
         <div className="text-gray-600 text-xs text-center py-4">
-          暂无持续性项目（找到工作或投资成功后会显示在这里）
+          暂无持续性项目（找到工作、投资成功或入学后会显示在这里）
         </div>
       </div>
     );
@@ -23,15 +38,37 @@ export function RecurringPanel() {
   const workItems = items.filter(i => i.type === 'work');
   const investItems = items.filter(i => i.type === 'invest');
   const loanItems = items.filter(i => i.type === 'loan');
+  const eduItems = items.filter(i => i.type === 'education');
 
   // 计算总收入和支出
   const totalIncome = items.reduce((sum, i) => sum + (i.monthlyIncome > 0 ? i.monthlyIncome : 0), 0);
-  const totalExpense = items.reduce((sum, i) => sum + (i.monthlyIncome < 0 ? Math.abs(i.monthlyIncome) : 0), 0);
+  const totalExpense = items.reduce((sum, i) => {
+    let exp = 0;
+    if (i.monthlyIncome < 0) exp += Math.abs(i.monthlyIncome);
+    if (i.monthlyCost > 0) exp += i.monthlyCost;
+    return sum + exp;
+  }, 0);
   const netIncome = totalIncome - totalExpense;
 
   return (
     <div className="p-4">
       <h3 className="text-sm font-bold text-gray-400 mb-2">📋 持续性项目</h3>
+
+      {/* 教育/技能信息 */}
+      <div className="bg-gray-900 rounded-lg p-3 mb-3">
+        <div className="text-xs text-gray-500 mb-1">🎓 教育与技能</div>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span className="bg-purple-900/30 text-purple-400 px-1.5 py-0.5 rounded">
+            📚 学历: {['无', 'ESL语言', '社区大学', '州立大学', '常春藤'][state.education.level]}
+          </span>
+          <span className="bg-blue-900/30 text-blue-400 px-1.5 py-0.5 rounded">
+            ⚡ 技能: {state.education.skills}
+          </span>
+          <span className="bg-yellow-900/30 text-yellow-400 px-1.5 py-0.5 rounded">
+            🌟 影响力: {state.education.influence}
+          </span>
+        </div>
+      </div>
 
       {/* 汇总条 */}
       <div className="bg-gray-900 rounded-lg p-3 mb-3 flex justify-between items-center text-xs">
@@ -53,7 +90,7 @@ export function RecurringPanel() {
         <div className="mb-3">
           <div className="text-xs text-gray-500 mb-1">💼 工作</div>
           {workItems.map(item => (
-            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} />
+            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} onSell={sellRecurringItem} />
           ))}
         </div>
       )}
@@ -63,7 +100,17 @@ export function RecurringPanel() {
         <div className="mb-3">
           <div className="text-xs text-gray-500 mb-1">📈 投资收益</div>
           {investItems.map(item => (
-            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} />
+            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} onSell={sellRecurringItem} />
+          ))}
+        </div>
+      )}
+
+      {/* 教育 */}
+      {eduItems.length > 0 && (
+        <div className="mb-3">
+          <div className="text-xs text-gray-500 mb-1">🎓 在读学校</div>
+          {eduItems.map(item => (
+            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} onSell={sellRecurringItem} />
           ))}
         </div>
       )}
@@ -73,7 +120,7 @@ export function RecurringPanel() {
         <div className="mb-3">
           <div className="text-xs text-gray-500 mb-1">💸 借贷还款</div>
           {loanItems.map(item => (
-            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} />
+            <RecurringItemCard key={item.id} item={item} onRemove={removeRecurringItem} onSell={sellRecurringItem} />
           ))}
         </div>
       )}
@@ -81,11 +128,12 @@ export function RecurringPanel() {
   );
 }
 
-function RecurringItemCard({ item, onRemove }: { item: RecurringItem; onRemove: (id: string) => void }) {
+function RecurringItemCard({ item, onRemove, onSell }: { item: RecurringItem; onRemove: (id: string) => void; onSell: (id: string) => { success: boolean; message: string } }) {
   const typeColors: Record<string, string> = {
     work: 'border-green-800 bg-green-950/30',
     invest: 'border-blue-800 bg-blue-950/30',
     loan: 'border-red-800 bg-red-950/30',
+    education: 'border-purple-800 bg-purple-950/30',
   };
 
   return (
@@ -95,6 +143,13 @@ function RecurringItemCard({ item, onRemove }: { item: RecurringItem; onRemove: 
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-base">{item.icon}</span>
             <span className="text-white text-sm font-bold">{item.name}</span>
+            {item.subType && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                item.subType === 'fund' ? 'bg-cyan-900/50 text-cyan-400' : 'bg-orange-900/50 text-orange-400'
+              }`}>
+                {item.subType === 'fund' ? '💹资金' : '🏪实体'}
+              </span>
+            )}
             {item.loseChance > 0 && (
               <span className="text-[10px] bg-yellow-900/50 text-yellow-400 px-1.5 py-0.5 rounded">
                 ⚠️ 月风险{Math.round(item.loseChance * 100)}%
@@ -113,6 +168,11 @@ function RecurringItemCard({ item, onRemove }: { item: RecurringItem; onRemove: 
             {item.monthlyIncome < 0 && (
               <span className="bg-red-900/40 text-red-400 px-1.5 py-0.5 rounded">
                 💰-${Math.abs(item.monthlyIncome).toLocaleString()}/月
+              </span>
+            )}
+            {item.monthlyCost > 0 && (
+              <span className="bg-orange-900/40 text-orange-400 px-1.5 py-0.5 rounded">
+                🏷️成本-${item.monthlyCost.toLocaleString()}/月
               </span>
             )}
             {item.monthlyHealthCost > 0 && (
@@ -135,9 +195,30 @@ function RecurringItemCard({ item, onRemove }: { item: RecurringItem; onRemove: 
                 ⏳剩余{item.remainingMonths}月
               </span>
             )}
+            {/* 资金类投资累计盈亏 */}
+            {item.subType === 'fund' && item.accumulatedGain !== undefined && (
+              <span className={`px-1.5 py-0.5 rounded ${item.accumulatedGain >= 0 ? 'bg-green-900/40 text-green-400' : 'bg-red-900/40 text-red-400'}`}>
+                📊累计{item.accumulatedGain >= 0 ? '+' : ''}${item.accumulatedGain.toLocaleString()}
+              </span>
+            )}
+            {/* 教育毕业奖励预览 */}
+            {item.type === 'education' && item.graduateBonus && (
+              <span className="bg-purple-900/40 text-purple-400 px-1.5 py-0.5 rounded">
+                🎓毕业: 技能+{item.graduateBonus.skills} 影响力+{item.graduateBonus.influence}
+              </span>
+            )}
           </div>
         </div>
       </div>
+      {/* 操作按钮 */}
+      {item.canSell && (
+        <button
+          onClick={() => onSell(item.id)}
+          className="mt-2 w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-xs transition-colors border border-gray-700"
+        >
+          {item.sellText || '终止'}
+        </button>
+      )}
     </div>
   );
 }

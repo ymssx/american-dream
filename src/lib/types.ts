@@ -7,7 +7,7 @@ export type GameStage = 'STORY_SELECT' | 'S00' | 'S01' | 'S02' | 'S02b' | 'S03' 
 export type PathId = 'A' | 'B' | 'C' | 'D';
 
 /** 行为类别 */
-export type ActionCategory = 'heal' | 'earn' | 'work' | 'invest' | 'healthToMoney' | 'moneyToHealth' | 'credit' | 'gamble' | 'special' | 'luxury';
+export type ActionCategory = 'heal' | 'earn' | 'invest' | 'education' | 'credit' | 'special' | 'luxury';
 
 /** 行为类型 */
 export type ActionType = 'fixed' | 'random' | 'risky' | 'lottery';
@@ -24,6 +24,15 @@ export interface Attributes {
   san: number;       // 精神值 0-100
   credit: number;    // 信用分
   luck: number;      // 幸运值
+}
+
+/** 教育/技能状态 */
+export interface EducationState {
+  level: number;          // 学历等级 0=无 1=语言学校 2=社区大学 3=州立大学 4=常春藤
+  schoolName: string;     // 当前/最高学校名称
+  graduated: boolean;     // 是否已毕业
+  skills: number;         // 技能值 0-100（影响面试成功率和学校录取）
+  influence: number;      // 影响力 0-100（社交、人脉、知名度）
 }
 
 /** 住房信息 */
@@ -52,15 +61,17 @@ export interface ActiveBuff {
   remainingDuration: number;
 }
 
-/** 持续性项目（工作、投资、借贷等） */
+/** 持续性项目（工作、投资、借贷、教育等） */
 export interface RecurringItem {
   id: string;              // 唯一实例ID
   sourceActionId: string;  // 来源行为ID
-  type: 'work' | 'invest' | 'loan';  // 项目类型
+  type: 'work' | 'invest' | 'loan' | 'education';  // 项目类型
+  subType?: 'fund' | 'business';  // 投资子类型：资金类/开店类
   name: string;
   icon: string;
   description: string;
   monthlyIncome: number;   // 每月收入（正数为收入，负数为支出）
+  monthlyCost: number;     // 每月固定成本（开店类/教育类）
   monthlyHealthCost: number;  // 每月健康消耗
   monthlySanCost: number;     // 每月SAN消耗
   monthlyCreditChange: number; // 每月信用变化
@@ -70,6 +81,18 @@ export interface RecurringItem {
   // 持续时间
   permanent: boolean;      // 是否永久（工作类）
   remainingMonths: number; // 剩余月数（投资/借贷类，-1表示永久）
+  // 资金类投资：累计收益追踪
+  accumulatedGain?: number; // 累计浮动盈亏（资金类投资用）
+  investPrincipal?: number; // 投资本金
+  // 教育类
+  graduateBonus?: {        // 毕业时获得的奖励
+    educationLevel: number;
+    skills: number;
+    influence: number;
+  };
+  // 可操作性
+  canSell?: boolean;       // 是否可以抛售/关店/退学
+  sellText?: string;       // 抛售/关店按钮文案
   // 开始时间
   startRound: number;
 }
@@ -93,6 +116,9 @@ export interface GameState {
   // 核心属性
   money: number;
   attributes: Attributes;
+
+  // 教育/技能
+  education: EducationState;
 
   // 住房
   housing: HousingState;
@@ -179,10 +205,18 @@ export interface ActionData {
     condition?: string;
     conditionText?: string;
   };
+  requirements?: {
+    educationLevel?: number;  // 最低学历等级
+    skills?: number;          // 最低技能值
+    influence?: number;       // 最低影响力
+  };
   limit?: {
     usesPerGame?: number;
     cooldown?: number;
   };
+  recurring?: string;    // 关联的持续性项目模板ID
+  quitWork?: boolean;    // 是否是辞职行为
+  subGroup?: string;     // 子分组ID（合并面板内的标签筛选）
   tags: string[];
 }
 

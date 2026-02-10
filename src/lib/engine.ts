@@ -61,6 +61,9 @@ export function evaluateCondition(cond: string, state: GameState): boolean {
 
   let val: number;
   if (parsed.stat === 'money') val = state.money;
+  else if (parsed.stat === 'skills') val = state.education?.skills ?? 0;
+  else if (parsed.stat === 'influence') val = state.education?.influence ?? 0;
+  else if (parsed.stat === 'educationLevel') val = state.education?.level ?? 0;
   else val = (state.attributes as unknown as Record<string, number>)[parsed.stat] ?? 0;
 
   switch (parsed.op) {
@@ -138,17 +141,36 @@ export function checkBehaviorExecutable(action: ActionData, state: GameState): {
   }
 
   // 检查辞职行为：必须有工作才能辞职
-  const actionAny = action as unknown as Record<string, unknown>;
-  if (actionAny.quitWork) {
+  if (action.quitWork) {
     const hasWork = state.recurringItems.some(r => r.type === 'work');
     if (!hasWork) reasons.push('你目前没有工作');
   }
 
   // 检查工作/投资类行为：如果已有同类型持续项目且来源相同，不能重复
-  if (actionAny.recurring) {
-    const templateId = actionAny.recurring as string;
+  if (action.recurring) {
     const existing = state.recurringItems.find(r => r.sourceActionId === action.id);
     if (existing) reasons.push(`已有[${existing.name}]运行中`);
+  }
+
+  // 检查门槛要求（学历、技能、影响力）
+  const req = action.requirements;
+  if (req) {
+    if (req.educationLevel !== undefined && state.education.level < req.educationLevel) {
+      const levelNames = ['无', '语言学校', '社区大学', '州立大学', '常春藤'];
+      reasons.push(`需要学历≥${levelNames[req.educationLevel] || req.educationLevel}`);
+    }
+    if (req.skills !== undefined && state.education.skills < req.skills) {
+      reasons.push(`需要技能≥${req.skills}（当前${state.education.skills}）`);
+    }
+    if (req.influence !== undefined && state.education.influence < req.influence) {
+      reasons.push(`需要影响力≥${req.influence}（当前${state.education.influence}）`);
+    }
+  }
+
+  // 检查教育类行为：不能同时读两个学校
+  if (action.category === 'education' && action.recurring) {
+    const existingEdu = state.recurringItems.find(r => r.type === 'education');
+    if (existingEdu) reasons.push(`已在就读[${existingEdu.name}]，需先退学`);
   }
 
   return { canExecute: reasons.length === 0, reasons };
@@ -334,7 +356,7 @@ export function executeSettlement(state: GameState): SettlementResult {
     }
   }
 
-  // 5.5 处理持续性项目（工作/投资/借贷）
+  // 5.5 处理持续性项目（工作/投资/借贷/教育）
   const survivingRecurring: RecurringItem[] = [];
   for (const item of state.recurringItems) {
     // 检查是否失去（被裁员/投资失败等）
@@ -352,6 +374,17 @@ export function executeSettlement(state: GameState): SettlementResult {
       } else {
         result.recurringExpense += Math.abs(item.monthlyIncome);
       }
+      // 资金类投资累计盈亏
+      if (item.subType === 'fund' && item.accumulatedGain !== undefined) {
+        item.accumulatedGain += item.monthlyIncome;
+      }
+    }
+
+    // 处理固定成本（开店类投资、学费等）
+    if (item.monthlyCost > 0) {
+      state.money -= item.monthlyCost;
+      result.moneyChange -= item.monthlyCost;
+      result.recurringExpense += item.monthlyCost;
     }
 
     // 处理健康消耗
@@ -375,6 +408,7 @@ export function executeSettlement(state: GameState): SettlementResult {
     const parts: string[] = [];
     if (item.monthlyIncome > 0) parts.push(`+$${item.monthlyIncome}`);
     if (item.monthlyIncome < 0) parts.push(`-$${Math.abs(item.monthlyIncome)}`);
+    if (item.monthlyCost > 0) parts.push(`成本-$${item.monthlyCost}`);
     if (item.monthlyHealthCost > 0) parts.push(`❤️-${item.monthlyHealthCost}`);
     if (item.monthlySanCost > 0) parts.push(`🧠-${item.monthlySanCost}`);
     result.recurringEffects.push(`${item.icon} ${item.name}: ${parts.join(' ')}`);
@@ -383,7 +417,17 @@ export function executeSettlement(state: GameState): SettlementResult {
     if (!item.permanent && item.remainingMonths > 0) {
       item.remainingMonths -= 1;
       if (item.remainingMonths <= 0) {
-        result.lostRecurring.push(`${item.icon} ${item.name} 已到期`);
+        // 教育类到期 = 毕业
+        if (item.type === 'education' && item.graduateBonus) {
+          state.education.level = Math.max(state.education.level, item.graduateBonus.educationLevel);
+          state.education.skills = clamp(state.education.skills + item.graduateBonus.skills, 0, 100);
+          state.education.influence = clamp(state.education.influence + item.graduateBonus.influence, 0, 100);
+          state.education.schoolName = item.name;
+          state.education.graduated = true;
+          result.lostRecurring.push(`🎓 毕业了！${item.name} —— 学历提升，技能+${item.graduateBonus.skills}，影响力+${item.graduateBonus.influence}`);
+        } else {
+          result.lostRecurring.push(`${item.icon} ${item.name} 已到期`);
+        }
         continue; // 不保留
       }
     }

@@ -34,6 +34,7 @@ function createDefaultState(): GameState {
     difficulty: 'normal',
     money: 2000,
     attributes: { health: 80, san: 100, credit: 620, luck: 50 },
+    education: { level: 0, schoolName: '', graduated: false, skills: 10, influence: 5 },
     housing: { type: '无固定住所', rent: 0 },
     housingLevel: '2',
     dietLevel: '1',
@@ -97,6 +98,7 @@ interface GameStore {
 
   // 持续性项目
   removeRecurringItem: (itemId: string) => void;
+  sellRecurringItem: (itemId: string) => { success: boolean; message: string };
 
   // 日志
   pushFeed: (text: string, kind?: FeedEntry['kind']) => void;
@@ -304,6 +306,12 @@ export const useGameStore = create<GameStore>()(
               if (val > 0) s.roundFinancials.income += val;
               else s.roundFinancials.expense += Math.abs(val);
               effectSummary.push(`资金${val >= 0 ? '+' : ''}${val}`);
+            } else if (key === 'skills') {
+              s.education.skills = clamp(s.education.skills + val, 0, 100);
+              effectSummary.push(`技能${val >= 0 ? '+' : ''}${val}`);
+            } else if (key === 'influence') {
+              s.education.influence = clamp(s.education.influence + val, 0, 100);
+              effectSummary.push(`影响力${val >= 0 ? '+' : ''}${val}`);
             } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
               const maxVal = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
               (s.attributes as unknown as Record<string, number>)[key] = clamp(
@@ -385,12 +393,11 @@ export const useGameStore = create<GameStore>()(
         s.fullGameLog.push(feedEntry);
 
         // 处理持续性项目（工作/投资）
-        const actionAny = action as unknown as Record<string, unknown>;
-        if (actionAny.recurring && outcome.success) {
-          const templateId = actionAny.recurring as string;
+        if (action.recurring && outcome.success) {
+          const templateId = action.recurring;
           const templates = (actionsData as unknown as Record<string, Record<string, unknown>>).recurringTemplates as Record<string, Record<string, unknown>> | undefined;
           const template = templates?.[templateId];
-          if (template) {
+        if (template) {
             // 如果是工作类型，先检查是否已经有同类工作
             if (template.type === 'work') {
               const existingWork = s.recurringItems.find(r => r.type === 'work');
@@ -400,30 +407,53 @@ export const useGameStore = create<GameStore>()(
                 effectSummary.push(`辞去[${existingWork.name}]`);
               }
             }
+            // 如果是教育类型，先检查是否已在读
+            if (template.type === 'education') {
+              const existingEdu = s.recurringItems.find(r => r.type === 'education');
+              if (existingEdu) {
+                s.recurringItems = s.recurringItems.filter(r => r.type !== 'education');
+                effectSummary.push(`退出[${existingEdu.name}]`);
+              }
+            }
             const newItem: RecurringItem = {
               id: `${templateId}_${uid()}`,
               sourceActionId: action.id,
               type: template.type as RecurringItem['type'],
+              subType: (template.subType as RecurringItem['subType']) || undefined,
               name: template.name as string,
               icon: template.icon as string,
               description: template.description as string,
-              monthlyIncome: template.monthlyIncome as number,
-              monthlyHealthCost: template.monthlyHealthCost as number,
-              monthlySanCost: template.monthlySanCost as number,
-              monthlyCreditChange: template.monthlyCreditChange as number,
-              loseChance: template.loseChance as number,
-              loseText: template.loseText as string,
+              monthlyIncome: template.monthlyIncome as number || 0,
+              monthlyCost: (template.monthlyCost as number) || 0,
+              monthlyHealthCost: template.monthlyHealthCost as number || 0,
+              monthlySanCost: template.monthlySanCost as number || 0,
+              monthlyCreditChange: template.monthlyCreditChange as number || 0,
+              loseChance: template.loseChance as number || 0,
+              loseText: template.loseText as string || '',
               permanent: template.type === 'work',
-              remainingMonths: template.type === 'loan' ? 6 : -1,
+              remainingMonths: (template.remainingMonths as number) || (template.type === 'loan' ? 6 : -1),
               startRound: s.currentRound,
+              // 资金类投资字段
+              accumulatedGain: template.subType === 'fund' ? 0 : undefined,
+              investPrincipal: template.subType === 'fund' ? (action.cost?.money || 0) : undefined,
+              // 可操作性
+              canSell: (template.canSell as boolean) || false,
+              sellText: (template.sellText as string) || undefined,
+              // 教育毕业奖励
+              graduateBonus: template.graduateBonus ? {
+                educationLevel: (template.graduateBonus as Record<string, number>).educationLevel || 0,
+                skills: (template.graduateBonus as Record<string, number>).skills || 0,
+                influence: (template.graduateBonus as Record<string, number>).influence || 0,
+              } : undefined,
             };
             s.recurringItems.push(newItem);
-            effectSummary.push(`获得持续性${template.type === 'work' ? '工作' : template.type === 'invest' ? '投资' : '项目'}[${template.name}]`);
+            const typeLabel = template.type === 'work' ? '工作' : template.type === 'invest' ? '投资' : template.type === 'education' ? '学业' : '项目';
+            effectSummary.push(`获得持续性${typeLabel}[${template.name}]`);
           }
         }
 
         // 处理辞职
-        if (actionAny.quitWork) {
+        if (action.quitWork) {
           const workItem = s.recurringItems.find(r => r.type === 'work');
           if (workItem) {
             effectSummary.push(`辞去了[${workItem.name}]`);
@@ -563,6 +593,42 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      sellRecurringItem: (itemId) => {
+        const s = get().state;
+        const item = s.recurringItems.find(r => r.id === itemId);
+        if (!item || !item.canSell) return { success: false, message: '该项目不可出售' };
+
+        const effects: string[] = [];
+
+        if (item.subType === 'fund' && item.accumulatedGain !== undefined) {
+          // 资金类投资：抛售结算累计浮动盈亏
+          const principal = item.investPrincipal || 0;
+          const totalReturn = principal + item.accumulatedGain;
+          s.money += totalReturn;
+          effects.push(`收回本金+收益 $${totalReturn.toLocaleString()}`);
+        } else if (item.subType === 'business') {
+          // 开店类投资：关店退出，不退本金
+          effects.push('店面已关闭，停止运营');
+        } else if (item.type === 'education') {
+          // 退学
+          effects.push('已退学');
+          s.attributes.san = clamp(s.attributes.san - 10, 0, s.maxSan);
+        }
+
+        s.recurringItems = s.recurringItems.filter(r => r.id !== itemId);
+        const msg = `${item.icon} ${item.sellText || '已终止'}: ${effects.join(' ')}`;
+        const feedEntry: FeedEntry = {
+          id: uid(),
+          text: msg,
+          kind: 'log',
+          timestamp: Date.now(),
+        };
+        s.feed.push(feedEntry);
+        s.fullGameLog.push(feedEntry);
+        set({ state: { ...s } });
+        return { success: true, message: msg };
+      },
+
       // ---- 日志 ----
       pushFeed: (text, kind = 'log') => set((s) => {
         const entry: FeedEntry = { id: uid(), text, kind, timestamp: Date.now() };
@@ -589,11 +655,11 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'american-dream-game',
-      version: 3,
+      version: 4,
       partialize: (state) => ({ state: state.state }),
       migrate: (persistedState: unknown, version: number) => {
-        if (version < 3) {
-          // 旧版存档缺少 recurringItems，直接重置
+        if (version < 4) {
+          // 旧版存档缺少 education/skills/influence，直接重置
           return { state: createDefaultState() };
         }
         return persistedState;
