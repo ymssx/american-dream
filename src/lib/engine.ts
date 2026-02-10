@@ -216,6 +216,7 @@ export interface SettlementResult {
   debuffEffects: string[];
   buffExpired: string[];
   healthChange: number;
+  sanChange: number;
   moneyChange: number;
   killLine: KillLineResult | null;
 }
@@ -228,6 +229,7 @@ export function executeSettlement(state: GameState): SettlementResult {
     debuffEffects: [],
     buffExpired: [],
     healthChange: 0,
+    sanChange: 0,
     moneyChange: 0,
     killLine: null,
   };
@@ -257,6 +259,12 @@ export function executeSettlement(state: GameState): SettlementResult {
     // 饮食影响健康
     state.attributes.health = clamp(state.attributes.health + dietData.healthChange, 0, 100);
     result.healthChange += dietData.healthChange;
+
+    // 饮食消耗SAN（吃得越差精神消耗越大）
+    if (dietData.sanCost) {
+      state.attributes.san = clamp(state.attributes.san - dietData.sanCost, 0, state.maxSan);
+      result.sanChange -= dietData.sanCost;
+    }
   }
 
   // 3. 处理Debuff
@@ -306,9 +314,20 @@ export function executeSettlement(state: GameState): SettlementResult {
   // 6. 信用自然衰减
   state.attributes.credit += constantsData.creditDecay;
 
-  // 7. 更新SAN上限（基于住房）
+  // 7. 更新SAN上限（基于住房）并恢复SAN值
   if (housingData) {
     state.maxSan = housingData.sanMax;
+
+    // 住房每月恢复SAN（住得越好恢复越多）
+    // 睡大街(sanMax=100)恢复5，地下室(110)恢复8，独立单间(130)恢复12
+    // 正经公寓(160)恢复18，郊区独栋(200)恢复25，海景豪宅(250)恢复35
+    const sanRecovery = Math.floor((housingData.sanMax - 80) * 0.2 + 5);
+    const prevSan = state.attributes.san;
+    state.attributes.san = clamp(state.attributes.san + sanRecovery, 0, state.maxSan);
+    const actualRecovery = state.attributes.san - prevSan;
+    if (actualRecovery !== 0) {
+      result.sanChange += actualRecovery;
+    }
   }
 
   // 8. 检查斩杀线

@@ -411,6 +411,10 @@ export const useGameStore = create<GameStore>()(
         const summaryParts: string[] = [];
         if (result.rentPaid > 0) summaryParts.push(`租金-$${result.rentPaid}`);
         if (result.dietCost > 0) summaryParts.push(`伙食-$${result.dietCost}`);
+        if (result.sanChange !== 0) {
+          const sign = result.sanChange > 0 ? '+' : '';
+          summaryParts.push(`🧠精神${sign}${result.sanChange}`);
+        }
         result.debuffEffects.forEach(e => summaryParts.push(e));
         result.buffExpired.forEach(name => summaryParts.push(`${name}已失效`));
 
