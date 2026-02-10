@@ -10,7 +10,7 @@ export function RecurringPanel() {
 
   if (items.length === 0) {
     return (
-      <div className="p-4">
+      <div className="h-full overflow-y-auto p-4">
         <h3 className="text-sm font-bold text-red-400/70 mb-2">🩸 持续性项目</h3>
         {/* 教育/技能信息 */}
         <div className="bg-gray-950 rounded-lg p-3 mb-3 border border-gray-800/40">
@@ -51,7 +51,7 @@ export function RecurringPanel() {
   const netIncome = totalIncome - totalExpense;
 
   return (
-    <div className="p-4">
+    <div className="h-full overflow-y-auto p-4 pb-8">
       <h3 className="text-sm font-bold text-gray-400 mb-2">📋 持续性项目</h3>
 
       {/* 教育/技能信息 */}
