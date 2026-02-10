@@ -118,6 +118,7 @@
         "cost": { "san": 30 },
         "gain": { "money": 2500 },
         "unlock": { "type": "default" },
+        "limit": { "cooldown": 1 },
         "tags": ["basic", "gig"]
       },
       {
@@ -152,6 +153,7 @@
         "cost": { "san": 20, "health": 5 },
         "gain": { "money": 2200 },
         "unlock": { "type": "default" },
+        "limit": { "cooldown": 1, "usesPerGame": 8 },
         "tags": ["basic", "health_cost"]
       },
       {
@@ -173,6 +175,7 @@
         "cost": { "san": 15 },
         "gain": { "money": 1200, "credit": -3 },
         "unlock": { "type": "condition", "condition": "money < 500", "conditionText": "资金低于500时可用" },
+        "limit": { "cooldown": 1 },
         "tags": ["emergency", "cheap"]
       },
       {
@@ -266,6 +269,7 @@
         "cost": { "san": 10, "money": 500 },
         "gain": { "health": 15 },
         "unlock": { "type": "round", "round": 2 },
+        "limit": { "cooldown": 1 },
         "tags": ["basic", "cheap"]
       },
       {
@@ -276,6 +280,7 @@
         "cost": { "san": 25, "money": 2000 },
         "gain": { "health": 20, "san": 20 },
         "unlock": { "type": "round", "round": 3 },
+        "limit": { "cooldown": 2 },
         "tags": ["san_gain", "expensive"]
       },
       {
@@ -351,6 +356,7 @@
           { "chance": 0.01, "gain": { "money": 50000 }, "text": "你把彩票翻来覆去看了三遍……中了。真的中了。" }
         ],
         "unlock": { "type": "default" },
+        "limit": { "cooldown": 1 },
         "tags": ["lottery", "cheap"]
       },
       {
@@ -430,6 +436,7 @@
         "cost": { "money": 800 },
         "gain": { "san": 25, "health": 10 },
         "unlock": { "type": "default" },
+        "limit": { "cooldown": 2 },
         "tags": ["entertainment"]
       },
       {
@@ -440,6 +447,7 @@
         "cost": { "money": 1500 },
         "gain": { "san": 35, "health": 20 },
         "unlock": { "type": "default" },
+        "limit": { "cooldown": 2 },
         "tags": ["entertainment", "outdoor"]
       },
       {
@@ -450,6 +458,7 @@
         "cost": { "money": 5000 },
         "gain": { "san": 60, "health": 30 },
         "unlock": { "type": "round", "round": 2 },
+        "limit": { "cooldown": 3 },
         "tags": ["entertainment", "luxury"]
       }
     ],

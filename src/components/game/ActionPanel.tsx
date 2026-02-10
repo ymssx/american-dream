@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import actionsData from '@/data/actions.json';
 import type { ActionData } from '@/lib/types';
@@ -11,6 +11,7 @@ export function ActionPanel() {
   const { state, getAvailableBehaviors, executeBehavior, endRound, nextRound } = useGameStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('earn');
   const [lastResult, setLastResult] = useState<Record<string, unknown> | null>(null);
+  const [executingId, setExecutingId] = useState<string | null>(null);
 
   const categories = actionsData.categories;
   const behaviors = getAvailableBehaviors();
@@ -18,13 +19,31 @@ export function ActionPanel() {
   // 按类别分组
   const categoryBehaviors = behaviors.filter(b => b.category === selectedCategory);
 
-  const handleExecute = (actionId: string) => {
-    const result = executeBehavior(actionId);
-    if (result.success && result.result) {
-      setLastResult(result.result as Record<string, unknown>);
-      setTimeout(() => setLastResult(null), 3000);
-    }
-  };
+  const handleExecute = useCallback((actionId: string) => {
+    // 防止重复点击
+    if (executingId) return;
+
+    setExecutingId(actionId);
+
+    // 短暂延迟模拟执行过程，增强反馈感
+    setTimeout(() => {
+      const result = executeBehavior(actionId);
+      setExecutingId(null);
+
+      if (result.success && result.result) {
+        setLastResult(result.result as Record<string, unknown>);
+      } else if (!result.success) {
+        setLastResult({
+          _error: true,
+          errorMsg: result.error || '执行失败',
+        });
+      }
+    }, 300);
+  }, [executingId, executeBehavior]);
+
+  const dismissResult = useCallback(() => {
+    setLastResult(null);
+  }, []);
 
   if (state.roundPhase === 'result') {
     return (
@@ -56,21 +75,66 @@ export function ActionPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* 结果弹窗 */}
+    <div className="flex flex-col h-full relative">
+      {/* 执行结果弹窗 — 醒目的模态遮罩 */}
       <AnimatePresence>
         {lastResult && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="bg-gray-800 border border-gray-700 rounded-lg p-4 mx-4 mt-2 mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            onClick={dismissResult}
           >
-            <p className="text-white font-bold">{String((lastResult.behavior as Record<string, string>)?.name || '')}</p>
-            <p className="text-gray-400 text-sm mt-1">{String(lastResult.narrative || '')}</p>
-            {lastResult.effectSummary ? (
-              <p className="text-yellow-400 text-xs mt-2">{String(lastResult.effectSummary)}</p>
-            ) : null}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+              className={`w-full max-w-sm rounded-2xl p-5 border shadow-2xl ${
+                (lastResult as Record<string, unknown>)._error
+                  ? 'bg-red-950 border-red-800'
+                  : 'bg-gray-900 border-gray-700'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(lastResult as Record<string, unknown>)._error ? (
+                <>
+                  <div className="text-center mb-3">
+                    <span className="text-3xl">❌</span>
+                  </div>
+                  <p className="text-red-300 text-center font-bold mb-1">执行失败</p>
+                  <p className="text-red-400 text-sm text-center">{String((lastResult as Record<string, unknown>).errorMsg || '')}</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-center mb-3">
+                    <span className="text-3xl">
+                      {String((lastResult.behavior as Record<string, string>)?.icon || '✅')}
+                    </span>
+                  </div>
+                  <p className="text-white font-bold text-center text-base mb-1">
+                    {String((lastResult.behavior as Record<string, string>)?.name || '')}
+                  </p>
+                  <p className="text-gray-400 text-sm text-center mb-3 leading-relaxed">
+                    {String(lastResult.narrative || '')}
+                  </p>
+                  {lastResult.effectSummary && String(lastResult.effectSummary).trim() !== '' && (
+                    <div className="bg-gray-800 rounded-lg p-3 mb-3">
+                      <p className="text-yellow-400 text-sm text-center font-mono">
+                        {String(lastResult.effectSummary)}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+              <button
+                onClick={dismissResult}
+                className="w-full mt-2 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
+              >
+                确认
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -110,7 +174,15 @@ export function ActionPanel() {
           <div className="text-gray-600 text-center py-8">该类别暂无可用行动</div>
         ) : (
           categoryBehaviors.map((action) => (
-            <ActionCard key={action.id} action={action} onExecute={handleExecute} san={state.attributes.san} />
+            <ActionCard
+              key={action.id}
+              action={action}
+              onExecute={handleExecute}
+              san={state.attributes.san}
+              isExecuting={executingId === action.id}
+              cooldowns={state.behaviorCooldowns}
+              useCounts={state.behaviorUseCount}
+            />
           ))
         )}
       </div>
@@ -133,10 +205,13 @@ export function ActionPanel() {
   );
 }
 
-function ActionCard({ action, onExecute, san }: {
+function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts }: {
   action: ActionData & { unlocked: boolean; canExecute: boolean; lockReason: string | null };
   onExecute: (id: string) => void;
   san: number;
+  isExecuting: boolean;
+  cooldowns: Record<string, number>;
+  useCounts: Record<string, number>;
 }) {
   const typeLabels: Record<string, { text: string; color: string }> = {
     fixed: { text: '确定', color: 'text-green-400' },
@@ -146,7 +221,13 @@ function ActionCard({ action, onExecute, san }: {
   };
 
   const typeInfo = typeLabels[action.type] || { text: action.type, color: 'text-gray-400' };
-  const disabled = !action.canExecute;
+  const disabled = !action.canExecute || isExecuting;
+
+  // 显示冷却和次数信息
+  const cooldown = cooldowns[action.id] || 0;
+  const used = useCounts[action.id] || 0;
+  const maxUses = action.limit?.usesPerGame;
+  const cdRounds = action.limit?.cooldown;
 
   return (
     <motion.div
@@ -162,7 +243,29 @@ function ActionCard({ action, onExecute, san }: {
           <h4 className="text-white font-bold text-sm">{action.name}</h4>
           <p className="text-gray-500 text-xs">{action.nameEn}</p>
         </div>
-        <span className={`text-xs ${typeInfo.color}`}>{typeInfo.text}</span>
+        <div className="flex flex-col items-end gap-1">
+          <span className={`text-xs ${typeInfo.color}`}>{typeInfo.text}</span>
+          {/* 限制信息标签 */}
+          {(maxUses || cdRounds) && (
+            <div className="flex gap-1">
+              {maxUses && (
+                <span className="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded">
+                  {used}/{maxUses}次
+                </span>
+              )}
+              {cdRounds && cooldown > 0 && (
+                <span className="text-[10px] bg-orange-900/50 text-orange-400 px-1.5 py-0.5 rounded">
+                  ⏳冷却{cooldown}月
+                </span>
+              )}
+              {cdRounds && cooldown === 0 && (
+                <span className="text-[10px] bg-gray-800 text-gray-500 px-1.5 py-0.5 rounded">
+                  间隔{cdRounds}月
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <p className="text-gray-400 text-xs mb-2">{action.description}</p>
@@ -194,15 +297,20 @@ function ActionCard({ action, onExecute, san }: {
       {/* 按钮 */}
       {disabled ? (
         <div className="text-xs text-gray-600">
-          🔒 {action.lockReason || '不可用'}
+          {isExecuting ? (
+            <span className="text-yellow-500 animate-pulse">⏳ 执行中...</span>
+          ) : (
+            <span>🔒 {action.lockReason || '不可用'}</span>
+          )}
         </div>
       ) : (
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           onClick={() => onExecute(action.id)}
-          className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-all"
+          className="w-full py-2 bg-gray-700 hover:bg-gray-600 active:bg-gray-500 text-white rounded-lg text-sm transition-all font-medium"
         >
-          执行
-        </button>
+          ▶ 执行
+        </motion.button>
       )}
     </motion.div>
   );
