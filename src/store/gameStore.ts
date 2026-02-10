@@ -2,12 +2,16 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, PathId, Difficulty, FeedEntry, ActionData, ActiveDebuff, ActiveBuff, RecurringItem } from '@/lib/types';
+import type { GameState, PathId, Difficulty, FeedEntry, ActionData, ActiveDebuff, ActiveBuff, RecurringItem, RandomEvent, DilemmaEvent } from '@/lib/types';
 import {
   clamp, uid, getBehaviorById, getDebuffById, getBuffById,
   checkBehaviorExecutable, resolveBehaviorOutcome,
   executeSettlement, checkKillLines, getAllBehaviors, checkUnlockCondition,
 } from '@/lib/engine';
+import { checkMilestones } from '@/data/milestones';
+import { rollRandomEvent } from '@/data/randomEvents';
+import { rollDilemma } from '@/data/dilemmaEvents';
+import { calculateClassLevel, calculateNetWorth } from '@/lib/classSystem';
 import constantsData from '@/data/constants.json';
 import actionsData from '@/data/actions.json';
 import storiesIndex from '@/data/stories.json';
@@ -80,6 +84,13 @@ function createDefaultState(): GameState {
     startedAt: Date.now(),
     lastSavedAt: Date.now(),
     visibleBehaviorIds: [],
+    // 爽感系统
+    achievedMilestones: [],
+    pendingMilestones: [],
+    wealthHistory: [],
+    classLevel: 0,
+    pendingRandomEvent: null,
+    pendingDilemma: null,
   };
 }
 
@@ -130,6 +141,12 @@ interface GameStore {
 
   // 死亡
   triggerDeath: (type: string, reason: string) => void;
+
+  // 爽感系统
+  dismissMilestone: () => void;
+  resolveDilemma: (choice: 'A' | 'B') => { text: string; effects: Record<string, number> };
+  dismissRandomEvent: () => void;
+  applyEffects: (effects: Record<string, number>) => void;
 }
 
 // ============ 创建 Store ============
@@ -500,6 +517,16 @@ export const useGameStore = create<GameStore>()(
           s.stage = 'DEATH';
         }
 
+        // 检查里程碑（行为执行后实时检查）
+        const newMs = checkMilestones(s);
+        if (newMs.length > 0) {
+          s.achievedMilestones = [...s.achievedMilestones, ...newMs];
+          s.pendingMilestones = [...s.pendingMilestones, ...newMs];
+        }
+
+        // 更新阶层
+        s.classLevel = calculateClassLevel(s);
+
         set({ state: { ...s } });
 
         return {
@@ -562,6 +589,65 @@ export const useGameStore = create<GameStore>()(
         s.roundFinancials.expense += result.rentPaid + result.dietCost + result.recurringExpense;
         s.roundFinancials.income += result.recurringIncome;
 
+        // === 爽感系统：随机事件 ===
+        const randomEvent = rollRandomEvent(s);
+        if (randomEvent) {
+          s.pendingRandomEvent = randomEvent;
+          // 立即应用随机事件效果
+          for (const [key, val] of Object.entries(randomEvent.effects)) {
+            if (typeof val !== 'number' || val === 0) continue;
+            if (key === 'money') {
+              s.money += val;
+              if (val > 0) s.roundFinancials.income += val;
+              else s.roundFinancials.expense += Math.abs(val);
+            } else if (key === 'skills') {
+              s.education.skills = clamp(s.education.skills + val, 0, 100);
+            } else if (key === 'influence') {
+              s.education.influence = clamp(s.education.influence + val, 0, 100);
+            } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
+              const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
+              (s.attributes as unknown as Record<string, number>)[key] = clamp(
+                ((s.attributes as unknown as Record<string, number>)[key] || 0) + val, 0, maxV
+              );
+            }
+          }
+          // 添加日志
+          const eventFeed: FeedEntry = {
+            id: uid(),
+            text: `【随机事件】${randomEvent.text}`,
+            kind: randomEvent.tone === 'positive' ? 'effect' : 'danger',
+            timestamp: Date.now(),
+          };
+          s.feed.push(eventFeed);
+          s.fullGameLog.push(eventFeed);
+        }
+
+        // === 爽感系统：里程碑检查 ===
+        const newMilestones = checkMilestones(s);
+        if (newMilestones.length > 0) {
+          s.achievedMilestones = [...s.achievedMilestones, ...newMilestones];
+          s.pendingMilestones = [...s.pendingMilestones, ...newMilestones];
+        }
+
+        // === 爽感系统：阶层更新 ===
+        s.classLevel = calculateClassLevel(s);
+
+        // === 爽感系统：资产历史 ===
+        s.wealthHistory = [...s.wealthHistory, {
+          round: s.currentRound,
+          money: s.money,
+          netWorth: calculateNetWorth(s),
+          classLevel: s.classLevel,
+        }];
+
+        // === 爽感系统：抉择事件（在随机事件之后） ===
+        if (!s.pendingRandomEvent) {
+          const dilemma = rollDilemma(s);
+          if (dilemma) {
+            s.pendingDilemma = dilemma;
+          }
+        }
+
         s.roundPhase = 'result';
         set({ state: { ...s } });
         return { killLine: result.killLine };
@@ -577,6 +663,8 @@ export const useGameStore = create<GameStore>()(
             roundBehaviors: [],
             roundFinancials: { income: 0, expense: 0 },
             visibleBehaviorIds: generateVisibleBehaviors(newRound),
+            pendingRandomEvent: null,
+            pendingDilemma: null,
           },
         };
       }),
@@ -683,14 +771,101 @@ export const useGameStore = create<GameStore>()(
           death: { active: true, type, reason },
         },
       })),
+
+      // ---- 爽感系统 ----
+      dismissMilestone: () => set((s) => ({
+        state: {
+          ...s.state,
+          pendingMilestones: s.state.pendingMilestones.slice(1),
+        },
+      })),
+
+      dismissRandomEvent: () => set((s) => ({
+        state: { ...s.state, pendingRandomEvent: null },
+      })),
+
+      resolveDilemma: (choice) => {
+        const s = get().state;
+        const dilemma = s.pendingDilemma;
+        if (!dilemma) return { text: '', effects: {} };
+
+        let text: string;
+        let effects: Record<string, number>;
+
+        if (choice === 'A') {
+          const option = dilemma.optionA;
+          const successChance = option.successChance ?? 1;
+          const success = Math.random() < successChance;
+
+          if (success || !option.failText) {
+            text = option.successText;
+            effects = option.effects;
+          } else {
+            text = option.failText;
+            effects = option.failEffects || option.effects;
+          }
+        } else {
+          const option = dilemma.optionB;
+          text = option.successText;
+          effects = option.effects;
+        }
+
+        // 应用效果
+        for (const [key, val] of Object.entries(effects)) {
+          if (typeof val !== 'number' || val === 0) continue;
+          if (key === 'money') {
+            s.money += val;
+          } else if (key === 'skills') {
+            s.education.skills = clamp(s.education.skills + val, 0, 100);
+          } else if (key === 'influence') {
+            s.education.influence = clamp(s.education.influence + val, 0, 100);
+          } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
+            const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
+            (s.attributes as unknown as Record<string, number>)[key] = clamp(
+              ((s.attributes as unknown as Record<string, number>)[key] || 0) + val, 0, maxV
+            );
+          }
+        }
+
+        // 日志
+        const feedEntry: FeedEntry = {
+          id: uid(),
+          text: `【抉择】${dilemma.title} → ${text}`,
+          kind: 'scene',
+          timestamp: Date.now(),
+        };
+        s.feed.push(feedEntry);
+        s.fullGameLog.push(feedEntry);
+
+        s.pendingDilemma = null;
+        set({ state: { ...s } });
+        return { text, effects };
+      },
+
+      applyEffects: (effects) => {
+        const s = get().state;
+        for (const [key, val] of Object.entries(effects)) {
+          if (typeof val !== 'number' || val === 0) continue;
+          if (key === 'money') s.money += val;
+          else if (key === 'skills') s.education.skills = clamp(s.education.skills + val, 0, 100);
+          else if (key === 'influence') s.education.influence = clamp(s.education.influence + val, 0, 100);
+          else if (['health', 'san', 'credit', 'luck'].includes(key)) {
+            const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
+            (s.attributes as unknown as Record<string, number>)[key] = clamp(
+              ((s.attributes as unknown as Record<string, number>)[key] || 0) + val, 0, maxV
+            );
+          }
+        }
+        set({ state: { ...s } });
+      },
     }),
     {
       name: 'american-dream-game',
-      version: 4,
+      version: 5,
       partialize: (state) => ({ state: state.state }),
       migrate: (persistedState: unknown, version: number) => {
-        if (version < 4) {
-          // 旧版存档缺少 education/skills/influence，直接重置
+        if (version < 5) {
+          // 旧版存档不兼容新系统，直接重置
           return { state: createDefaultState() };
         }
         return persistedState;

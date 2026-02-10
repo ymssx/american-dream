@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { getRoundTitle, getYearPhaseText } from '@/lib/engine';
+import { getClassInfo } from '@/lib/classSystem';
 import constantsData from '@/data/constants.json';
 
 const EDU_NAMES = ['无学历', '语言学校', '社区大学', '州立大学', '常春藤'];
@@ -173,8 +174,18 @@ export function StatusBar() {
         <StatText icon="🍀" label="运气" value={attributes.luck} max={100} color="text-emerald-400" />
       </div>
 
-      {/* 身份 + 生活水平 - 一行展示所有标签 */}
+      {/* 身份 + 生活水平 + 阶层 - 一行展示所有标签 */}
       <div className="px-3 pb-2 flex flex-wrap gap-1.5">
+        {/* 阶层标签 */}
+        {(() => {
+          const ci = getClassInfo(state.classLevel);
+          return (
+            <Tag
+              color={state.classLevel >= 3 ? 'amber' : state.classLevel >= 2 ? 'blue' : state.classLevel >= 1 ? 'orange' : 'dim'}
+              text={`${ci.icon} ${ci.name}`}
+            />
+          );
+        })()}
         <Tag
           color={education.level >= 3 ? 'indigo' : education.level >= 1 ? 'gray' : 'dim'}
           text={`🎓 ${education.level > 0 ? (education.schoolName || EDU_NAMES[education.level]) : EDU_NAMES[0]}${education.level > 0 && !education.graduated ? ' (在读)' : ''}`}
@@ -213,6 +224,9 @@ function Tag({ color, text }: { color: string; text: string }) {
     gray: 'bg-gray-800 text-gray-400 border-gray-700',
     dim: 'bg-gray-800/50 text-gray-600 border-gray-800',
     slate: 'bg-gray-800/70 text-gray-400 border-gray-700/60',
+    amber: 'bg-amber-900/40 text-amber-300 border-amber-700/50',
+    blue: 'bg-blue-900/40 text-blue-300 border-blue-700/50',
+    orange: 'bg-orange-900/40 text-orange-300 border-orange-700/50',
   };
   return (
     <span className={`text-[11px] px-2 py-0.5 rounded border ${styles[color] || styles.gray}`}>

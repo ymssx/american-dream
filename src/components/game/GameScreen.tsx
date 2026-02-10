@@ -6,6 +6,9 @@ import { ActionPanel } from './ActionPanel';
 import { FeedPanel } from './FeedPanel';
 import { SettingsPanel } from './SettingsPanel';
 import { RecurringPanel } from './RecurringPanel';
+import { MilestonePopup } from './MilestonePopup';
+import { RandomEventPopup } from './RandomEventPopup';
+import { DilemmaPopup } from './DilemmaPopup';
 
 type Tab = 'action' | 'recurring' | 'log' | 'settings';
 
@@ -47,6 +50,12 @@ export function GameScreen() {
         {activeTab === 'log' && <FeedPanel />}
         {activeTab === 'settings' && <SettingsPanel />}
       </div>
+
+      {/* === 爽感系统弹窗层 === */}
+      {/* 优先级: 里程碑 > 随机事件 > 抉择事件 */}
+      <MilestonePopup />
+      <RandomEventPopup />
+      <DilemmaPopup />
     </div>
   );
 }

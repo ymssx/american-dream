@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import actionsData from '@/data/actions.json';
 import type { ActionData } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getClassInfo } from '@/lib/classSystem';
+import { WealthChart } from './WealthChart';
 
 /** 行为面板 */
 export function ActionPanel() {
@@ -149,66 +151,152 @@ export function ActionPanel() {
 
   if (state.roundPhase === 'result') {
     const net = state.roundFinancials.income - state.roundFinancials.expense;
+    const classInfo = getClassInfo(state.classLevel);
+
+    // “新闻头条”风格的本月最大事件
+    const headline = useMemo(() => {
+      if (net >= 10000) return { text: '💰 大丰收！本月净赚超万', color: 'text-green-400', bg: 'bg-green-950/50' };
+      if (net >= 3000) return { text: '📈 财务稳健，小有盈余', color: 'text-emerald-400', bg: 'bg-emerald-950/40' };
+      if (net <= -5000) return { text: '🚨 财务危机！本月严重亏损', color: 'text-red-400', bg: 'bg-red-950/50' };
+      if (net <= -1000) return { text: '📉 入不敷出，需要开源节流', color: 'text-orange-400', bg: 'bg-orange-950/40' };
+      if (state.attributes.health <= 20) return { text: '⚠️ 健康警报！身体即将崩溃', color: 'text-red-400', bg: 'bg-red-950/50' };
+      if (state.attributes.san <= 20) return { text: '🌀 精神危机！意志力消磨殆尽', color: 'text-purple-400', bg: 'bg-purple-950/50' };
+      if (state.roundBehaviors.length === 0) return { text: '😴 无所事事的一个月', color: 'text-gray-400', bg: 'bg-gray-800/50' };
+      return { text: '📅 又一个月过去了', color: 'text-gray-400', bg: 'bg-gray-800/50' };
+    }, [net, state.attributes.health, state.attributes.san, state.roundBehaviors.length]);
+
+    // AI 点评
+    const aiComment = useMemo(() => {
+      const comments: string[] = [];
+      if (net >= 10000) comments.push('赚麻了，再来几个这样的月你就财务自由了。');
+      else if (net >= 3000) comments.push('不错的一个月，继续保持。');
+      else if (net <= -5000) comments.push('流血严重，得想办法止血了。');
+      else if (net <= -1000) comments.push('花得比赚得多，不是长久之计。');
+
+      if (state.recurringItems.filter(r => r.type === 'work').length === 0 && state.currentRound > 3) {
+        comments.push('还没有正式工作，考虑找一份？');
+      }
+      if (state.attributes.health <= 30) comments.push('身体是革命的本钱。');
+      if (state.money < 0) comments.push('负债中……每一分钱都得精打细算。');
+      if (state.money > 50000 && state.recurringItems.filter(r => r.type === 'invest').length === 0) {
+        comments.push('有这么多现金，考虑投资一下？');
+      }
+
+      return comments.length > 0 ? comments[Math.floor(Math.random() * comments.length)] : '继续努力，美国梦不会辜负每一个努力的人。';
+    }, [net, state.recurringItems, state.currentRound, state.attributes.health, state.money]);
+
     return (
-      <div className="p-6 text-center">
-        <h3 className="text-xl font-bold text-white mb-4">📊 本月报告</h3>
-        <div className="bg-gray-900 rounded-xl p-4 mb-4 text-left">
-          <p className="text-gray-400 text-sm mb-2">本月执行了 {state.roundBehaviors.length} 个行动</p>
-          <div className="flex flex-wrap gap-2">
-            {state.roundBehaviors.map((b, i) => (
-              <span key={i} className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">
-                {b.name}
-              </span>
-            ))}
-          </div>
-          {/* 资金明细 */}
-          <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">进账</span>
-              <span className="text-green-400">+${state.roundFinancials.income.toLocaleString()}</span>
+      <div className="h-full overflow-y-auto">
+        <div className="p-5 pb-32">
+          {/* 新闻头条 */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`${headline.bg} rounded-xl p-4 mb-4 border border-gray-800/60`}
+          >
+            <p className={`text-lg font-black text-center ${headline.color}`}>{headline.text}</p>
+          </motion.div>
+
+          {/* 阶层显示 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className={`flex items-center justify-center gap-2 mb-4 px-3 py-2 rounded-lg ${classInfo.bgColor} border border-gray-800/40`}
+          >
+            <span className="text-xl">{classInfo.icon}</span>
+            <span className={`text-sm font-bold ${classInfo.color}`}>{classInfo.name}</span>
+            <span className="text-gray-500 text-xs">— {classInfo.description}</span>
+          </motion.div>
+
+          <div className="bg-gray-900 rounded-xl p-4 mb-4 text-left">
+            {/* 行动摘要 */}
+            <p className="text-gray-400 text-sm mb-2">本月执行了 {state.roundBehaviors.length} 个行动</p>
+            <div className="flex flex-wrap gap-2">
+              {state.roundBehaviors.map((b, i) => (
+                <span key={i} className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">
+                  {b.name}
+                </span>
+              ))}
+              {state.roundBehaviors.length === 0 && (
+                <span className="text-gray-600 text-xs">本月什么都没做</span>
+              )}
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">支出（含房租/伙食）</span>
-              <span className="text-red-400">-${state.roundFinancials.expense.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm font-bold pt-1 border-t border-gray-800">
-              <span className="text-gray-300">本月净收入</span>
-              <span className={net >= 0 ? 'text-green-400' : 'text-red-400'}>
-                {net >= 0 ? '+' : ''}{net.toLocaleString()}
-              </span>
-            </div>
-          </div>
-          {/* 状态变化 */}
-          <div className="mt-3 pt-3 border-t border-gray-800 flex flex-wrap gap-2 text-xs">
-            <span className="text-gray-500">余额: <span className="text-white font-mono">${state.money.toLocaleString()}</span></span>
-            <span className="text-gray-500">❤️ {state.attributes.health}</span>
-            <span className="text-gray-500">🧠 {state.attributes.san}/{state.maxSan}</span>
-            <span className="text-gray-500">💳 {state.attributes.credit}</span>
-          </div>
-          {/* 持续性项目摘要 */}
-          {state.recurringItems.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-800">
-              <p className="text-gray-500 text-xs mb-1.5">📋 持续性项目</p>
-              <div className="flex flex-wrap gap-1">
-                {state.recurringItems.map((item) => (
-                  <span key={item.id} className={`text-[10px] px-1.5 py-0.5 rounded ${
-                    item.type === 'work' ? 'bg-green-900/40 text-green-400' :
-                    item.type === 'invest' ? 'bg-blue-900/40 text-blue-400' :
-                    'bg-red-900/40 text-red-400'
-                  }`}>
-                    {item.icon} {item.name} {item.monthlyIncome >= 0 ? '+' : ''}{item.monthlyIncome.toLocaleString()}/月
-                  </span>
-                ))}
+
+            {/* 资金明细 */}
+            <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">进账</span>
+                <span className="text-green-400">+${state.roundFinancials.income.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">支出（含房租/伙食）</span>
+                <span className="text-red-400">-${state.roundFinancials.expense.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm font-bold pt-1 border-t border-gray-800">
+                <span className="text-gray-300">本月净收入</span>
+                <motion.span
+                  initial={{ scale: 1.3 }}
+                  animate={{ scale: 1 }}
+                  className={`${net >= 0 ? 'text-green-400' : 'text-red-400'} ${Math.abs(net) >= 5000 ? 'text-base' : ''}`}
+                >
+                  {net >= 0 ? '+' : ''}{net.toLocaleString()}
+                </motion.span>
               </div>
             </div>
-          )}
+
+            {/* 状态变化 */}
+            <div className="mt-3 pt-3 border-t border-gray-800 flex flex-wrap gap-2 text-xs">
+              <span className="text-gray-500">余额: <span className="text-white font-mono">${state.money.toLocaleString()}</span></span>
+              <span className="text-gray-500">❤️ {state.attributes.health}</span>
+              <span className="text-gray-500">🧠 {state.attributes.san}/{state.maxSan}</span>
+              <span className="text-gray-500">💳 {state.attributes.credit}</span>
+            </div>
+
+            {/* 持续性项目摘要 */}
+            {state.recurringItems.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800">
+                <p className="text-gray-500 text-xs mb-1.5">📋 持续性项目</p>
+                <div className="flex flex-wrap gap-1">
+                  {state.recurringItems.map((item) => (
+                    <span key={item.id} className={`text-[10px] px-1.5 py-0.5 rounded ${
+                      item.type === 'work' ? 'bg-green-900/40 text-green-400' :
+                      item.type === 'invest' ? 'bg-blue-900/40 text-blue-400' :
+                      item.type === 'education' ? 'bg-indigo-900/40 text-indigo-400' :
+                      'bg-red-900/40 text-red-400'
+                    }`}>
+                      {item.icon} {item.name} {item.monthlyIncome >= 0 ? '+' : ''}{item.monthlyIncome.toLocaleString()}/月
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 资产走势图 */}
+            <WealthChart history={state.wealthHistory} currentMoney={state.money} />
+          </div>
+
+          {/* AI 点评 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="bg-gray-800/50 rounded-lg p-3 mb-4 border border-gray-700/40"
+          >
+            <p className="text-gray-500 text-[10px] mb-1">🤖 AI 点评</p>
+            <p className="text-gray-300 text-sm italic">“{aiComment}”</p>
+          </motion.div>
         </div>
-        <button
-          onClick={nextRound}
-          className="px-8 py-3 bg-red-700 hover:bg-red-600 text-white rounded-lg text-lg"
-        >
-          进入下个月
-        </button>
+
+        {/* 固定底部按钮 */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-950/95 border-t border-gray-800 backdrop-blur-sm">
+          <button
+            onClick={nextRound}
+            className="w-full px-8 py-3 bg-red-700 hover:bg-red-600 text-white rounded-lg text-lg font-bold transition-colors"
+          >
+            进入下个月 →
+          </button>
+        </div>
       </div>
     );
   }
@@ -269,7 +357,15 @@ export function ActionPanel() {
           );
         })()}
 
-        {lastResult && (
+        {lastResult && (() => {
+          // 判断是否大额收益/损失
+          const gains = lastResult.gain as Record<string, number> | undefined;
+          const moneyGain = gains?.money || 0;
+          const isBigWin = moneyGain >= 5000;
+          const isBigLoss = moneyGain <= -3000;
+          const isError = !!(lastResult as Record<string, unknown>)._error;
+
+          return (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -283,13 +379,17 @@ export function ActionPanel() {
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
               className={`w-full max-w-sm rounded-2xl p-5 border shadow-2xl ${
-                (lastResult as Record<string, unknown>)._error
+                isError
                   ? 'bg-red-950 border-red-800'
+                  : isBigWin
+                  ? 'bg-gradient-to-b from-yellow-950/95 to-amber-950/95 border-yellow-600 shadow-yellow-500/20'
+                  : isBigLoss
+                  ? 'bg-gradient-to-b from-red-950/95 to-gray-950/95 border-red-700 shadow-red-500/20'
                   : 'bg-gray-900 border-gray-700'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-              {(lastResult as Record<string, unknown>)._error ? (
+              {isError ? (
                 <>
                   <div className="text-center mb-3">
                     <span className="text-3xl">❌</span>
@@ -299,6 +399,26 @@ export function ActionPanel() {
                 </>
               ) : (
                 <>
+                  {/* 大额收益特效 */}
+                  {isBigWin && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: [0, 1.3, 1] }}
+                      transition={{ duration: 0.5 }}
+                      className="text-center mb-2"
+                    >
+                      <span className="text-5xl">💰</span>
+                    </motion.div>
+                  )}
+                  {isBigLoss && (
+                    <motion.div
+                      animate={{ x: [0, -5, 5, -3, 3, 0] }}
+                      transition={{ duration: 0.4 }}
+                      className="text-center mb-2"
+                    >
+                      <span className="text-5xl">💸</span>
+                    </motion.div>
+                  )}
                   <div className="text-center mb-3">
                     <span className="text-3xl">
                       {String((lastResult.behavior as Record<string, string>)?.icon || '✅')}
@@ -311,11 +431,22 @@ export function ActionPanel() {
                     {String(lastResult.narrative || '')}
                   </p>
                   {lastResult.effectSummary && String(lastResult.effectSummary).trim() !== '' && (
-                    <div className="bg-gray-800 rounded-lg p-3 mb-3">
-                      <p className="text-yellow-400 text-sm text-center font-mono">
+                    <div className={`rounded-lg p-3 mb-3 ${
+                      isBigWin ? 'bg-yellow-900/40' : isBigLoss ? 'bg-red-900/40' : 'bg-gray-800'
+                    }`}>
+                      <p className={`text-sm text-center font-mono ${
+                        isBigWin ? 'text-yellow-300 font-bold' : isBigLoss ? 'text-red-300 font-bold' : 'text-yellow-400'
+                      }`}>
                         {String(lastResult.effectSummary)}
                       </p>
                     </div>
+                  )}
+                  {/* 大额提示 */}
+                  {isBigWin && (
+                    <p className="text-yellow-500/80 text-xs text-center mb-2 animate-pulse">✨ 大赚一笔！</p>
+                  )}
+                  {isBigLoss && (
+                    <p className="text-red-500/80 text-xs text-center mb-2 animate-pulse">💥 血亏严重…</p>
                   )}
                 </>
               )}
@@ -327,7 +458,8 @@ export function ActionPanel() {
               </button>
             </motion.div>
           </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
 
       {/* 类别选择器 */}

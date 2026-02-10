@@ -171,6 +171,23 @@ export interface GameState {
 
   // 每回合可见的行为ID列表（随机刷新）
   visibleBehaviorIds: string[];
+
+  // === 爽感系统新增 ===
+  // 里程碑
+  achievedMilestones: string[];       // 已达成的里程碑ID
+  pendingMilestones: string[];        // 待显示的里程碑ID队列
+
+  // 资产历史
+  wealthHistory: WealthRecord[];
+
+  // 阶层
+  classLevel: ClassLevel;
+
+  // 随机事件
+  pendingRandomEvent: RandomEvent | null;
+
+  // 抉择事件
+  pendingDilemma: DilemmaEvent | null;
 }
 
 /** 行为数据结构 */
@@ -233,4 +250,60 @@ export interface BehaviorResult {
   narrative: string;
   effectSummary: string;
   outcomeSuccess?: boolean;
+}
+
+/** 里程碑定义 */
+export interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  tone: 'great' | 'good' | 'neutral' | 'warn';
+  check: (state: GameState) => boolean;
+}
+
+/** 随机事件定义 */
+export interface RandomEvent {
+  id: string;
+  text: string;
+  icon: string;
+  tone: 'positive' | 'negative' | 'extreme' | 'neutral';
+  effects: Record<string, number>;
+  chance: number; // 触发权重
+}
+
+/** 抉择事件定义 */
+export interface DilemmaEvent {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  minRound?: number;
+  condition?: (state: GameState) => boolean;
+  optionA: {
+    text: string;
+    description: string;
+    effects: Record<string, number>;
+    successChance?: number; // 成功概率，默认100%
+    successText: string;
+    failText?: string;
+    failEffects?: Record<string, number>;
+  };
+  optionB: {
+    text: string;
+    description: string;
+    effects: Record<string, number>;
+    successText: string;
+  };
+}
+
+/** 阶层等级 */
+export type ClassLevel = 0 | 1 | 2 | 3 | 4;
+
+/** 资产历史记录 */
+export interface WealthRecord {
+  round: number;
+  money: number;
+  netWorth: number; // 净资产 = 现金 + 投资估值
+  classLevel: ClassLevel;
 }
