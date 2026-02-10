@@ -20,14 +20,14 @@ export function StatusBar() {
   return (
     <div className="bg-gray-900 border-b border-gray-700/50">
       {/* 头部：回合 + 金钱 */}
-      <div className="flex justify-between items-center px-4 py-2.5 border-b border-gray-800/60">
-        <div className="flex items-center gap-2.5">
-          <span className="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-md font-mono font-medium">
+      <div className="flex justify-between items-center px-3 py-2 border-b border-gray-800/60">
+        <div className="flex items-center gap-2">
+          <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-md font-mono font-medium">
             第{currentRound}月
           </span>
           <div>
             <span className="text-sm text-white font-bold">{getRoundTitle(currentRound)}</span>
-            <span className="text-[11px] text-gray-500 ml-2">{getYearPhaseText(currentRound)}</span>
+            <span className="text-[11px] text-gray-500 ml-1.5">{getYearPhaseText(currentRound)}</span>
           </div>
         </div>
         <div className="text-right">
@@ -45,36 +45,29 @@ export function StatusBar() {
         </div>
       </div>
 
-      {/* 四维属性 - 2x2网格 */}
-      <div className="grid grid-cols-4 gap-3 px-4 py-3">
+      {/* 四维属性 - 逐行排列 */}
+      <div className="px-3 py-2 space-y-1.5">
         <StatBar icon="❤️" label="生命" value={attributes.health} max={100} color="bg-red-500" danger={attributes.health <= 20} />
         <StatBar icon="🧠" label="精神" value={attributes.san} max={maxSan} color="bg-purple-500" danger={attributes.san <= 30} />
         <StatBar icon="💳" label="信用" value={attributes.credit} max={850} color="bg-blue-500" danger={attributes.credit < 500} />
         <StatBar icon="🍀" label="运气" value={attributes.luck} max={100} color="bg-emerald-500" />
       </div>
 
-      {/* 身份信息 - 分行展示 */}
-      <div className="px-4 pb-2.5 space-y-1.5">
-        {/* 第一行：个人属性 */}
-        <div className="flex items-center gap-2">
-          <Tag
-            color={education.level >= 3 ? 'indigo' : education.level >= 1 ? 'gray' : 'dim'}
-            text={`🎓 ${education.level > 0 ? (education.schoolName || EDU_NAMES[education.level]) : EDU_NAMES[0]}${education.level > 0 && !education.graduated ? ' (在读)' : ''}`}
-          />
-          {education.skills > 0 && <Tag color="yellow" text={`⚡ ${education.skills}`} />}
-          {education.influence > 0 && <Tag color="pink" text={`🌟 ${education.influence}`} />}
-        </div>
-
-        {/* 第二行：生活水平 */}
-        <div className="flex items-center gap-2">
-          <Tag color="slate" text={`🏠 ${housingData?.name || '流浪'}`} />
-          <Tag color="slate" text={`🍜 ${dietData?.name || '省吃俭用'}`} />
-        </div>
+      {/* 身份 + 生活水平 - 一行展示所有标签 */}
+      <div className="px-3 pb-2 flex flex-wrap gap-1.5">
+        <Tag
+          color={education.level >= 3 ? 'indigo' : education.level >= 1 ? 'gray' : 'dim'}
+          text={`🎓 ${education.level > 0 ? (education.schoolName || EDU_NAMES[education.level]) : EDU_NAMES[0]}${education.level > 0 && !education.graduated ? ' (在读)' : ''}`}
+        />
+        {education.skills > 0 && <Tag color="yellow" text={`⚡ ${education.skills}`} />}
+        {education.influence > 0 && <Tag color="pink" text={`🌟 ${education.influence}`} />}
+        <Tag color="slate" text={`🏠 ${housingData?.name || '流浪'}`} />
+        <Tag color="slate" text={`🍜 ${dietData?.name || '省吃俭用'}`} />
       </div>
 
       {/* Buff / Debuff */}
       {(activeDebuffs.length > 0 || activeBuffs.length > 0) && (
-        <div className="flex gap-1.5 px-4 pb-2.5 flex-wrap">
+        <div className="flex gap-1.5 px-3 pb-2 flex-wrap">
           {activeDebuffs.map(d => (
             <span key={d.id} className="bg-red-950/60 text-red-400 px-2 py-0.5 rounded text-[10px] border border-red-800/40 animate-pulse">
               {d.icon} {d.name} ({d.remainingDuration}月)
@@ -108,7 +101,7 @@ function Tag({ color, text }: { color: string; text: string }) {
   );
 }
 
-/** 迷你属性条 */
+/** 迷你属性条 - 改为单行横向布局 */
 function StatBar({ icon, label, value, max, color, danger }: {
   icon: string;
   label: string;
@@ -119,19 +112,17 @@ function StatBar({ icon, label, value, max, color, danger }: {
 }) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <div className={danger ? 'animate-pulse' : ''}>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-[11px] text-gray-500">{icon} {label}</span>
-        <span className={`text-[11px] font-mono font-bold ${danger ? 'text-red-400' : 'text-gray-300'}`}>
-          {value}{max > 100 ? `/${max}` : ''}
-        </span>
-      </div>
-      <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+    <div className={`flex items-center gap-2 ${danger ? 'animate-pulse' : ''}`}>
+      <span className="text-[11px] text-gray-500 w-12 shrink-0">{icon} {label}</span>
+      <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
         <div
           className={`h-full ${color} rounded-full transition-all duration-700 ease-out`}
           style={{ width: `${pct}%` }}
         />
       </div>
+      <span className={`text-[11px] font-mono font-bold w-10 text-right shrink-0 ${danger ? 'text-red-400' : 'text-gray-300'}`}>
+        {value}{max > 100 ? `/${max}` : ''}
+      </span>
     </div>
   );
 }
