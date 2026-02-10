@@ -1,6 +1,7 @@
 'use client';
 
 import { useGameStore } from '@/store/gameStore';
+import { StorySelect } from '@/components/stages/StorySelect';
 import { StageS00, StageS01, StageS02, StageS02b, StageS03, StageS04, StageS05 } from '@/components/stages/StageComponents';
 import { GameScreen } from '@/components/game/GameScreen';
 import { DeathScreen } from '@/components/game/DeathScreen';
@@ -25,6 +26,7 @@ export default function Home() {
 
   // 根据当前阶段渲染对应组件
   switch (state.stage) {
+    case 'STORY_SELECT': return <StorySelect />;
     case 'S00': return <StageS00 />;
     case 'S01': return <StageS01 />;
     case 'S02': return <StageS02 />;
@@ -34,6 +36,6 @@ export default function Home() {
     case 'S05': return <StageS05 />;
     case 'GAME': return <GameScreen />;
     case 'DEATH': return <DeathScreen />;
-    default: return <StageS00 />;
+    default: return <StorySelect />;
   }
 }

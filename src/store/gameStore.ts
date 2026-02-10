@@ -10,17 +10,31 @@ import {
 } from '@/lib/engine';
 import constantsData from '@/data/constants.json';
 import actionsData from '@/data/actions.json';
+import storiesIndex from '@/data/stories.json';
+
+// 动态加载故事数据
+const storyModules: Record<string, unknown> = {
+  story1: require('@/data/stories/story1.json'),
+  story2: require('@/data/stories/story2.json'),
+  story3: require('@/data/stories/story3.json'),
+};
+
+function getStoryData(storyId: string | null): Record<string, unknown> {
+  if (!storyId) return storyModules.story1 as Record<string, unknown>;
+  return (storyModules[storyId] || storyModules.story1) as Record<string, unknown>;
+}
 
 // ============ 默认状态 ============
 
 function createDefaultState(): GameState {
   return {
-    stage: 'S00',
+    stage: 'STORY_SELECT',
+    storyId: null,
     pathId: null,
     difficulty: 'normal',
     money: 2000,
     attributes: { health: 80, san: 100, credit: 620, luck: 50 },
-    housing: { type: '无', rent: 0 },
+    housing: { type: '无固定住所', rent: 0 },
     housingLevel: '2',
     dietLevel: '1',
     currentRound: 1,
@@ -49,6 +63,11 @@ function createDefaultState(): GameState {
 
 interface GameStore {
   state: GameState;
+
+  // 故事选择
+  selectStory: (storyId: string) => void;
+  randomStory: () => void;
+  getStoryData: () => Record<string, unknown>;
 
   // 阶段流转
   setStage: (stage: GameState['stage']) => void;
@@ -92,6 +111,25 @@ export const useGameStore = create<GameStore>()(
     (set, get) => ({
       state: createDefaultState(),
 
+      // ---- 故事选择 ----
+      selectStory: (storyId) => set((s) => ({
+        state: { ...s.state, storyId, stage: 'S00' },
+      })),
+
+      randomStory: () => {
+        const stories = storiesIndex.stories;
+        const idx = Math.floor(Math.random() * stories.length);
+        const storyId = stories[idx].id;
+        set((s) => ({
+          state: { ...s.state, storyId, stage: 'S00' },
+        }));
+      },
+
+      getStoryData: () => {
+        const s = get().state;
+        return getStoryData(s.storyId);
+      },
+
       // ---- 阶段流转 ----
       setStage: (stage) => set((s) => ({
         state: { ...s.state, stage },
@@ -106,9 +144,9 @@ export const useGameStore = create<GameStore>()(
       })),
 
       selectPath: (pathId) => set((s) => {
-        // 根据路线从 stages.json 查找对应的初始属性
-        const stagesData = require('@/data/stages.json');
-        const identity = stagesData.S02.identityOptions.find((o: { id: string }) => o.id === pathId);
+        // 根据路线从当前故事数据查找对应的初始属性
+        const stagesData = getStoryData(s.state.storyId) as Record<string, { identityOptions?: Array<{ id: string; stats: Record<string, number> }> }>;
+        const identity = stagesData.S02?.identityOptions?.find((o) => o.id === pathId);
         const stats = identity?.stats || {};
         return {
           state: {
@@ -154,10 +192,12 @@ export const useGameStore = create<GameStore>()(
       })),
 
       advanceTutorial: () => set((s) => {
-        const stagesData = require('@/data/stages.json');
+        interface TutorialEffect { stat: string; delta: number; type?: string; rent?: number; reason?: string }
+        interface TutorialScript { day: number; text: string; effects?: TutorialEffect[]; spotlight?: { key: string; tip: string } }
+        const stagesData = getStoryData(s.state.storyId) as Record<string, { tutorialByPath?: Record<string, { script: TutorialScript[] }> }>;
         const pathId = s.state.pathId || 'A';
-        const tutorial = stagesData.S05.tutorialByPath[pathId];
-        const script = tutorial?.script || [];
+        const tutorial = stagesData.S05?.tutorialByPath?.[pathId];
+        const script: TutorialScript[] = tutorial?.script || [];
         const nextStep = s.state.tutorialStep + 1;
 
         // 应用当前步骤的效果
@@ -170,7 +210,7 @@ export const useGameStore = create<GameStore>()(
             else if (eff.stat === 'health') newState.attributes = { ...newState.attributes, health: clamp(newState.attributes.health + eff.delta, 0, 100) };
             else if (eff.stat === 'san') newState.attributes = { ...newState.attributes, san: clamp(newState.attributes.san + eff.delta, 0, 100) };
             else if (eff.stat === 'housing') {
-              newState.housing = { type: eff.type, rent: eff.rent };
+              newState.housing = { type: eff.type || '', rent: eff.rent || 0 };
             }
           }
         }
@@ -229,7 +269,7 @@ export const useGameStore = create<GameStore>()(
       executeBehavior: (actionId) => {
         const s = get().state;
         const action = getBehaviorById(actionId);
-        if (!action) return { success: false, error: '行为不存在' };
+        if (!action) return { success: false, error: '该行动不存在' };
 
         const check = checkBehaviorExecutable(action, s);
         if (!check.canExecute) return { success: false, error: check.reasons.join('; ') };
@@ -259,7 +299,7 @@ export const useGameStore = create<GameStore>()(
               s.money += val;
               if (val > 0) s.roundFinancials.income += val;
               else s.roundFinancials.expense += Math.abs(val);
-              effectSummary.push(`金钱${val >= 0 ? '+' : ''}${val}`);
+              effectSummary.push(`资金${val >= 0 ? '+' : ''}${val}`);
             } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
               const maxVal = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
               (s.attributes as unknown as Record<string, number>)[key] = clamp(
@@ -267,7 +307,7 @@ export const useGameStore = create<GameStore>()(
                 0,
                 maxVal
               );
-              const names: Record<string, string> = { health: '健康', san: 'SAN', credit: '信用', luck: '幸运' };
+              const names: Record<string, string> = { health: '体力', san: 'SAN', credit: '评分', luck: '运势' };
               effectSummary.push(`${names[key]}${val >= 0 ? '+' : ''}${val}`);
             }
           }
@@ -276,13 +316,13 @@ export const useGameStore = create<GameStore>()(
         // 应用setCreditTo
         if (action.setCreditTo !== undefined) {
           s.attributes.credit = action.setCreditTo;
-          effectSummary.push(`信用重置为${action.setCreditTo}`);
+          effectSummary.push(`信用评分重置为${action.setCreditTo}`);
         }
 
         // 应用clearAllDebuffs
         if (action.clearAllDebuffs) {
           s.activeDebuffs = [];
-          effectSummary.push('清除所有负面效果');
+          effectSummary.push('移除全部负面状态');
         }
 
         // 应用debuff
@@ -300,7 +340,7 @@ export const useGameStore = create<GameStore>()(
                 canClearEarly: defData.canClearEarly,
                 clearCost: defData.clearCost || 0,
               });
-              effectSummary.push(`获得[${defData.name}]`);
+              effectSummary.push(`触发[${defData.name}]`);
             }
           }
         }
@@ -316,7 +356,7 @@ export const useGameStore = create<GameStore>()(
               effect: buffData.effect as unknown as Record<string, number>,
               remainingDuration: action.buff.duration || buffData.duration,
             });
-            effectSummary.push(`获得[${buffData.name}]`);
+            effectSummary.push(`激活[${buffData.name}]`);
           }
         }
 
@@ -369,14 +409,14 @@ export const useGameStore = create<GameStore>()(
 
         // 添加结算日志
         const summaryParts: string[] = [];
-        if (result.rentPaid > 0) summaryParts.push(`房租-$${result.rentPaid}`);
-        if (result.dietCost > 0) summaryParts.push(`饮食-$${result.dietCost}`);
+        if (result.rentPaid > 0) summaryParts.push(`租金-$${result.rentPaid}`);
+        if (result.dietCost > 0) summaryParts.push(`伙食-$${result.dietCost}`);
         result.debuffEffects.forEach(e => summaryParts.push(e));
-        result.buffExpired.forEach(name => summaryParts.push(`${name}效果消失`));
+        result.buffExpired.forEach(name => summaryParts.push(`${name}已失效`));
 
         const feedEntry: FeedEntry = {
           id: uid(),
-          text: `【月度结算】${summaryParts.join(' | ')}`,
+          text: `【本月结算】${summaryParts.join(' | ')}`,
           kind: 'system',
           timestamp: Date.now(),
         };
@@ -410,7 +450,7 @@ export const useGameStore = create<GameStore>()(
       switchHousing: (level) => {
         const s = get().state;
         const housingData = constantsData.housing[level as keyof typeof constantsData.housing];
-        if (!housingData) return { success: false, error: '住宅类型不存在' };
+        if (!housingData) return { success: false, error: '该住所类型不存在' };
 
         s.housingLevel = level;
         s.housing = { type: housingData.name, rent: housingData.cost };
@@ -418,7 +458,7 @@ export const useGameStore = create<GameStore>()(
 
         const feedEntry: FeedEntry = {
           id: uid(),
-          text: `更换住所：${housingData.name}（$${housingData.cost}/月）`,
+          text: `搬迁至：${housingData.name}（$${housingData.cost}/月）`,
           kind: 'log',
           timestamp: Date.now(),
         };
@@ -458,7 +498,15 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'american-dream-game',
+      version: 2,
       partialize: (state) => ({ state: state.state }),
+      migrate: (persistedState: unknown, version: number) => {
+        if (version < 2) {
+          // 旧版存档没有 storyId，直接重置为新游戏
+          return { state: createDefaultState() };
+        }
+        return persistedState;
+      },
     }
   )
 );

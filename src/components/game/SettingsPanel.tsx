@@ -16,13 +16,13 @@ export function SettingsPanel() {
           onClick={() => setTab('housing')}
           className={`px-3 py-1.5 rounded text-xs ${tab === 'housing' ? 'bg-gray-700 text-white' : 'text-gray-500'}`}
         >
-          🏠 住房
+          🏠 住所
         </button>
         <button
           onClick={() => setTab('diet')}
           className={`px-3 py-1.5 rounded text-xs ${tab === 'diet' ? 'bg-gray-700 text-white' : 'text-gray-500'}`}
         >
-          🍜 饮食
+          🍜 伙食
         </button>
       </div>
 
@@ -88,7 +88,7 @@ export function SettingsPanel() {
                   <div className="text-right">
                     <div className="text-white text-sm font-mono">${data.moneyCost}/月</div>
                     <div className={`text-xs ${data.healthChange > 0 ? 'text-green-400' : data.healthChange < 0 ? 'text-red-400' : 'text-gray-500'}`}>
-                      健康 {data.healthChange > 0 ? '+' : ''}{data.healthChange}/月
+                      体力 {data.healthChange > 0 ? '+' : ''}{data.healthChange}/月
                     </div>
                   </div>
                 </div>

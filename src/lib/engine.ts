@@ -200,10 +200,10 @@ export interface KillLineResult {
 
 export function checkKillLines(state: GameState): KillLineResult | null {
   if (state.attributes.health <= 0) {
-    return { triggered: true, type: 'health', reason: '身体机能衰竭，你倒下了。' };
+    return { triggered: true, type: 'health', reason: '你的身体终于罢工了。那些年透支的健康一次性来讨债。' };
   }
   if (state.attributes.san <= 0) {
-    return { triggered: true, type: 'sanity', reason: '精神崩溃，你失去了对现实的感知。' };
+    return { triggered: true, type: 'sanity', reason: '脑子里那根弦断了。你再也分不清梦境和现实。' };
   }
   return null;
 }
@@ -241,9 +241,9 @@ export function executeSettlement(state: GameState): SettlementResult {
       result.rentPaid = rent;
       result.moneyChange -= rent;
     } else {
-      // 交不起房租，降级为流浪
+      // 付不起房租，降级为露宿
       state.housingLevel = '1';
-      state.housing = { type: '流浪', rent: 0 };
+      state.housing = { type: '睡大街', rent: 0 };
     }
   }
 
@@ -271,11 +271,11 @@ export function executeSettlement(state: GameState): SettlementResult {
     if (effect.healthPerRound) {
       state.attributes.health = clamp(state.attributes.health + effect.healthPerRound, 0, 100);
       result.healthChange += effect.healthPerRound;
-      result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 健康${effect.healthPerRound}`);
+      result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 体力${effect.healthPerRound}`);
     }
     if (effect.creditPerRound) {
       state.attributes.credit += effect.creditPerRound;
-      result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 信用${effect.creditPerRound}`);
+      result.debuffEffects.push(`${debuff.icon} ${debuff.name}: 评分${effect.creditPerRound}`);
     }
     debuff.remainingDuration -= 1;
     if (debuff.remainingDuration > 0) {
@@ -319,12 +319,12 @@ export function executeSettlement(state: GameState): SettlementResult {
 
 // ============ 年份阶段文本 ============
 export function getYearPhaseText(month: number): string {
-  if (month <= 12) return '第一年：混乱期（The Chaos）';
-  if (month <= 24) return '第二年：崛起期（The Rise）';
-  if (month <= 36) return '第三年：巅峰期（The Peak）';
-  if (month <= 48) return '第四年：帝国期（The Empire）';
-  if (month <= 60) return '第五年：统治期（The Dominion）';
-  return `第${Math.ceil(month / 12)}年：永恒传奇（The Eternal Legacy）`;
+  if (month <= 12) return '第一年：苟活（Survival Mode）';
+  if (month <= 24) return '第二年：挣扎（Breaking Ground）';
+  if (month <= 36) return '第三年：爬坡（Climbing Up）';
+  if (month <= 48) return '第四年：撕开裂缝（Tearing Through）';
+  if (month <= 60) return '第五年：站上去（Reaching The Top）';
+  return `第${Math.ceil(month / 12)}年：传奇（Legend）`;
 }
 
 export function getRoundTitle(round: number): string {

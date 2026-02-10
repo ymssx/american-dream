@@ -1,7 +1,7 @@
 // 游戏核心类型定义
 
 /** 游戏阶段 */
-export type GameStage = 'S00' | 'S01' | 'S02' | 'S02b' | 'S03' | 'S04' | 'S05' | 'GAME' | 'DEATH' | 'ENDING';
+export type GameStage = 'STORY_SELECT' | 'S00' | 'S01' | 'S02' | 'S02b' | 'S03' | 'S04' | 'S05' | 'GAME' | 'DEATH' | 'ENDING';
 
 /** 身份路线 */
 export type PathId = 'A' | 'B' | 'C' | 'D';
@@ -64,6 +64,7 @@ export interface FeedEntry {
 export interface GameState {
   // 基础阶段
   stage: GameStage;
+  storyId: string | null;  // 当前故事ID
   pathId: PathId | null;
   difficulty: Difficulty;
 

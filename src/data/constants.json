@@ -6,19 +6,19 @@
     "easy":   { "health": 100, "san": 100, "money": 3000,  "credit": 660 }
   },
   "housing": {
-    "1": { "sanMax": 100, "cost": 0,     "name": "流浪",     "description": "睡桥洞、公园长椅" },
-    "2": { "sanMax": 110, "cost": 1600,  "name": "床位",     "description": "唐人街老楼的单人床位" },
-    "3": { "sanMax": 130, "cost": 4500,  "name": "独间公寓", "description": "一个属于自己的小单间" },
-    "4": { "sanMax": 160, "cost": 12000, "name": "豪华公寓", "description": "曼哈顿高层公寓，落地窗看城市天际线" },
-    "5": { "sanMax": 200, "cost": 35000, "name": "联排别墅", "description": "郊区大House，有花园和车库" },
-    "6": { "sanMax": 250, "cost": 80000, "name": "海景豪宅", "description": "Malibu海滨豪宅，无边泳池，私人沙滩" }
+    "1": { "sanMax": 100, "cost": 0,     "name": "睡大街",     "description": "天桥底下、地铁通风口、公园长凳" },
+    "2": { "sanMax": 110, "cost": 1600,  "name": "地下室床位", "description": "六人间的铁架子床，窗户开在天花板高度" },
+    "3": { "sanMax": 130, "cost": 4500,  "name": "独立单间",   "description": "虽然只有十几平米但至少有一扇能关上的门" },
+    "4": { "sanMax": 160, "cost": 12000, "name": "正经公寓",   "description": "有客厅有厨房有阳台，像个正常人住的地方" },
+    "5": { "sanMax": 200, "cost": 35000, "name": "郊区独栋",   "description": "带草坪和车库的House，白色栅栏美国梦标配" },
+    "6": { "sanMax": 250, "cost": 80000, "name": "海景豪宅",   "description": "马里布山崖上的玻璃房子，落地窗外就是太平洋" }
   },
   "diet": {
-    "1": { "sanCost": 10, "healthChange": -10, "moneyCost": 200,  "name": "省吃俭用", "description": "以泡面和便宜食物为主" },
-    "2": { "sanCost": 9,  "healthChange": 0,   "moneyCost": 400,  "name": "正常饮食", "description": "保证基本营养" },
-    "3": { "sanCost": 8,  "healthChange": 10,  "moneyCost": 600,  "name": "注重健康", "description": "营养均衡，适度改善" },
-    "4": { "sanCost": 5,  "healthChange": 25,  "moneyCost": 2000, "name": "私人厨师", "description": "米其林大厨定制营养餐，有机食材空运" },
-    "5": { "sanCost": 3,  "healthChange": 40,  "moneyCost": 5000, "name": "顶级养生", "description": "私人营养师+顶级食材，活到120岁的饮食方案" }
+    "1": { "sanCost": 10, "healthChange": -10, "moneyCost": 200,  "name": "垃圾食品", "description": "一美元菜单和便利店微波炉食品" },
+    "2": { "sanCost": 9,  "healthChange": 0,   "moneyCost": 400,  "name": "勉强温饱", "description": "超市打折区的面包牛奶加罐头" },
+    "3": { "sanCost": 8,  "healthChange": 10,  "moneyCost": 600,  "name": "正常饮食", "description": "自己做饭，注意营养搭配" },
+    "4": { "sanCost": 5,  "healthChange": 25,  "moneyCost": 2000, "name": "精致餐食", "description": "Whole Foods有机食材加偶尔的外出就餐" },
+    "5": { "sanCost": 3,  "healthChange": 40,  "moneyCost": 5000, "name": "顶级膳食", "description": "私人营养师定制方案，牛排三文鱼管够" }
   },
   "monsterDamage": {
     "1": 110, "2": 115, "3": 95, "4": 120, "5": 95, "6": 110,
@@ -31,17 +31,17 @@
     "sanityBright": 60,
     "sanityLow": 30,
     "roundTitles": {
-      "1": "初来乍到", "2": "站稳脚跟", "3": "工作节奏", "4": "社交网络",
-      "5": "第一道坎", "6": "积累期", "7": "抉择时刻", "8": "中期考验",
-      "9": "压力升级", "10": "逆风翻盘", "11": "新的开始", "12": "扎根美国",
-      "13": "阶层跃迁", "14": "资本积累", "15": "投资帝国", "16": "社会名流",
-      "17": "政治捐款", "18": "慈善晚宴", "19": "家族基业", "20": "美国贵族",
-      "21": "跨国布局", "22": "影响力", "23": "传承之路", "24": "永恒遗产"
+      "1": "落脚", "2": "扎根", "3": "磨合", "4": "找路",
+      "5": "撞墙", "6": "熬过去", "7": "分水岭", "8": "瓶颈期",
+      "9": "绝境", "10": "翻身仗", "11": "新局面", "12": "站稳了",
+      "13": "向上爬", "14": "攒家底", "15": "布棋盘", "16": "换圈子",
+      "17": "打通关系", "18": "回馈社会", "19": "立根基", "20": "金字塔尖",
+      "21": "全球视野", "22": "版图扩张", "23": "传承", "24": "封神"
     }
   },
   "killLines": {
-    "health": { "threshold": 0, "label": "健康归零", "deathType": "health" },
-    "san":    { "threshold": 0, "label": "精神崩溃", "deathType": "sanity" },
-    "money":  { "threshold": -99999, "label": "破产", "deathType": "bankrupt" }
+    "health": { "threshold": 0, "label": "身体报废", "deathType": "health" },
+    "san":    { "threshold": 0, "label": "精神失控", "deathType": "sanity" },
+    "money":  { "threshold": -99999, "label": "彻底归零", "deathType": "bankrupt" }
   }
 }

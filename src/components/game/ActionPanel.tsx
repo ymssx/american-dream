@@ -29,9 +29,9 @@ export function ActionPanel() {
   if (state.roundPhase === 'result') {
     return (
       <div className="p-6 text-center">
-        <h3 className="text-xl font-bold text-white mb-4">📊 月度结算完成</h3>
+        <h3 className="text-xl font-bold text-white mb-4">📊 本月报告</h3>
         <div className="bg-gray-900 rounded-xl p-4 mb-4 text-left">
-          <p className="text-gray-400 text-sm mb-2">本月完成了 {state.roundBehaviors.length} 个行为</p>
+          <p className="text-gray-400 text-sm mb-2">本月执行了 {state.roundBehaviors.length} 个行动</p>
           <div className="flex flex-wrap gap-2">
             {state.roundBehaviors.map((b, i) => (
               <span key={i} className="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">
@@ -40,7 +40,7 @@ export function ActionPanel() {
             ))}
           </div>
           <div className="mt-3 text-sm text-gray-400">
-            <span className="text-green-400">收入 +${state.roundFinancials.income.toLocaleString()}</span>
+            <span className="text-green-400">进账 +${state.roundFinancials.income.toLocaleString()}</span>
             {' | '}
             <span className="text-red-400">支出 -${state.roundFinancials.expense.toLocaleString()}</span>
           </div>
@@ -107,7 +107,7 @@ export function ActionPanel() {
       {/* 行为列表 */}
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-3">
         {categoryBehaviors.length === 0 ? (
-          <div className="text-gray-600 text-center py-8">该类别暂无可用行为</div>
+          <div className="text-gray-600 text-center py-8">该类别暂无可用行动</div>
         ) : (
           categoryBehaviors.map((action) => (
             <ActionCard key={action.id} action={action} onExecute={handleExecute} san={state.attributes.san} />
@@ -119,7 +119,7 @@ export function ActionPanel() {
       <div className="p-4 border-t border-gray-800 bg-gray-900/80">
         <div className="flex gap-3">
           <div className="flex-1 text-xs text-gray-500">
-            SAN: {state.attributes.san}/{state.maxSan} · 已完成 {state.roundBehaviors.length} 个行为
+            SAN: {state.attributes.san}/{state.maxSan} · 已执行 {state.roundBehaviors.length} 个行动
           </div>
           <button
             onClick={() => endRound()}
@@ -139,10 +139,10 @@ function ActionCard({ action, onExecute, san }: {
   san: number;
 }) {
   const typeLabels: Record<string, { text: string; color: string }> = {
-    fixed: { text: '固定', color: 'text-green-400' },
+    fixed: { text: '确定', color: 'text-green-400' },
     random: { text: '概率', color: 'text-yellow-400' },
-    risky: { text: '风险', color: 'text-orange-400' },
-    lottery: { text: '赌博', color: 'text-red-400' },
+    risky: { text: '冒险', color: 'text-orange-400' },
+    lottery: { text: '博彩', color: 'text-red-400' },
   };
 
   const typeInfo = typeLabels[action.type] || { text: action.type, color: 'text-gray-400' };

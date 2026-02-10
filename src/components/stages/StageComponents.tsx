@@ -1,12 +1,12 @@
 'use client';
 
 import { useGameStore } from '@/store/gameStore';
-import stagesData from '@/data/stages.json';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /** S00 - 压抑的现实（逐行打字机） */
 export function StageS00() {
-  const { state, nextS00Line, setStage } = useGameStore();
+  const { state, nextS00Line, setStage, getStoryData } = useGameStore();
+  const stagesData = getStoryData() as Record<string, { title?: string; lines: string[]; cta: string }>;
   const stage = stagesData.S00;
   const idx = state.bgLineIdx;
   const lines = stage.lines;
@@ -46,7 +46,7 @@ export function StageS00() {
         onClick={nextS00Line}
         className="mt-8 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-all text-sm"
       >
-        继续
+        下一步
       </button>
       <div className="mt-4 flex gap-1">
         {lines.map((_, i) => (
@@ -59,7 +59,8 @@ export function StageS00() {
 
 /** S01 - 起点 */
 export function StageS01() {
-  const { setStage } = useGameStore();
+  const { setStage, getStoryData } = useGameStore();
+  const stagesData = getStoryData() as Record<string, { mainText: string; button: string; lines: Array<{ text: string }> }>;
   const stage = stagesData.S01;
 
   return (
@@ -99,7 +100,8 @@ export function StageS01() {
 
 /** S02 - 身份选择 */
 export function StageS02() {
-  const { selectPath, setStage } = useGameStore();
+  const { selectPath, setStage, getStoryData } = useGameStore();
+  const stagesData = getStoryData() as Record<string, { title: string; desc: string; identityOptions: Array<{ id: string; name: string; desc: string; stats: { money: number; health: number; san: number; credit: number } }> }>;
   const stage = stagesData.S02;
 
   const handleSelect = (id: string) => {
@@ -146,7 +148,8 @@ export function StageS02() {
 
 /** S02b - 斩杀线叙事 */
 export function StageS02b() {
-  const { state, nextS02bScene, setStage } = useGameStore();
+  const { state, nextS02bScene, setStage, getStoryData } = useGameStore();
+  const stagesData = getStoryData() as Record<string, { scenes: Array<{ scene: string; monologue: string }> }>;
   const stage = stagesData.S02b;
   const idx = state.s02bSceneIdx;
   const scenes = stage.scenes;
@@ -158,7 +161,7 @@ export function StageS02b() {
           onClick={() => setStage('S03')}
           className="px-8 py-4 text-xl bg-red-700 hover:bg-red-600 text-white rounded-lg"
         >
-          继续
+          下一步
         </button>
       </div>
     );
@@ -186,7 +189,7 @@ export function StageS02b() {
         onClick={nextS02bScene}
         className="mt-10 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm"
       >
-        继续 ({idx + 1}/{scenes.length})
+        下一步 ({idx + 1}/{scenes.length})
       </button>
     </div>
   );
@@ -194,11 +197,12 @@ export function StageS02b() {
 
 /** S03 - 入境 */
 export function StageS03() {
-  const { state, setStage } = useGameStore();
+  const { state, setStage, getStoryData } = useGameStore();
+  const stagesData = getStoryData() as Record<string, { title: string; byPath: Record<string, { button: string; lines: Array<{ day: string; text: string }> }> }>;
   const stage = stagesData.S03;
   const pathData = stage.byPath[state.pathId as keyof typeof stage.byPath];
 
-  if (!pathData) return <div className="min-h-screen bg-black flex items-center justify-center text-white">路线数据加载中...</div>;
+  if (!pathData) return <div className="min-h-screen bg-black flex items-center justify-center text-white">数据加载中...</div>;
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
@@ -238,7 +242,8 @@ export function StageS03() {
 
 /** S04 - 落地即归零 */
 export function StageS04() {
-  const { state, setStage } = useGameStore();
+  const { state, setStage, getStoryData } = useGameStore();
+  const stagesData = getStoryData() as Record<string, { byPath: Record<string, { scene: string; monologue: string }> }>;
   const stage = stagesData.S04;
   const pathData = stage.byPath[state.pathId as keyof typeof stage.byPath];
 
@@ -259,17 +264,18 @@ export function StageS04() {
           onClick={() => setStage('S05')}
           className="px-8 py-4 bg-red-700 hover:bg-red-600 text-white rounded-lg"
         >
-          继续
+          下一步
         </button>
       </motion.div>
     </div>
   );
 }
 
+/** S04
 /** S05 - 强制教程 */
 export function StageS05() {
-  const { state, advanceTutorial } = useGameStore();
-  const stagesDataImport = stagesData as Record<string, unknown>;
+  const { state, advanceTutorial, getStoryData } = useGameStore();
+  const stagesDataImport = getStoryData();
   const stage = stagesDataImport.S05 as { title: string; desc: string; tutorialByPath: Record<string, { button: string; script: Array<{ day: number; text: string; effects?: Array<{ stat: string; delta?: number; reason?: string }>; spotlight?: { key: string; tip: string } }> }> };
   const pathId = state.pathId || 'A';
   const tutorial = stage.tutorialByPath[pathId];
@@ -279,7 +285,7 @@ export function StageS05() {
   if (step >= script.length) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-white">
-        <p>教程完成，正在进入游戏...</p>
+        <p>开局任务完成，即将进入游戏...</p>
       </div>
     );
   }
@@ -331,7 +337,7 @@ export function StageS05() {
             onClick={advanceTutorial}
             className="px-8 py-3 bg-red-700 hover:bg-red-600 text-white rounded-lg"
           >
-            {step < script.length - 1 ? '继续' : tutorial.button}
+            {step < script.length - 1 ? '下一步' : tutorial.button}
           </button>
         </div>
 

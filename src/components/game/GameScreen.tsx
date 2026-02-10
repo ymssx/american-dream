@@ -21,7 +21,7 @@ export function GameScreen() {
       <div className="flex border-b border-gray-800 bg-gray-900/50">
         {([
           { key: 'action', label: '⚡ 行动', icon: '⚡' },
-          { key: 'log', label: '📜 日志', icon: '📜' },
+          { key: 'log', label: '📜 记录', icon: '📜' },
           { key: 'settings', label: '⚙️ 设置', icon: '⚙️' },
         ] as { key: Tab; label: string; icon: string }[]).map(tab => (
           <button

@@ -9,9 +9,9 @@ export function FeedPanel() {
 
   return (
     <div className="h-full overflow-y-auto px-4 py-3 space-y-2">
-      <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-2">📜 事件日志</h3>
+      <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-2">📜 事件记录</h3>
       {feed.length === 0 ? (
-        <p className="text-gray-600 text-sm">暂无事件...</p>
+        <p className="text-gray-600 text-sm">暂无事件记录...</p>
       ) : (
         feed.map((entry) => {
           const kindStyles: Record<string, string> = {
