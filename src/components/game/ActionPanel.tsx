@@ -13,15 +13,17 @@ export function ActionPanel() {
   const { state, getAvailableBehaviors, executeBehavior, endRound, nextRound, flushDeferredMilestones } = useGameStore();
   const [selectedCategory, setSelectedCategory] = useState<string>('special');
   const [showQuickRest, setShowQuickRest] = useState(false);
-  const [quickRestResults, setQuickRestResults] = useState<Array<{ name: string; icon: string; costText: string; gainText: string }>>([]);
+  const [quickRestResults, setQuickRestResults] = useState<Array<{ id: string; name: string; icon: string; costText: string; gainText: string }>>([]);
   const [quickRestTotals, setQuickRestTotals] = useState<{ totalMoney: number; gains: Record<string, number> }>({ totalMoney: 0, gains: {} });
   const [showQuickEarn, setShowQuickEarn] = useState(false);
-  const [quickEarnResults, setQuickEarnResults] = useState<Array<{ name: string; icon: string; costText: string; gainText: string }>>([]);
+  const [quickEarnResults, setQuickEarnResults] = useState<Array<{ id: string; name: string; icon: string; costText: string; gainText: string }>>([]);
   const [quickEarnTotals, setQuickEarnTotals] = useState<{ totalMoney: number; gains: Record<string, number> }>({ totalMoney: 0, gains: {} });
   const [selectedSubGroup, setSelectedSubGroup] = useState<string>('all');
   const [lastResult, setLastResult] = useState<Record<string, unknown> | null>(null);
   const [executingId, setExecutingId] = useState<string | null>(null);
   const [pendingDangerAction, setPendingDangerAction] = useState<string | null>(null);
+  const [excludedRestIds, setExcludedRestIds] = useState<Set<string>>(new Set());
+  const [excludedEarnIds, setExcludedEarnIds] = useState<Set<string>>(new Set());
 
   const categories = actionsData.categories as Array<{ id: string; name: string; subtitle: string; icon: string; color: string; subGroups?: Array<{ id: string; name: string; icon: string }> }>;
   const behaviors = getAvailableBehaviors();
@@ -193,10 +195,62 @@ export function ActionPanel() {
     setShowQuickRest(true);
   }, [behaviors]);
 
+  const toggleRestExclude = useCallback((id: string) => {
+    setExcludedRestIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleEarnExclude = useCallback((id: string) => {
+    setExcludedEarnIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  // 一键休整：动态计算未排除项的汇总
+  const activeRestResults = quickRestResults.filter(r => !excludedRestIds.has(r.id));
+  const activeRestTotals = useMemo(() => {
+    let totalMoney = 0;
+    const gains: Record<string, number> = {};
+    for (const item of activeRestResults) {
+      const action = behaviors.find(b => b.id === item.id);
+      if (!action) continue;
+      const moneyCost = action.cost?.money || 0;
+      if (moneyCost > 0) totalMoney += moneyCost;
+      const actionGains = action.gain || {};
+      for (const [k, v] of Object.entries(actionGains)) {
+        if (typeof v === 'number' && v > 0) gains[k] = (gains[k] || 0) + v;
+      }
+    }
+    return { totalMoney, gains };
+  }, [activeRestResults, behaviors]);
+
+  // 一键搞钱：动态计算未排除项的汇总
+  const activeEarnResults = quickEarnResults.filter(r => !excludedEarnIds.has(r.id));
+  const activeEarnTotals = useMemo(() => {
+    let totalMoney = 0;
+    const gains: Record<string, number> = {};
+    for (const item of activeEarnResults) {
+      const action = behaviors.find(b => b.id === item.id);
+      if (!action) continue;
+      const moneyCost = action.cost?.money || 0;
+      if (moneyCost > 0) totalMoney += moneyCost;
+      const actionGains = action.gain || {};
+      for (const [k, v] of Object.entries(actionGains)) {
+        if (typeof v === 'number' && v > 0) gains[k] = (gains[k] || 0) + v;
+      }
+    }
+    return { totalMoney, gains };
+  }, [activeEarnResults, behaviors]);
+
   const executeQuickRest = useCallback(() => {
-    // 按顺序执行所有可以执行的休整行为
+    // 按顺序执行所有未排除的休整行为
     const restActions = behaviors
-      .filter(b => b.category === 'special' && b.type === 'fixed' && b.canExecute && b.unlocked);
+      .filter(b => b.category === 'special' && b.type === 'fixed' && b.canExecute && b.unlocked && !excludedRestIds.has(b.id));
     const results: string[] = [];
     for (const action of restActions) {
       const result = executeBehavior(action.id);
@@ -205,19 +259,20 @@ export function ActionPanel() {
       }
     }
     setShowQuickRest(false);
+    setExcludedRestIds(new Set());
     if (results.length > 0) {
       setLastResult({
         behavior: { name: '一键休整', icon: '🛋️' },
         narrative: `完成了 ${results.length} 项休整：${results.join('、')}`,
-        effectSummary: Object.entries(quickRestTotals.gains)
+        effectSummary: Object.entries(activeRestTotals.gains)
           .map(([k, v]) => {
             const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
             return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
           }).join(' '),
-        gain: quickRestTotals.gains,
+        gain: activeRestTotals.gains,
       });
     }
-  }, [behaviors, executeBehavior, quickRestTotals]);
+  }, [behaviors, executeBehavior, activeRestTotals, excludedRestIds]);
 
   // ====== 一键搞钱 ======
   // 筛选 earn 分类下 type=fixed、能执行的行为，排除可能致死的
@@ -277,7 +332,7 @@ export function ActionPanel() {
 
   const executeQuickEarn = useCallback(() => {
     const earnActions = behaviors
-      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked)
+      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked && !excludedEarnIds.has(b.id))
       .filter(b => {
         const costHealth = (b.cost as Record<string, number>)?.health || 0;
         const costSan = (b.cost as Record<string, number>)?.san || 0;
@@ -301,19 +356,20 @@ export function ActionPanel() {
       }
     }
     setShowQuickEarn(false);
+    setExcludedEarnIds(new Set());
     if (results.length > 0) {
       setLastResult({
-        behavior: { name: `打了${results.length}份工`, icon: '�' },
-        narrative: `今天干了 ${results.length} 份零工：${results.join('、')}`,        effectSummary: Object.entries(quickEarnTotals.gains)
+        behavior: { name: `打了${results.length}份工`, icon: '💵' },
+        narrative: `今天干了 ${results.length} 份零工：${results.join('、')}`,
+        effectSummary: Object.entries(activeEarnTotals.gains)
           .map(([k, v]) => {
             const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
             return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
           }).join(' '),
-        gain: quickEarnTotals.gains,
+        gain: activeEarnTotals.gains,
       });
     }
-  }, [behaviors, executeBehavior, quickEarnTotals, state.attributes.health, state.attributes.san]);
-
+  }, [behaviors, executeBehavior, activeEarnTotals, excludedEarnIds, state.attributes.health, state.attributes.san]);
   const dismissResult = useCallback(() => {
     setLastResult(null);
     // 操作结果弹窗关闭后，再展示暂存的里程碑
@@ -548,31 +604,43 @@ export function ActionPanel() {
               <div className="text-center mb-4">
                 <span className="text-4xl">🛋️</span>
                 <p className="text-red-300 font-bold text-lg mt-2">一键休整</p>
-                <p className="text-gray-500 text-xs mt-1">以下 {quickRestResults.length} 项休整可以执行</p>
+                <p className="text-gray-500 text-xs mt-1">点击可排除不想做的项目（{activeRestResults.length}/{quickRestResults.length}）</p>
               </div>
 
-              {/* 项目列表 */}
+              {/* 项目列表 - 可切换 */}
               <div className="space-y-2 mb-4 max-h-60 overflow-y-auto">
-                {quickRestResults.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between bg-gray-800/60 rounded-lg px-3 py-2">
-                    <span className="text-white text-sm font-medium">{item.name}</span>
-                    <div className="flex gap-2 text-xs">
-                      <span className="text-red-400">{item.costText}</span>
-                      <span className="text-gray-600">→</span>
-                      <span className="text-green-400">{item.gainText}</span>
+                {quickRestResults.map((item, i) => {
+                  const excluded = excludedRestIds.has(item.id);
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => toggleRestExclude(item.id)}
+                      className={`flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer transition-all ${
+                        excluded ? 'bg-gray-900/40 opacity-40' : 'bg-gray-800/60'
+                      }`}
+                    >
+                      <span className={`text-base flex-shrink-0 transition-transform ${excluded ? 'grayscale' : ''}`}>
+                        {excluded ? '⬜' : '✅'}
+                      </span>
+                      <span className={`text-sm font-medium flex-1 min-w-0 truncate ${excluded ? 'text-gray-500 line-through' : 'text-white'}`}>{item.name}</span>
+                      <div className="flex gap-2 text-xs flex-shrink-0">
+                        <span className="text-red-400">{item.costText}</span>
+                        <span className="text-gray-600">→</span>
+                        <span className="text-green-400">{item.gainText}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              {/* 汇总 */}
+              {/* 汇总 - 动态 */}
               <div className="bg-red-950/30 border border-red-800/40 rounded-lg p-3 mb-4">
-                <p className="text-red-400 text-xs font-bold mb-1">📊 总计</p>
+                <p className="text-red-400 text-xs font-bold mb-1">📊 总计（已选 {activeRestResults.length} 项）</p>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  {quickRestTotals.totalMoney > 0 && (
-                    <span className="text-red-400">花费 💰${quickRestTotals.totalMoney}</span>
+                  {activeRestTotals.totalMoney > 0 && (
+                    <span className="text-red-400">花费 💰${activeRestTotals.totalMoney}</span>
                   )}
-                  {Object.entries(quickRestTotals.gains).map(([k, v]) => {
+                  {Object.entries(activeRestTotals.gains).map(([k, v]) => {
                     const names: Record<string, string> = { health: '❤️体力', san: '🧠SAN', credit: '💳信用', money: '💰资金', skills: '⚡技能', influence: '🌟影响力' };
                     return (
                       <span key={k} className="text-green-400">
@@ -580,22 +648,24 @@ export function ActionPanel() {
                       </span>
                     );
                   })}
+                  {activeRestResults.length === 0 && <span className="text-gray-600">没有选中任何项目</span>}
                 </div>
               </div>
 
               {/* 按钮 */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowQuickRest(false)}
+                  onClick={() => { setShowQuickRest(false); setExcludedRestIds(new Set()); }}
                   className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
                 >
                   取消
                 </button>
                 <button
                   onClick={executeQuickRest}
-                  className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors"
+                  disabled={activeRestResults.length === 0}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-colors ${activeRestResults.length === 0 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-red-800 hover:bg-red-700 text-white'}`}
                 >
-                  🩸 全部执行
+                  🩸 执行 {activeRestResults.length} 项
                 </button>
               </div>
             </motion.div>
@@ -622,29 +692,41 @@ export function ActionPanel() {
             >
               <div className="text-center mb-4">
                 <span className="text-4xl">💵</span>
-                <p className="text-green-300 font-bold text-lg mt-2">打{quickEarnResults.length}份工</p>
-                <p className="text-gray-500 text-xs mt-1">以下零工可以安全执行（不会致死）</p>
+                <p className="text-green-300 font-bold text-lg mt-2">打{activeEarnResults.length}份工</p>
+                <p className="text-gray-500 text-xs mt-1">点击可排除不想做的零工（{activeEarnResults.length}/{quickEarnResults.length}）</p>
               </div>
 
-              {/* 项目列表 */}
+              {/* 项目列表 - 可切换 */}
               <div className="space-y-2 mb-4 max-h-60 overflow-y-auto">
-                {quickEarnResults.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between bg-gray-800/60 rounded-lg px-3 py-2">
-                    <span className="text-white text-sm font-medium">{item.name}</span>
-                    <div className="flex gap-2 text-xs">
-                      <span className="text-red-400">{item.costText}</span>
-                      <span className="text-gray-600">→</span>
-                      <span className="text-green-400">{item.gainText}</span>
+                {quickEarnResults.map((item, i) => {
+                  const excluded = excludedEarnIds.has(item.id);
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => toggleEarnExclude(item.id)}
+                      className={`flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer transition-all ${
+                        excluded ? 'bg-gray-900/40 opacity-40' : 'bg-gray-800/60'
+                      }`}
+                    >
+                      <span className={`text-base flex-shrink-0 transition-transform ${excluded ? 'grayscale' : ''}`}>
+                        {excluded ? '⬜' : '✅'}
+                      </span>
+                      <span className={`text-sm font-medium flex-1 min-w-0 truncate ${excluded ? 'text-gray-500 line-through' : 'text-white'}`}>{item.name}</span>
+                      <div className="flex gap-2 text-xs flex-shrink-0">
+                        <span className="text-red-400">{item.costText}</span>
+                        <span className="text-gray-600">→</span>
+                        <span className="text-green-400">{item.gainText}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              {/* 汇总 */}
+              {/* 汇总 - 动态 */}
               <div className="bg-green-950/30 border border-green-800/40 rounded-lg p-3 mb-4">
-                <p className="text-green-400 text-xs font-bold mb-1">💰 预估收益</p>
+                <p className="text-green-400 text-xs font-bold mb-1">💰 预估收益（已选 {activeEarnResults.length} 份）</p>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  {Object.entries(quickEarnTotals.gains).map(([k, v]) => {
+                  {Object.entries(activeEarnTotals.gains).map(([k, v]) => {
                     const names: Record<string, string> = { health: '❤️体力', san: '🧠SAN', credit: '💳信用', money: '💰资金', skills: '⚡技能', influence: '🌟影响力' };
                     return (
                       <span key={k} className="text-green-400">
@@ -652,25 +734,26 @@ export function ActionPanel() {
                       </span>
                     );
                   })}
+                  {activeEarnResults.length === 0 && <span className="text-gray-600">没有选中任何零工</span>}
                 </div>
               </div>
 
               {/* 按钮 */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowQuickEarn(false)}
+                  onClick={() => { setShowQuickEarn(false); setExcludedEarnIds(new Set()); }}
                   className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
                 >
                   取消
                 </button>
                 <button
                   onClick={executeQuickEarn}
-                  className="flex-1 py-2.5 bg-green-800 hover:bg-green-700 text-white rounded-lg text-sm font-bold transition-colors"
+                  disabled={activeEarnResults.length === 0}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-colors ${activeEarnResults.length === 0 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-green-800 hover:bg-green-700 text-white'}`}
                 >
-                  � 开干！
+                  💵 打{activeEarnResults.length}份工！
                 </button>
-              </div>
-            </motion.div>
+              </div>            </motion.div>
           </motion.div>
         )}
 
