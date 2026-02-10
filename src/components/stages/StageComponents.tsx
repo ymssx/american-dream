@@ -3,6 +3,19 @@
 import { useGameStore } from '@/store/gameStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
+/** 通用跳过按钮 */
+function SkipButton() {
+  const { skipToGame } = useGameStore();
+  return (
+    <button
+      onClick={skipToGame}
+      className="fixed top-4 right-4 z-50 px-3 py-1.5 text-[11px] text-gray-600 hover:text-gray-300 border border-gray-800 hover:border-gray-500 rounded-lg transition-all bg-black/50 backdrop-blur-sm"
+    >
+      ⚡ 跳过剧情
+    </button>
+  );
+}
+
 /** S00 - 压抑的现实（逐行打字机） */
 export function StageS00() {
   const { state, nextS00Line, setStage, getStoryData } = useGameStore();
@@ -30,6 +43,7 @@ export function StageS00() {
 
   return (
     <div className="min-h-screen bg-black text-gray-300 flex flex-col items-center justify-center px-6">
+      <SkipButton />
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}
@@ -65,6 +79,7 @@ export function StageS01() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white flex flex-col items-center justify-center px-6">
+      <SkipButton />
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -111,6 +126,7 @@ export function StageS02() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
+      <SkipButton />
       <div className="max-w-4xl mx-auto">
         <motion.h2
           initial={{ opacity: 0 }}
@@ -171,6 +187,7 @@ export function StageS02b() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+      <SkipButton />
       <AnimatePresence mode="wait">
         <motion.div
           key={idx}
@@ -206,6 +223,7 @@ export function StageS03() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
+      <SkipButton />
       <div className="max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-8 text-gray-400">{stage.title}</h2>
         <div className="space-y-6">
@@ -251,6 +269,7 @@ export function StageS04() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+      <SkipButton />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -294,6 +313,7 @@ export function StageS05() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12 flex flex-col items-center justify-center">
+      <SkipButton />
       <div className="max-w-2xl">
         <h2 className="text-2xl font-bold text-center mb-2">{stage.title}</h2>
         <p className="text-gray-500 text-center mb-8">{stage.desc}</p>

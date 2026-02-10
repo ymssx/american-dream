@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 /** 故事选择界面 */
 export function StorySelect() {
-  const { selectStory, randomStory } = useGameStore();
+  const { selectStory, randomStory, skipToGame } = useGameStore();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const stories = storiesIndex.stories;
 
@@ -113,6 +113,17 @@ export function StorySelect() {
       >
         不同的故事有不同的开场剧情和入境路线，进入游戏后的生存系统通用。
       </motion.p>
+
+      {/* 一键跳过剧情 */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        onClick={skipToGame}
+        className="mt-4 px-6 py-2 text-gray-600 hover:text-gray-400 text-xs border border-gray-800 hover:border-gray-600 rounded-lg transition-all"
+      >
+        ⚡ 跳过剧情，直接开始生存
+      </motion.button>
     </div>
   );
 }

@@ -145,6 +145,9 @@ interface GameStore {
   // 重置
   resetGame: () => void;
 
+  // 跳过剧情直接进入游戏
+  skipToGame: () => void;
+
   // 死亡
   triggerDeath: (type: string, reason: string) => void;
 
@@ -242,6 +245,39 @@ export const useGameStore = create<GameStore>()(
           visibleBehaviorIds: generateVisibleBehaviors(1),
         },
       })),
+
+      // 一键跳过所有剧情，随机角色直接进入游戏
+      skipToGame: () => {
+        const stories = storiesIndex.stories;
+        const storyIdx = Math.floor(Math.random() * stories.length);
+        const storyId = stories[storyIdx].id;
+        const stagesData = getStoryData(storyId) as Record<string, { identityOptions?: Array<{ id: string; stats: Record<string, number> }> }>;
+        const paths: PathId[] = ['A', 'B', 'C', 'D'];
+        const pathId = paths[Math.floor(Math.random() * paths.length)];
+        const identity = stagesData.S02?.identityOptions?.find((o) => o.id === pathId);
+        const stats = identity?.stats || {};
+        set((s) => ({
+          state: {
+            ...s.state,
+            storyId,
+            pathId,
+            money: stats.money ?? s.state.money,
+            attributes: {
+              health: stats.health ?? s.state.attributes.health,
+              san: stats.san ?? s.state.attributes.san,
+              credit: stats.credit ?? s.state.attributes.credit,
+              luck: 50,
+            },
+            stage: 'GAME',
+            currentRound: 1,
+            roundPhase: 'action',
+            tutorialDone: true,
+            roundBehaviors: [],
+            roundFinancials: { income: 0, expense: 0 },
+            visibleBehaviorIds: generateVisibleBehaviors(1),
+          },
+        }));
+      },
 
       advanceTutorial: () => set((s) => {
         interface TutorialEffect { stat: string; delta: number; type?: string; rent?: number; reason?: string }
