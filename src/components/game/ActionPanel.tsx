@@ -223,7 +223,7 @@ export function ActionPanel() {
   // 筛选 earn 分类下 type=fixed、能执行的行为，排除可能致死的
   const prepareQuickEarn = useCallback(() => {
     const earnActions = behaviors
-      .filter(b => b.category === 'earn' && b.type === 'fixed' && b.canExecute && b.unlocked)
+      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked)
       .filter(b => {
         // 排除可能致死的行为
         const costHealth = (b.cost as Record<string, number>)?.health || 0;
@@ -277,7 +277,7 @@ export function ActionPanel() {
 
   const executeQuickEarn = useCallback(() => {
     const earnActions = behaviors
-      .filter(b => b.category === 'earn' && b.type === 'fixed' && b.canExecute && b.unlocked)
+      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked)
       .filter(b => {
         const costHealth = (b.cost as Record<string, number>)?.health || 0;
         const costSan = (b.cost as Record<string, number>)?.san || 0;
@@ -303,9 +303,8 @@ export function ActionPanel() {
     setShowQuickEarn(false);
     if (results.length > 0) {
       setLastResult({
-        behavior: { name: '一键搞钱', icon: '💵' },
-        narrative: `完成了 ${results.length} 项工作：${results.join('、')}`,
-        effectSummary: Object.entries(quickEarnTotals.gains)
+        behavior: { name: `打了${results.length}份工`, icon: '�' },
+        narrative: `今天干了 ${results.length} 份零工：${results.join('、')}`,        effectSummary: Object.entries(quickEarnTotals.gains)
           .map(([k, v]) => {
             const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
             return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
@@ -623,8 +622,8 @@ export function ActionPanel() {
             >
               <div className="text-center mb-4">
                 <span className="text-4xl">💵</span>
-                <p className="text-green-300 font-bold text-lg mt-2">一键搞钱</p>
-                <p className="text-gray-500 text-xs mt-1">以下 {quickEarnResults.length} 项工作可以安全执行（不会致死）</p>
+                <p className="text-green-300 font-bold text-lg mt-2">打{quickEarnResults.length}份工</p>
+                <p className="text-gray-500 text-xs mt-1">以下零工可以安全执行（不会致死）</p>
               </div>
 
               {/* 项目列表 */}
@@ -668,7 +667,7 @@ export function ActionPanel() {
                   onClick={executeQuickEarn}
                   className="flex-1 py-2.5 bg-green-800 hover:bg-green-700 text-white rounded-lg text-sm font-bold transition-colors"
                 >
-                  💵 全部搞钱
+                  � 开干！
                 </button>
               </div>
             </motion.div>
@@ -894,7 +893,7 @@ export function ActionPanel() {
           })()}
           {selectedCategory === 'earn' && (() => {
             const earnCount = behaviors.filter(b => {
-              if (b.category !== 'earn' || b.type !== 'fixed' || !b.canExecute || !b.unlocked) return false;
+              if (b.category !== 'earn' || b.subGroup !== 'gig' || b.type !== 'fixed' || !b.canExecute || !b.unlocked) return false;
               const costHealth = (b.cost as Record<string, number>)?.health || 0;
               const costSan = (b.cost as Record<string, number>)?.san || 0;
               if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
@@ -906,13 +905,12 @@ export function ActionPanel() {
                 onClick={prepareQuickEarn}
                 className="px-3 py-1 bg-green-900/60 hover:bg-green-800/80 text-green-300 rounded-lg text-xs font-bold transition-all border border-green-700/50 hover:border-green-600"
               >
-                💵 一键搞钱 ({earnCount})
+                � 打{earnCount}份工
               </button>
-            ) : null;
-          })()}
+            ) : null;          })()}
         </div>
         {subGroups && subGroups.length > 1 && (
-          <div className="flex gap-1 mt-1.5">
+          <div className="flex flex-wrap gap-1 mt-1.5">
             {subGroups.map((sg) => {
               const sgCount = sg.id === 'all'
                 ? behaviors.filter(b => b.category === selectedCategory).length
