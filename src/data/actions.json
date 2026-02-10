@@ -1,0 +1,525 @@
+{
+  "categories": [
+    { "id": "heal", "name": "求医", "subtitle": "看病，但在美国", "icon": "🏥", "color": "#ff6b6b" },
+    { "id": "earn", "name": "搬砖", "subtitle": "一切的依靠", "icon": "🧱", "color": "#2ecc71" },
+    { "id": "healthToMoney", "name": "卖命", "subtitle": "用生命换钱", "icon": "💀", "color": "#e67e22" },
+    { "id": "moneyToHealth", "name": "氪命", "subtitle": "小心账单", "icon": "💎", "color": "#3498db" },
+    { "id": "credit", "name": "借贷", "subtitle": "美国式负债", "icon": "💳", "color": "#9b59b6" },
+    { "id": "gamble", "name": "梭哈", "subtitle": "富贵险中求", "icon": "🎰", "color": "#e74c3c" },
+    { "id": "special", "name": "躺平", "subtitle": "当心触发连招", "icon": "🛋️", "color": "#f1c40f" },
+    { "id": "luxury", "name": "上流", "subtitle": "成为人上人", "icon": "👑", "color": "#DAA520" }
+  ],
+  "actionTypes": {
+    "fixed": { "name": "固定型", "description": "结果确定，无随机" },
+    "random": { "name": "概率型", "description": "多个结果分支，按概率触发" },
+    "risky": { "name": "风险型", "description": "有基础收益，但有概率触发负面效果" },
+    "lottery": { "name": "赌博型", "description": "高风险高回报，可能血本无归" }
+  },
+  "debuffs": [
+    { "id": "creditCardDebt", "name": "信用卡还款", "icon": "💳", "effect": { "moneyPerRound": -300 }, "duration": 4, "canClearEarly": true, "clearCost": 1000 },
+    { "id": "bankLoanDebt", "name": "银行贷款", "icon": "🏦", "effect": { "moneyPerRound": -500 }, "duration": 6, "canClearEarly": true, "clearCost": 2500 },
+    { "id": "lowInterestDebt", "name": "低息贷款", "icon": "🏦", "effect": { "moneyPerRound": -400 }, "duration": 6, "canClearEarly": true, "clearCost": 2000 },
+    { "id": "infected", "name": "感染", "icon": "🤒", "effect": { "healthPerRound": -5 }, "duration": 3, "canClearEarly": true, "clearCost": 1500 },
+    { "id": "socialDeath", "name": "社死", "icon": "😱", "effect": { "creditPerRound": -10 }, "duration": 3, "canClearEarly": false }
+  ],
+  "buffs": [
+    { "id": "insurance", "name": "医疗保险", "icon": "🏥", "effect": { "healthDamageReduction": 0.5 }, "duration": 3 },
+    { "id": "wellRested", "name": "精力充沛", "icon": "😊", "effect": { "sanMaxBonus": 20 }, "duration": 1 },
+    { "id": "lucky", "name": "幸运", "icon": "🍀", "effect": { "luckBonus": 0.1 }, "duration": 2 }
+  ],
+  "actions": {
+    "heal": [
+      {
+        "id": "H01", "name": "沃尔玛过期药", "nameEn": "Walmart Clearance Meds",
+        "category": "heal", "type": "fixed",
+        "description": "清仓区淘宝，过期三个月应该还能吃",
+        "quote": "Best By只是建议，不是命令。",
+        "cost": { "san": 15 },
+        "gain": { "health": 17 },
+        "unlock": { "type": "default" },
+        "tags": ["basic", "cheap"]
+      },
+      {
+        "id": "H02", "name": "去墨西哥买药", "nameEn": "Mexican Pharmacy Run",
+        "category": "heal", "type": "fixed",
+        "description": "跨境医疗，美国人传统艺能",
+        "quote": "同样的药，十分之一的价格，但代价呢？",
+        "cost": { "san": 30 },
+        "gain": { "health": 38 },
+        "unlock": { "type": "default" },
+        "tags": ["basic", "standard"]
+      },
+      {
+        "id": "H03", "name": "急诊室蹭治疗", "nameEn": "ER Dodge",
+        "category": "heal", "type": "random",
+        "description": "50%白嫖成功，50%被识破",
+        "quote": "急诊室不能拒绝病人，但账单会寄来。",
+        "cost": { "san": 30 },
+        "outcomes": [
+          { "chance": 0.5, "gain": { "health": 75 }, "text": "成功了！账单寄到了一个不存在的地址。" },
+          { "chance": 0.5, "gain": { "health": 0, "credit": -20 }, "text": "被识破了。保安请你离开，信用记录留下污点。" }
+        ],
+        "unlock": { "type": "round", "round": 2 },
+        "tags": ["random", "risky"]
+      },
+      {
+        "id": "H04", "name": "GoFundMe众筹", "nameEn": "GoFundMe Campaign",
+        "category": "heal", "type": "random",
+        "description": "社交媒体卖惨，效果看运气",
+        "quote": "你的命值多少取决于故事有多惨。",
+        "cost": { "san": 70 },
+        "outcomes": [
+          { "chance": 0.3, "gain": { "health": 100 }, "text": "你的故事火了！捐款涌入。" },
+          { "chance": 0.5, "gain": { "health": 60, "credit": -5 }, "text": "一般般，筹到了一些。" },
+          { "chance": 0.2, "gain": { "health": 20, "credit": -10 }, "text": "没人关心你。捐款寥寥无几。" }
+        ],
+        "unlock": { "type": "round", "round": 4 },
+        "tags": ["random", "high_cost"]
+      },
+      {
+        "id": "H05", "name": "在读本科黑医", "nameEn": "YouTube Medical School",
+        "category": "heal", "type": "risky",
+        "description": "找在读本科医学生作为练手素材，便宜但毫无从医经验",
+        "quote": "起来吧，手术做完了。咦我剪刀呢？",
+        "cost": { "san": 40 },
+        "baseGain": { "health": 60 },
+        "risk": { "chance": 0.3, "penalty": { "health": -30 }, "debuff": { "id": "infected", "duration": 3 }, "text": "感染了！伤口开始发炎。" },
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["risky", "high_efficiency"]
+      },
+      {
+        "id": "H06", "name": "社区救济站", "nameEn": "Free Clinic",
+        "category": "heal", "type": "fixed",
+        "description": "排队6小时，每局限用3次",
+        "quote": "免费的代价是时间。穷人的时间不值钱。",
+        "cost": { "san": 35 },
+        "gain": { "health": 48, "credit": 5 },
+        "unlock": { "type": "round", "round": 2 },
+        "limit": { "usesPerGame": 3 },
+        "tags": ["limited", "free"]
+      },
+      {
+        "id": "H09", "name": "正规医院", "nameEn": "Public Hospital",
+        "category": "heal", "type": "fixed",
+        "description": "美国正规医院，贵但靠谱。稳定治愈，无风险无副作用。",
+        "quote": "账单到了。你的病治好了，但钱包病了。",
+        "cost": { "san": 15, "money": 12000 },
+        "gain": { "health": 100, "san": 10, "credit": 10 },
+        "unlock": { "type": "default" },
+        "tags": ["reliable", "high_cost"]
+      }
+    ],
+    "earn": [
+      {
+        "id": "E01", "name": "沿街乞讨", "nameEn": "Street Begging",
+        "category": "earn", "type": "fixed",
+        "description": "放下尊严，零成本创收",
+        "quote": "Thank you! God bless you!",
+        "cost": { "san": 30 },
+        "gain": { "money": 2500 },
+        "unlock": { "type": "default" },
+        "tags": ["basic", "gig"]
+      },
+      {
+        "id": "E02", "name": "借车开Uber", "nameEn": "Uber Driver",
+        "category": "earn", "type": "random",
+        "description": "收入看乘客小费，还要小心撞到美式三折叠",
+        "quote": "4.99星司机，4.7以下就封号。",
+        "cost": { "san": 30 },
+        "outcomes": [
+          { "chance": 0.3, "gain": { "money": 5000, "credit": 5 }, "text": "五星好评！大方的小费！" },
+          { "chance": 0.4, "gain": { "money": 2500 }, "text": "普通的一天，普通的收入。" },
+          { "chance": 0.3, "gain": { "money": 500, "credit": -10 }, "text": "乘客投诉你态度差，平台扣了钱。" }
+        ],
+        "unlock": { "type": "round", "round": 2 },
+        "tags": ["random", "gig"]
+      },
+      {
+        "id": "E03", "name": "送外卖DoorDash", "nameEn": "DoorDash Delivery",
+        "category": "earn", "type": "fixed",
+        "description": "零工经济，没有保险没有尊严",
+        "quote": "您的订单正在配送中。配送员正在饿着肚子。",
+        "cost": { "san": 70, "health": 10 },
+        "gain": { "money": 5600, "credit": 10 },
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["high_cost", "health_risk"]
+      },
+      {
+        "id": "E04", "name": "卖血浆", "nameEn": "Plasma Donation",
+        "category": "earn", "type": "fixed",
+        "description": "穷人的ATM机",
+        "quote": "左臂针眼吸毒，右臂针眼赚钱",
+        "cost": { "san": 20, "health": 5 },
+        "gain": { "money": 2200 },
+        "unlock": { "type": "default" },
+        "tags": ["basic", "health_cost"]
+      },
+      {
+        "id": "E07", "name": "仓库扛包", "nameEn": "Amazon Warehouse",
+        "category": "earn", "type": "risky",
+        "description": "高强度体力活，有受伤风险",
+        "quote": "你有15秒完成这个包裹。计时开始。",
+        "cost": { "san": 60, "health": 10 },
+        "baseGain": { "money": 5500 },
+        "risk": { "chance": 0.25, "penalty": { "health": -20 }, "text": "搬货时扭伤了腰。" },
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["risky", "health_risk"]
+      },
+      {
+        "id": "E09", "name": "收废品", "nameEn": "Can Collecting",
+        "category": "earn", "type": "fixed",
+        "description": "翻垃圾桶捡瓶子",
+        "quote": "每个瓶子5美分。我今天捡了200个。",
+        "cost": { "san": 15 },
+        "gain": { "money": 1200, "credit": -3 },
+        "unlock": { "type": "condition", "condition": "money < 500", "conditionText": "金币低于500时解锁" },
+        "tags": ["emergency", "cheap"]
+      },
+      {
+        "id": "E10", "name": "临床试验", "nameEn": "Clinical Trial",
+        "category": "earn", "type": "risky",
+        "description": "用身体换钱，有副作用风险",
+        "quote": "副作用可能包括：头痛、恶心、死亡。",
+        "cost": { "san": 40, "health": 15 },
+        "baseGain": { "money": 5500 },
+        "risk": { "chance": 0.2, "penalty": { "health": -35 }, "text": "严重副作用，身体出了大问题。" },
+        "unlock": { "type": "round", "round": 4 },
+        "tags": ["risky", "health_risk"]
+      },
+      {
+        "id": "EARN_HIGH01", "name": "FAANG高级工程师", "nameEn": "FAANG Senior Engineer",
+        "category": "earn", "type": "fixed",
+        "description": "Google/Meta/Apple，年薪$400K+RSU，硅谷人上人",
+        "quote": "TC or GTFO.",
+        "cost": { "san": 25 },
+        "gain": { "money": 35000, "credit": 8 },
+        "unlock": { "type": "condition", "condition": "money > 30000" },
+        "tags": ["work", "tech", "high-income"]
+      },
+      {
+        "id": "EARN_HIGH03", "name": "做自媒体网红", "nameEn": "Social Media Influencer",
+        "category": "earn", "type": "random",
+        "description": "拍vlog记录美国生活，靠广告和带货赚钱",
+        "quote": "Don't forget to like and subscribe!",
+        "cost": { "san": 15 },
+        "outcomes": [
+          { "chance": 0.1, "gain": { "money": 50000, "san": 30, "credit": 15 }, "text": "你的视频登上了YouTube热门！品牌合作邀约接到手软！" },
+          { "chance": 0.6, "gain": { "money": 8000, "san": 5 }, "text": "粉丝在缓慢增长，收入也在慢慢上来。" },
+          { "chance": 0.3, "gain": { "money": -2000, "san": -30, "credit": -5 }, "text": "一条评论引发了网暴。你被迫关闭了评论区和私信。" }
+        ],
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["work", "creative"]
+      }
+    ],
+    "healthToMoney": [
+      {
+        "id": "HM01", "name": "卖肾", "nameEn": "Sell a Kidney",
+        "category": "healthToMoney", "type": "fixed",
+        "description": "一次性大招",
+        "quote": "你有两个肾，但只需要一个。",
+        "cost": { "san": 50, "health": 80 },
+        "gain": { "money": 10000, "credit": -30 },
+        "unlock": { "type": "round", "round": 9 },
+        "limit": { "usesPerGame": 1 },
+        "tags": ["oneTime", "extreme"]
+      },
+      {
+        "id": "HM02", "name": "高频卖血", "nameEn": "Frequent Plasma",
+        "category": "healthToMoney", "type": "risky",
+        "description": "比普通卖血更频繁，有贫血风险",
+        "quote": "他们说一周只能卖两次。我找了三家。",
+        "cost": { "san": 30, "health": 15 },
+        "baseGain": { "money": 3800 },
+        "risk": { "chance": 0.25, "penalty": { "health": -15 }, "text": "贫血了，头晕眼花。" },
+        "unlock": { "type": "round", "round": 4 },
+        "limit": { "cooldown": 2 },
+        "tags": ["cooldown", "risky"]
+      },
+      {
+        "id": "HM03", "name": "危险工作", "nameEn": "Hazardous Job",
+        "category": "healthToMoney", "type": "risky",
+        "description": "石棉清理、化学品处理",
+        "quote": "他们发了口罩，但没人戴。太热了。",
+        "cost": { "san": 45, "health": 20 },
+        "baseGain": { "money": 5000 },
+        "risk": { "chance": 0.2, "penalty": { "health": -25 }, "text": "接触了有毒物质，身体出问题了。" },
+        "unlock": { "type": "round", "round": 5 },
+        "tags": ["risky", "health_cost"]
+      }
+    ],
+    "moneyToHealth": [
+      {
+        "id": "MH01", "name": "私立医院", "nameEn": "Private Hospital",
+        "category": "moneyToHealth", "type": "fixed",
+        "description": "有钱就是能续命",
+        "quote": "退伍飞行员直升机已待命。",
+        "cost": { "san": 20, "money": 5000 },
+        "gain": { "health": 60, "credit": 5 },
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["expensive", "reliable"]
+      },
+      {
+        "id": "MH03", "name": "健身房", "nameEn": "Gym Membership",
+        "category": "moneyToHealth", "type": "fixed",
+        "description": "办卡容易坚持难",
+        "quote": "我已经连续三个月没去了。",
+        "cost": { "san": 10, "money": 500 },
+        "gain": { "health": 15 },
+        "unlock": { "type": "round", "round": 2 },
+        "tags": ["basic", "cheap"]
+      },
+      {
+        "id": "MH04", "name": "心理咨询", "nameEn": "Therapy",
+        "category": "moneyToHealth", "type": "fixed",
+        "description": "治愈身心",
+        "quote": "200刀一小时，她说：'你感觉怎么样？'",
+        "cost": { "san": 25, "money": 2000 },
+        "gain": { "health": 20, "san": 20 },
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["san_gain", "expensive"]
+      },
+      {
+        "id": "MH06", "name": "买医疗保险", "nameEn": "Health Insurance",
+        "category": "moneyToHealth", "type": "risky",
+        "description": "持续3回合减伤，但可能被拒保",
+        "quote": "月供500，免赔额8000。",
+        "cost": { "san": 10, "money": 2500 },
+        "baseGain": { "credit": 15 },
+        "buff": { "id": "insurance", "duration": 3 },
+        "risk": { "chance": 0.25, "penalty": { "money": -500 }, "text": "很抱歉，您的申请被拒绝了。手续费不退。" },
+        "unlock": { "type": "round", "round": 3 },
+        "tags": ["risky", "buff"]
+      }
+    ],
+    "credit": [
+      {
+        "id": "SP03", "name": "发薪日贷款", "nameEn": "Payday Loan",
+        "category": "credit", "type": "fixed",
+        "description": "高利贷，利滚利的噩梦",
+        "quote": "只要你能按时还款，利息不是问题！",
+        "cost": { "san": 10 },
+        "gain": { "san": 25, "money": 5000 },
+        "unlock": { "type": "default" },
+        "limit": { "usesPerGame": 2 },
+        "tags": ["limited", "support"]
+      },
+      {
+        "id": "CR01", "name": "按时还款", "nameEn": "Pay Bills",
+        "category": "credit", "type": "fixed",
+        "description": "维持信用分的基本操作",
+        "quote": "准时还款是美德。也是活下去的必要条件。",
+        "cost": { "san": 10, "money": 300 },
+        "gain": { "credit": 20 },
+        "unlock": { "type": "round", "round": 2 },
+        "limit": { "cooldown": 1 },
+        "tags": ["basic", "credit_gain"]
+      },
+      {
+        "id": "CR04", "name": "申请信用卡", "nameEn": "New Credit Card",
+        "category": "credit", "type": "fixed",
+        "description": "获得现金，每回合还款300，持续4回合",
+        "quote": "0%利率前12个月！之后29.99%。",
+        "cost": { "san": 15 },
+        "gain": { "money": 2000, "credit": -10 },
+        "debuff": { "id": "creditCardDebt", "duration": 4 },
+        "unlock": { "type": "condition", "condition": "credit >= 580", "conditionText": "信用分580以上可申请" },
+        "tags": ["loan", "debuff"]
+      },
+      {
+        "id": "CR07", "name": "申请破产", "nameEn": "Bankruptcy",
+        "category": "credit", "type": "fixed",
+        "description": "清除所有Debuff，信用归300",
+        "quote": "信用社会的首陀罗",
+        "cost": { "san": 80, "money": 1500 },
+        "gain": {},
+        "setCreditTo": 300,
+        "clearAllDebuffs": true,
+        "unlock": { "type": "round", "round": 10 },
+        "limit": { "usesPerGame": 1 },
+        "tags": ["oneTime", "extreme"]
+      }
+    ],
+    "gamble": [
+      {
+        "id": "G01", "name": "买彩票", "nameEn": "Lottery",
+        "category": "gamble", "type": "lottery",
+        "description": "穷人税，1%爆奖",
+        "quote": "You can't win if you don't play.",
+        "cost": { "san": 5, "money": 100 },
+        "outcomes": [
+          { "chance": 0.99, "gain": { "money": 0 }, "text": "谢谢参与。" },
+          { "chance": 0.01, "gain": { "money": 50000 }, "text": "不可能...你中了！！！" }
+        ],
+        "unlock": { "type": "default" },
+        "tags": ["lottery", "cheap"]
+      },
+      {
+        "id": "G03", "name": "Meme股WSB", "nameEn": "WSB Meme Stocks",
+        "category": "gamble", "type": "lottery",
+        "description": "钻石手还是纸手",
+        "quote": "I'm not a cat. I just like the stock. 🚀💎🙌",
+        "cost": { "san": 30, "money": 2000 },
+        "outcomes": [
+          { "chance": 0.1, "gain": { "money": 8000 }, "text": "🚀 To the moon!!!" },
+          { "chance": 0.3, "gain": { "money": 3000 }, "text": "小赚，见好就收。" },
+          { "chance": 0.3, "gain": { "money": 1000 }, "text": "亏了一点，还好跑得快。" },
+          { "chance": 0.3, "gain": { "money": 0 }, "text": "📉 归零了。钻石手变韭菜。" }
+        ],
+        "unlock": { "type": "round", "round": 5 },
+        "tags": ["lottery", "meme"]
+      },
+      {
+        "id": "G04", "name": "梭哈加密货币", "nameEn": "YOLO Crypto",
+        "category": "gamble", "type": "lottery",
+        "description": "WAGMI还是NGMI",
+        "quote": "这不是投资，这是信仰。",
+        "cost": { "san": 40, "money": 3000 },
+        "outcomes": [
+          { "chance": 0.05, "gain": { "money": 15000 }, "text": "WAGMI!!! 财富自由！" },
+          { "chance": 0.25, "gain": { "money": 5000 }, "text": "赚了一点，落袋为安。" },
+          { "chance": 0.35, "gain": { "money": 1500 }, "text": "小亏，还能接受。" },
+          { "chance": 0.35, "gain": { "money": 0, "credit": -15 }, "text": "NGMI. 归零了。" }
+        ],
+        "unlock": { "type": "round", "round": 7 },
+        "tags": ["lottery", "crypto"]
+      },
+      {
+        "id": "G06", "name": "地下赌场", "nameEn": "Texas Hold'em",
+        "category": "gamble", "type": "lottery",
+        "description": "技术+运气",
+        "quote": "如果你在牌桌上找不到傻子，那傻子就是你。",
+        "cost": { "san": 25, "money": 2000 },
+        "outcomes": [
+          { "chance": 0.15, "gain": { "money": 6000 }, "text": "All in成功！" },
+          { "chance": 0.3, "gain": { "money": 2500 }, "text": "小赚。" },
+          { "chance": 0.25, "gain": { "money": 1000 }, "text": "小亏。" },
+          { "chance": 0.3, "gain": { "money": 0 }, "text": "Bad beat. 清空了。" }
+        ],
+        "unlock": { "type": "round", "round": 6 },
+        "tags": ["lottery", "poker"]
+      }
+    ],
+    "special": [
+      {
+        "id": "SP01", "name": "下水道躺平", "nameEn": "Lie Flat",
+        "category": "special", "type": "fixed",
+        "description": "偶尔会有强酸，身体需要休息，每月能躺一次",
+        "quote": "下一个史莱姆不会是我吧",
+        "cost": { "san": 0 },
+        "gain": { "san": 10, "health": 5, "credit": -25 },
+        "unlock": { "type": "default" },
+        "limit": { "cooldown": 1 },
+        "tags": ["rest", "cooldown"]
+      },
+      {
+        "id": "SP04", "name": "教会救助", "nameEn": "Church Charity",
+        "category": "special", "type": "fixed",
+        "description": "社区教会的免费援助。资源有限，每月只接待一次。",
+        "quote": "上帝保佑你，孩子。",
+        "cost": { "san": 20 },
+        "gain": { "health": 15, "money": 500 },
+        "unlock": { "type": "condition", "condition": "money < 1000", "conditionText": "金币低于1000时解锁" },
+        "limit": { "cooldown": 1 },
+        "tags": ["emergency", "support"]
+      },
+      {
+        "id": "ENT01", "name": "看电影", "nameEn": "Movie Night",
+        "category": "special", "type": "fixed",
+        "description": "买一张电影票，在黑暗中享受两小时的逃离现实",
+        "quote": "至少在电影里，好人总会赢。",
+        "cost": { "money": 800 },
+        "gain": { "san": 25, "health": 10 },
+        "unlock": { "type": "default" },
+        "tags": ["entertainment"]
+      },
+      {
+        "id": "ENT02", "name": "国家公园徒步", "nameEn": "National Park Hiking",
+        "category": "special", "type": "fixed",
+        "description": "花一天时间去国家公园徒步，呼吸新鲜空气，暂时忘掉烦恼",
+        "quote": "大自然不在乎你的签证状态。",
+        "cost": { "money": 1500 },
+        "gain": { "san": 35, "health": 20 },
+        "unlock": { "type": "default" },
+        "tags": ["entertainment", "outdoor"]
+      },
+      {
+        "id": "ENT04", "name": "迪士尼一日游", "nameEn": "Disneyland Day Trip",
+        "category": "special", "type": "fixed",
+        "description": "花大价钱去迪士尼乐园，做一天快乐的普通人",
+        "quote": "排队3小时，玩3分钟。但那3分钟你是真的快乐。",
+        "cost": { "money": 5000 },
+        "gain": { "san": 60, "health": 30 },
+        "unlock": { "type": "round", "round": 2 },
+        "tags": ["entertainment", "luxury"]
+      }
+    ],
+    "luxury": [
+      {
+        "id": "LUX01", "name": "天使投资", "nameEn": "Angel Investment",
+        "category": "luxury", "type": "random",
+        "description": "投资初创公司，押注下一个独角兽",
+        "quote": "硅谷的故事告诉我们，99个失败才换来1个奇迹。",
+        "cost": { "money": 20000, "san": 20 },
+        "outcomes": [
+          { "chance": 0.1, "gain": { "money": 200000, "san": 30, "credit": 15 }, "text": "你投资的公司成功上市了！投资回报率1000%！" },
+          { "chance": 0.4, "gain": { "money": 40000, "san": 10 }, "text": "公司稳步发展，你的投资翻了一倍。" },
+          { "chance": 0.5, "gain": { "san": -30 }, "text": "创始人带着你的钱跑路了。Welcome to Silicon Valley." }
+        ],
+        "unlock": { "type": "condition", "condition": "money > 50000" },
+        "tags": ["investment", "luxury"]
+      },
+      {
+        "id": "LUX03", "name": "开连锁餐厅", "nameEn": "Restaurant Chain",
+        "category": "luxury", "type": "random",
+        "description": "开一家中餐连锁，用味道征服美国人的胃",
+        "quote": "American Dream从一碗麻辣烫开始。",
+        "cost": { "money": 50000, "san": 25 },
+        "outcomes": [
+          { "chance": 0.15, "gain": { "money": 150000, "san": 40, "credit": 20, "health": 10 }, "text": "你的餐厅被TikTok博主推荐了！排队排到街角！" },
+          { "chance": 0.55, "gain": { "money": 30000, "san": 10, "credit": 5 }, "text": "生意还行，足够养活自己和员工。" },
+          { "chance": 0.3, "gain": { "money": -20000, "san": -20, "credit": -10 }, "text": "卫生检查不合格，被勒令停业整改。" }
+        ],
+        "unlock": { "type": "condition", "condition": "money > 80000" },
+        "tags": ["business", "luxury"]
+      },
+      {
+        "id": "LUX04", "name": "买兰博基尼", "nameEn": "Buy a Lamborghini",
+        "category": "luxury", "type": "fixed",
+        "description": "Aventador SVJ，V12发动机的咆哮就是你的BGM",
+        "quote": "当你的车比你的房子贵，你就真的到美国了。",
+        "cost": { "money": 80000, "san": 5 },
+        "gain": { "san": 80, "credit": 25, "health": 15 },
+        "unlock": { "type": "condition", "condition": "money > 100000" },
+        "limit": { "usesPerGame": 1 },
+        "tags": ["luxury", "flex"]
+      },
+      {
+        "id": "LUX06", "name": "开科技公司", "nameEn": "Launch Tech Startup",
+        "category": "luxury", "type": "random",
+        "description": "拿到VC融资，你就是下一个Elon Musk",
+        "quote": "Move fast and break things. Including your bank account.",
+        "cost": { "money": 80000, "san": 30 },
+        "outcomes": [
+          { "chance": 0.05, "gain": { "money": 500000, "san": 50, "credit": 30 }, "text": "NASDAQ敲钟那一刻，你热泪盈眶。从移民到上市公司CEO。" },
+          { "chance": 0.35, "gain": { "money": 200000, "san": 20, "credit": 15 }, "text": "Google出价收购了你的公司。" },
+          { "chance": 0.6, "gain": { "money": -50000, "san": -40, "credit": -15 }, "text": "烧完了所有投资人的钱，产品还没上线。" }
+        ],
+        "unlock": { "type": "condition", "condition": "money > 120000" },
+        "tags": ["business", "luxury", "tech"]
+      },
+      {
+        "id": "LUX10", "name": "竞选市议员", "nameEn": "Run for City Council",
+        "category": "luxury", "type": "random",
+        "description": "从商界跨入政界，用权力改变世界",
+        "quote": "在美国，金钱就是政治的入场券。",
+        "cost": { "money": 150000, "san": 30 },
+        "outcomes": [
+          { "chance": 0.3, "gain": { "money": 50000, "san": 60, "credit": 50 }, "text": "你赢了！从一个移民到市议员。CNN要采访你。这是真正的美国梦。" },
+          { "chance": 0.7, "gain": { "san": -15, "credit": 10 }, "text": "差了200票。但整个竞选过程让你认识了很多人。" }
+        ],
+        "unlock": { "type": "condition", "condition": "credit > 80" },
+        "tags": ["luxury", "politics"]
+      }
+    ]
+  }
+}

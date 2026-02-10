@@ -1,0 +1,47 @@
+{
+  "initialStats": {
+    "hell":   { "health": 50,  "san": 100, "money": 1000,  "credit": 560 },
+    "hard":   { "health": 65,  "san": 100, "money": 1500,  "credit": 580 },
+    "normal": { "health": 80,  "san": 100, "money": 2000,  "credit": 620 },
+    "easy":   { "health": 100, "san": 100, "money": 3000,  "credit": 660 }
+  },
+  "housing": {
+    "1": { "sanMax": 100, "cost": 0,     "name": "流浪",     "description": "睡桥洞、公园长椅" },
+    "2": { "sanMax": 110, "cost": 1600,  "name": "床位",     "description": "唐人街老楼的单人床位" },
+    "3": { "sanMax": 130, "cost": 4500,  "name": "独间公寓", "description": "一个属于自己的小单间" },
+    "4": { "sanMax": 160, "cost": 12000, "name": "豪华公寓", "description": "曼哈顿高层公寓，落地窗看城市天际线" },
+    "5": { "sanMax": 200, "cost": 35000, "name": "联排别墅", "description": "郊区大House，有花园和车库" },
+    "6": { "sanMax": 250, "cost": 80000, "name": "海景豪宅", "description": "Malibu海滨豪宅，无边泳池，私人沙滩" }
+  },
+  "diet": {
+    "1": { "sanCost": 10, "healthChange": -10, "moneyCost": 200,  "name": "省吃俭用", "description": "以泡面和便宜食物为主" },
+    "2": { "sanCost": 9,  "healthChange": 0,   "moneyCost": 400,  "name": "正常饮食", "description": "保证基本营养" },
+    "3": { "sanCost": 8,  "healthChange": 10,  "moneyCost": 600,  "name": "注重健康", "description": "营养均衡，适度改善" },
+    "4": { "sanCost": 5,  "healthChange": 25,  "moneyCost": 2000, "name": "私人厨师", "description": "米其林大厨定制营养餐，有机食材空运" },
+    "5": { "sanCost": 3,  "healthChange": 40,  "moneyCost": 5000, "name": "顶级养生", "description": "私人营养师+顶级食材，活到120岁的饮食方案" }
+  },
+  "monsterDamage": {
+    "1": 110, "2": 115, "3": 95, "4": 120, "5": 95, "6": 110,
+    "7": 130, "8": 120, "9": 100, "10": 120, "11": 120, "12": 125
+  },
+  "creditDecay": -10,
+  "game": { "totalRounds": 9999 },
+  "loopConfig": {
+    "totalRounds": 9999,
+    "sanityBright": 60,
+    "sanityLow": 30,
+    "roundTitles": {
+      "1": "初来乍到", "2": "站稳脚跟", "3": "工作节奏", "4": "社交网络",
+      "5": "第一道坎", "6": "积累期", "7": "抉择时刻", "8": "中期考验",
+      "9": "压力升级", "10": "逆风翻盘", "11": "新的开始", "12": "扎根美国",
+      "13": "阶层跃迁", "14": "资本积累", "15": "投资帝国", "16": "社会名流",
+      "17": "政治捐款", "18": "慈善晚宴", "19": "家族基业", "20": "美国贵族",
+      "21": "跨国布局", "22": "影响力", "23": "传承之路", "24": "永恒遗产"
+    }
+  },
+  "killLines": {
+    "health": { "threshold": 0, "label": "健康归零", "deathType": "health" },
+    "san":    { "threshold": 0, "label": "精神崩溃", "deathType": "sanity" },
+    "money":  { "threshold": -99999, "label": "破产", "deathType": "bankrupt" }
+  }
+}
