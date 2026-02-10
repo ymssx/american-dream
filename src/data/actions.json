@@ -1,5 +1,12 @@
 {
-  "categories": [
+"categories": [
+    {
+      "id": "special",
+      "name": "休整",
+      "subtitle": "苟一天算一天",
+      "icon": "🛋️",
+      "color": "#f1c40f"
+    },
     {
       "id": "earn",
       "name": "搞钱",
@@ -90,13 +97,6 @@
       "subtitle": "数字牢笼",
       "icon": "💳",
       "color": "#9b59b6"
-    },
-    {
-      "id": "special",
-      "name": "休整",
-      "subtitle": "苟一天算一天",
-      "icon": "🛋️",
-      "color": "#f1c40f"
     },
     {
       "id": "luxury",

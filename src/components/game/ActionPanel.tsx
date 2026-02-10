@@ -11,7 +11,10 @@ import { WealthChart } from './WealthChart';
 /** 行为面板 */
 export function ActionPanel() {
   const { state, getAvailableBehaviors, executeBehavior, endRound, nextRound } = useGameStore();
-  const [selectedCategory, setSelectedCategory] = useState<string>('earn');
+  const [selectedCategory, setSelectedCategory] = useState<string>('special');
+  const [showQuickRest, setShowQuickRest] = useState(false);
+  const [quickRestResults, setQuickRestResults] = useState<Array<{ name: string; icon: string; costText: string; gainText: string }>>([]);
+  const [quickRestTotals, setQuickRestTotals] = useState<{ totalMoney: number; gains: Record<string, number> }>({ totalMoney: 0, gains: {} });
   const [selectedSubGroup, setSelectedSubGroup] = useState<string>('all');
   const [lastResult, setLastResult] = useState<Record<string, unknown> | null>(null);
   const [executingId, setExecutingId] = useState<string | null>(null);
@@ -144,6 +147,74 @@ export function ActionPanel() {
   const cancelDangerExecute = useCallback(() => {
     setPendingDangerAction(null);
   }, []);
+
+  // ====== 一键休整 ======
+  // 筛选 special 分类下 type=fixed、能执行的行为，打包预览
+  const prepareQuickRest = useCallback(() => {
+    const restActions = behaviors
+      .filter(b => b.category === 'special' && b.type === 'fixed' && b.canExecute && b.unlocked);
+    if (restActions.length === 0) return;
+
+    const items: Array<{ id: string; name: string; icon: string; costText: string; gainText: string }> = [];
+    let totalMoney = 0;
+    const totalGains: Record<string, number> = {};
+
+    for (const action of restActions) {
+      const moneyCost = action.cost?.money || 0;
+      const sanCost = action.cost?.san || 0;
+      const costParts: string[] = [];
+      if (moneyCost > 0) { costParts.push(`💰$${moneyCost}`); totalMoney += moneyCost; }
+      if (sanCost > 0) costParts.push(`🧠${sanCost}`);
+
+      const gainParts: string[] = [];
+      const gains = action.gain || {};
+      const names: Record<string, string> = { health: '❤️', san: '🧠', credit: '💳', money: '💰', skills: '⚡', influence: '🌟' };
+      for (const [k, v] of Object.entries(gains)) {
+        if (typeof v === 'number' && v > 0) {
+          gainParts.push(`${names[k] || k}+${k === 'money' ? `$${v}` : v}`);
+          totalGains[k] = (totalGains[k] || 0) + v;
+        }
+      }
+
+      items.push({
+        id: action.id,
+        name: action.name,
+        icon: '🛋️',
+        costText: costParts.join(' ') || '免费',
+        gainText: gainParts.join(' ') || '—',
+      });
+    }
+
+    setQuickRestResults(items);
+    setQuickRestTotals({ totalMoney, gains: totalGains });
+    setShowQuickRest(true);
+  }, [behaviors]);
+
+  const executeQuickRest = useCallback(() => {
+    // 按顺序执行所有可以执行的休整行为
+    const restActions = behaviors
+      .filter(b => b.category === 'special' && b.type === 'fixed' && b.canExecute && b.unlocked);
+    const results: string[] = [];
+    for (const action of restActions) {
+      const result = executeBehavior(action.id);
+      if (result.success) {
+        results.push(action.name);
+      }
+    }
+    setShowQuickRest(false);
+    if (results.length > 0) {
+      setLastResult({
+        behavior: { name: '一键休整', icon: '🛋️' },
+        narrative: `完成了 ${results.length} 项休整：${results.join('、')}`,
+        effectSummary: Object.entries(quickRestTotals.gains)
+          .map(([k, v]) => {
+            const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
+            return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
+          }).join(' '),
+        gain: quickRestTotals.gains,
+      });
+    }
+  }, [behaviors, executeBehavior, quickRestTotals]);
 
   const dismissResult = useCallback(() => {
     setLastResult(null);
@@ -355,6 +426,81 @@ export function ActionPanel() {
     <div className="flex flex-col h-full relative">
       {/* 执行结果弹窗 — 醒目的模态遮罩 */}
       <AnimatePresence>
+        {/* 一键休整预览弹窗 */}
+        {showQuickRest && (
+          <motion.div
+            key="quick-rest"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setShowQuickRest(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+              className="w-full max-w-sm rounded-2xl p-5 border border-yellow-700/60 bg-gradient-to-b from-gray-900 to-gray-950 shadow-2xl shadow-yellow-900/20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-4">
+                <span className="text-4xl">🛋️</span>
+                <p className="text-yellow-300 font-bold text-lg mt-2">一键休整</p>
+                <p className="text-gray-500 text-xs mt-1">以下 {quickRestResults.length} 项休整可以执行</p>
+              </div>
+
+              {/* 项目列表 */}
+              <div className="space-y-2 mb-4 max-h-60 overflow-y-auto">
+                {quickRestResults.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between bg-gray-800/60 rounded-lg px-3 py-2">
+                    <span className="text-white text-sm font-medium">{item.name}</span>
+                    <div className="flex gap-2 text-xs">
+                      <span className="text-red-400">{item.costText}</span>
+                      <span className="text-gray-600">→</span>
+                      <span className="text-green-400">{item.gainText}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 汇总 */}
+              <div className="bg-yellow-900/20 border border-yellow-800/40 rounded-lg p-3 mb-4">
+                <p className="text-yellow-400 text-xs font-bold mb-1">📊 总计</p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {quickRestTotals.totalMoney > 0 && (
+                    <span className="text-red-400">花费 💰${quickRestTotals.totalMoney}</span>
+                  )}
+                  {Object.entries(quickRestTotals.gains).map(([k, v]) => {
+                    const names: Record<string, string> = { health: '❤️体力', san: '🧠SAN', credit: '💳信用', money: '💰资金', skills: '⚡技能', influence: '🌟影响力' };
+                    return (
+                      <span key={k} className="text-green-400">
+                        {names[k] || k}+{k === 'money' ? `$${v}` : v}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 按钮 */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowQuickRest(false)}
+                  className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-bold transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={executeQuickRest}
+                  className="flex-1 py-2.5 bg-yellow-700 hover:bg-yellow-600 text-white rounded-lg text-sm font-bold transition-colors"
+                >
+                  🛋️ 全部执行
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* 致命行为确认弹窗 */}
         {pendingDangerAction && (() => {
           const danger = checkDanger(pendingDangerAction);
@@ -536,10 +682,23 @@ export function ActionPanel() {
         })}
       </div>
 
-      {/* 类别描述 + 子分组筛选 */}
+      {/* 类别描述 + 一键休整按钮 + 子分组筛选 */}
       <div className="px-4 py-2">
-        <div className="text-xs text-gray-500">
-          {currentCat?.subtitle}
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-gray-500">
+            {currentCat?.subtitle}
+          </div>
+          {selectedCategory === 'special' && (() => {
+            const restCount = behaviors.filter(b => b.category === 'special' && b.type === 'fixed' && b.canExecute && b.unlocked).length;
+            return restCount > 0 ? (
+              <button
+                onClick={prepareQuickRest}
+                className="px-3 py-1 bg-yellow-800/60 hover:bg-yellow-700/80 text-yellow-300 rounded-lg text-xs font-bold transition-all border border-yellow-700/50 hover:border-yellow-600"
+              >
+                🛋️ 一键休整 ({restCount})
+              </button>
+            ) : null;
+          })()}
         </div>
         {subGroups && subGroups.length > 1 && (
           <div className="flex gap-1 mt-1.5">
