@@ -1,6 +1,6 @@
 // 游戏逻辑引擎 - 行为系统、结算系统、斩杀线检测
 
-import type { ActionData, Attributes, GameState, BehaviorResult, ActiveDebuff, ActiveBuff } from './types';
+import type { ActionData, Attributes, GameState, BehaviorResult, ActiveDebuff, ActiveBuff, RecurringItem } from './types';
 import actionsData from '@/data/actions.json';
 import constantsData from '@/data/constants.json';
 
@@ -137,6 +137,20 @@ export function checkBehaviorExecutable(action: ActionData, state: GameState): {
     reasons.push('已使用过');
   }
 
+  // 检查辞职行为：必须有工作才能辞职
+  const actionAny = action as unknown as Record<string, unknown>;
+  if (actionAny.quitWork) {
+    const hasWork = state.recurringItems.some(r => r.type === 'work');
+    if (!hasWork) reasons.push('你目前没有工作');
+  }
+
+  // 检查工作/投资类行为：如果已有同类型持续项目且来源相同，不能重复
+  if (actionAny.recurring) {
+    const templateId = actionAny.recurring as string;
+    const existing = state.recurringItems.find(r => r.sourceActionId === action.id);
+    if (existing) reasons.push(`已有[${existing.name}]运行中`);
+  }
+
   return { canExecute: reasons.length === 0, reasons };
 }
 
@@ -218,6 +232,10 @@ export interface SettlementResult {
   healthChange: number;
   sanChange: number;
   moneyChange: number;
+  recurringEffects: string[];   // 持续性项目结算日志
+  recurringIncome: number;      // 持续性项目总收入
+  recurringExpense: number;     // 持续性项目总支出
+  lostRecurring: string[];      // 本月失去的持续性项目
   killLine: KillLineResult | null;
 }
 
@@ -231,6 +249,10 @@ export function executeSettlement(state: GameState): SettlementResult {
     healthChange: 0,
     sanChange: 0,
     moneyChange: 0,
+    recurringEffects: [],
+    recurringIncome: 0,
+    recurringExpense: 0,
+    lostRecurring: [],
     killLine: null,
   };
 
@@ -312,8 +334,74 @@ export function executeSettlement(state: GameState): SettlementResult {
     }
   }
 
+  // 5.5 处理持续性项目（工作/投资/借贷）
+  const survivingRecurring: RecurringItem[] = [];
+  for (const item of state.recurringItems) {
+    // 检查是否失去（被裁员/投资失败等）
+    if (item.loseChance > 0 && Math.random() < item.loseChance) {
+      result.lostRecurring.push(`${item.icon} ${item.name}: ${item.loseText}`);
+      continue; // 不保留
+    }
+
+    // 处理月收入/支出
+    if (item.monthlyIncome !== 0) {
+      state.money += item.monthlyIncome;
+      result.moneyChange += item.monthlyIncome;
+      if (item.monthlyIncome > 0) {
+        result.recurringIncome += item.monthlyIncome;
+      } else {
+        result.recurringExpense += Math.abs(item.monthlyIncome);
+      }
+    }
+
+    // 处理健康消耗
+    if (item.monthlyHealthCost > 0) {
+      state.attributes.health = clamp(state.attributes.health - item.monthlyHealthCost, 0, 100);
+      result.healthChange -= item.monthlyHealthCost;
+    }
+
+    // 处理SAN消耗
+    if (item.monthlySanCost > 0) {
+      state.attributes.san = clamp(state.attributes.san - item.monthlySanCost, 0, state.maxSan);
+      result.sanChange -= item.monthlySanCost;
+    }
+
+    // 处理信用变化
+    if (item.monthlyCreditChange !== 0) {
+      state.attributes.credit += item.monthlyCreditChange;
+    }
+
+    // 生成日志
+    const parts: string[] = [];
+    if (item.monthlyIncome > 0) parts.push(`+$${item.monthlyIncome}`);
+    if (item.monthlyIncome < 0) parts.push(`-$${Math.abs(item.monthlyIncome)}`);
+    if (item.monthlyHealthCost > 0) parts.push(`❤️-${item.monthlyHealthCost}`);
+    if (item.monthlySanCost > 0) parts.push(`🧠-${item.monthlySanCost}`);
+    result.recurringEffects.push(`${item.icon} ${item.name}: ${parts.join(' ')}`);
+
+    // 处理剩余月数
+    if (!item.permanent && item.remainingMonths > 0) {
+      item.remainingMonths -= 1;
+      if (item.remainingMonths <= 0) {
+        result.lostRecurring.push(`${item.icon} ${item.name} 已到期`);
+        continue; // 不保留
+      }
+    }
+
+    survivingRecurring.push(item);
+  }
+  state.recurringItems = survivingRecurring;
+
   // 6. 信用自然衰减
   state.attributes.credit += constantsData.creditDecay;
+
+  // 6.5 健康自然衰减（模拟生活压力、缺乏运动、美国饮食环境等）
+  // 基础每月-3，住得越差额外衰减越多（睡大街额外-3，地下室额外-2，独立单间0）
+  const healthDecayBase = -3;
+  const housingHealthPenalty = housingData ? Math.max(0, Math.floor((130 - housingData.sanMax) * 0.1)) : 3;
+  const totalHealthDecay = healthDecayBase - housingHealthPenalty;
+  state.attributes.health = clamp(state.attributes.health + totalHealthDecay, 0, 100);
+  result.healthChange += totalHealthDecay;
 
   // 7. 更新SAN上限（基于住房）并恢复SAN值
   if (housingData) {

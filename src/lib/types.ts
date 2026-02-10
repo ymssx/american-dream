@@ -7,7 +7,7 @@ export type GameStage = 'STORY_SELECT' | 'S00' | 'S01' | 'S02' | 'S02b' | 'S03' 
 export type PathId = 'A' | 'B' | 'C' | 'D';
 
 /** 行为类别 */
-export type ActionCategory = 'heal' | 'earn' | 'healthToMoney' | 'moneyToHealth' | 'credit' | 'gamble' | 'special' | 'luxury';
+export type ActionCategory = 'heal' | 'earn' | 'work' | 'invest' | 'healthToMoney' | 'moneyToHealth' | 'credit' | 'gamble' | 'special' | 'luxury';
 
 /** 行为类型 */
 export type ActionType = 'fixed' | 'random' | 'risky' | 'lottery';
@@ -52,6 +52,28 @@ export interface ActiveBuff {
   remainingDuration: number;
 }
 
+/** 持续性项目（工作、投资、借贷等） */
+export interface RecurringItem {
+  id: string;              // 唯一实例ID
+  sourceActionId: string;  // 来源行为ID
+  type: 'work' | 'invest' | 'loan';  // 项目类型
+  name: string;
+  icon: string;
+  description: string;
+  monthlyIncome: number;   // 每月收入（正数为收入，负数为支出）
+  monthlyHealthCost: number;  // 每月健康消耗
+  monthlySanCost: number;     // 每月SAN消耗
+  monthlyCreditChange: number; // 每月信用变化
+  // 风险
+  loseChance: number;      // 每月失去概率（被裁员/投资失败/等）
+  loseText: string;        // 失去时的文案
+  // 持续时间
+  permanent: boolean;      // 是否永久（工作类）
+  remainingMonths: number; // 剩余月数（投资/借贷类，-1表示永久）
+  // 开始时间
+  startRound: number;
+}
+
 /** 日志条目 */
 export interface FeedEntry {
   id: string;
@@ -87,6 +109,9 @@ export interface GameState {
   // Buff/Debuff
   activeDebuffs: ActiveDebuff[];
   activeBuffs: ActiveBuff[];
+
+  // 持续性项目（工作、投资、借贷）
+  recurringItems: RecurringItem[];
 
   // 行为冷却与限制
   behaviorCooldowns: Record<string, number>;

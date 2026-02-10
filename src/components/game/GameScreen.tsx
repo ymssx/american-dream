@@ -5,8 +5,9 @@ import { StatusBar } from './StatusBar';
 import { ActionPanel } from './ActionPanel';
 import { FeedPanel } from './FeedPanel';
 import { SettingsPanel } from './SettingsPanel';
+import { RecurringPanel } from './RecurringPanel';
 
-type Tab = 'action' | 'log' | 'settings';
+type Tab = 'action' | 'recurring' | 'log' | 'settings';
 
 /** 游戏主界面 */
 export function GameScreen() {
@@ -21,6 +22,7 @@ export function GameScreen() {
       <div className="flex border-b border-gray-800 bg-gray-900/50">
         {([
           { key: 'action', label: '⚡ 行动', icon: '⚡' },
+          { key: 'recurring', label: '💼 持续', icon: '💼' },
           { key: 'log', label: '📜 记录', icon: '📜' },
           { key: 'settings', label: '⚙️ 设置', icon: '⚙️' },
         ] as { key: Tab; label: string; icon: string }[]).map(tab => (
@@ -41,6 +43,7 @@ export function GameScreen() {
       {/* 内容面板 */}
       <div className="flex-1 overflow-hidden">
         {activeTab === 'action' && <ActionPanel />}
+        {activeTab === 'recurring' && <RecurringPanel />}
         {activeTab === 'log' && <FeedPanel />}
         {activeTab === 'settings' && <SettingsPanel />}
       </div>

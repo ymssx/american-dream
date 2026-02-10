@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameState, PathId, Difficulty, FeedEntry, ActionData, ActiveDebuff, ActiveBuff } from '@/lib/types';
+import type { GameState, PathId, Difficulty, FeedEntry, ActionData, ActiveDebuff, ActiveBuff, RecurringItem } from '@/lib/types';
 import {
   clamp, uid, getBehaviorById, getDebuffById, getBuffById,
   checkBehaviorExecutable, resolveBehaviorOutcome,
@@ -45,6 +45,7 @@ function createDefaultState(): GameState {
     behaviorCooldowns: {},
     behaviorUseCount: {},
     usedOneTimeBehaviors: [],
+    recurringItems: [],
     tutorialStep: 0,
     tutorialDone: false,
     bgLineIdx: 0,
@@ -93,6 +94,9 @@ interface GameStore {
   // 住房/饮食
   switchHousing: (level: string) => { success: boolean; error?: string };
   switchDiet: (level: string) => void;
+
+  // 持续性项目
+  removeRecurringItem: (itemId: string) => void;
 
   // 日志
   pushFeed: (text: string, kind?: FeedEntry['kind']) => void;
@@ -380,6 +384,55 @@ export const useGameStore = create<GameStore>()(
         s.feed.push(feedEntry);
         s.fullGameLog.push(feedEntry);
 
+        // 处理持续性项目（工作/投资）
+        const actionAny = action as unknown as Record<string, unknown>;
+        if (actionAny.recurring && outcome.success) {
+          const templateId = actionAny.recurring as string;
+          const templates = (actionsData as unknown as Record<string, Record<string, unknown>>).recurringTemplates as Record<string, Record<string, unknown>> | undefined;
+          const template = templates?.[templateId];
+          if (template) {
+            // 如果是工作类型，先检查是否已经有同类工作
+            if (template.type === 'work') {
+              const existingWork = s.recurringItems.find(r => r.type === 'work');
+              if (existingWork) {
+                // 替换旧工作
+                s.recurringItems = s.recurringItems.filter(r => r.type !== 'work');
+                effectSummary.push(`辞去[${existingWork.name}]`);
+              }
+            }
+            const newItem: RecurringItem = {
+              id: `${templateId}_${uid()}`,
+              sourceActionId: action.id,
+              type: template.type as RecurringItem['type'],
+              name: template.name as string,
+              icon: template.icon as string,
+              description: template.description as string,
+              monthlyIncome: template.monthlyIncome as number,
+              monthlyHealthCost: template.monthlyHealthCost as number,
+              monthlySanCost: template.monthlySanCost as number,
+              monthlyCreditChange: template.monthlyCreditChange as number,
+              loseChance: template.loseChance as number,
+              loseText: template.loseText as string,
+              permanent: template.type === 'work',
+              remainingMonths: template.type === 'loan' ? 6 : -1,
+              startRound: s.currentRound,
+            };
+            s.recurringItems.push(newItem);
+            effectSummary.push(`获得持续性${template.type === 'work' ? '工作' : template.type === 'invest' ? '投资' : '项目'}[${template.name}]`);
+          }
+        }
+
+        // 处理辞职
+        if (actionAny.quitWork) {
+          const workItem = s.recurringItems.find(r => r.type === 'work');
+          if (workItem) {
+            effectSummary.push(`辞去了[${workItem.name}]`);
+            s.recurringItems = s.recurringItems.filter(r => r.type !== 'work');
+          } else {
+            return { success: false, error: '你目前没有工作可辞' };
+          }
+        }
+
         // 检查斩杀线
         const killLine = checkKillLines(s);
         if (killLine) {
@@ -411,6 +464,19 @@ export const useGameStore = create<GameStore>()(
         const summaryParts: string[] = [];
         if (result.rentPaid > 0) summaryParts.push(`租金-$${result.rentPaid}`);
         if (result.dietCost > 0) summaryParts.push(`伙食-$${result.dietCost}`);
+
+        // 持续性项目结算日志
+        if (result.recurringEffects.length > 0) {
+          result.recurringEffects.forEach(e => summaryParts.push(e));
+        }
+        if (result.lostRecurring.length > 0) {
+          result.lostRecurring.forEach(e => summaryParts.push(`⚠️${e}`));
+        }
+
+        if (result.healthChange !== 0) {
+          const sign = result.healthChange > 0 ? '+' : '';
+          summaryParts.push(`❤️体力${sign}${result.healthChange}`);
+        }
         if (result.sanChange !== 0) {
           const sign = result.sanChange > 0 ? '+' : '';
           summaryParts.push(`🧠精神${sign}${result.sanChange}`);
@@ -431,6 +497,10 @@ export const useGameStore = create<GameStore>()(
           s.death = { active: true, type: result.killLine.type, reason: result.killLine.reason };
           s.stage = 'DEATH';
         }
+
+        // 将结算的租金和伙食费计入本月支出
+        s.roundFinancials.expense += result.rentPaid + result.dietCost + result.recurringExpense;
+        s.roundFinancials.income += result.recurringIncome;
 
         s.roundPhase = 'result';
         set({ state: { ...s } });
@@ -476,6 +546,23 @@ export const useGameStore = create<GameStore>()(
         return { state: { ...s.state, dietLevel: level } };
       }),
 
+      // ---- 持续性项目 ----
+      removeRecurringItem: (itemId) => {
+        const s = get().state;
+        const item = s.recurringItems.find(r => r.id === itemId);
+        if (item) {
+          s.recurringItems = s.recurringItems.filter(r => r.id !== itemId);
+          const feedEntry: FeedEntry = {
+            id: uid(),
+            text: `${item.icon} ${item.name} 已终止`,
+            kind: 'log',
+            timestamp: Date.now(),
+          };
+          s.feed.push(feedEntry);
+          set({ state: { ...s } });
+        }
+      },
+
       // ---- 日志 ----
       pushFeed: (text, kind = 'log') => set((s) => {
         const entry: FeedEntry = { id: uid(), text, kind, timestamp: Date.now() };
@@ -502,11 +589,11 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'american-dream-game',
-      version: 2,
+      version: 3,
       partialize: (state) => ({ state: state.state }),
       migrate: (persistedState: unknown, version: number) => {
-        if (version < 2) {
-          // 旧版存档没有 storyId，直接重置为新游戏
+        if (version < 3) {
+          // 旧版存档缺少 recurringItems，直接重置
           return { state: createDefaultState() };
         }
         return persistedState;

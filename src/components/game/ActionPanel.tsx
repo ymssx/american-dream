@@ -46,6 +46,7 @@ export function ActionPanel() {
   }, []);
 
   if (state.roundPhase === 'result') {
+    const net = state.roundFinancials.income - state.roundFinancials.expense;
     return (
       <div className="p-6 text-center">
         <h3 className="text-xl font-bold text-white mb-4">📊 本月报告</h3>
@@ -58,11 +59,47 @@ export function ActionPanel() {
               </span>
             ))}
           </div>
-          <div className="mt-3 text-sm text-gray-400">
-            <span className="text-green-400">进账 +${state.roundFinancials.income.toLocaleString()}</span>
-            {' | '}
-            <span className="text-red-400">支出 -${state.roundFinancials.expense.toLocaleString()}</span>
+          {/* 资金明细 */}
+          <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">进账</span>
+              <span className="text-green-400">+${state.roundFinancials.income.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">支出（含房租/伙食）</span>
+              <span className="text-red-400">-${state.roundFinancials.expense.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm font-bold pt-1 border-t border-gray-800">
+              <span className="text-gray-300">本月净收入</span>
+              <span className={net >= 0 ? 'text-green-400' : 'text-red-400'}>
+                {net >= 0 ? '+' : ''}{net.toLocaleString()}
+              </span>
+            </div>
           </div>
+          {/* 状态变化 */}
+          <div className="mt-3 pt-3 border-t border-gray-800 flex flex-wrap gap-2 text-xs">
+            <span className="text-gray-500">余额: <span className="text-white font-mono">${state.money.toLocaleString()}</span></span>
+            <span className="text-gray-500">❤️ {state.attributes.health}</span>
+            <span className="text-gray-500">🧠 {state.attributes.san}/{state.maxSan}</span>
+            <span className="text-gray-500">💳 {state.attributes.credit}</span>
+          </div>
+          {/* 持续性项目摘要 */}
+          {state.recurringItems.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-800">
+              <p className="text-gray-500 text-xs mb-1.5">📋 持续性项目</p>
+              <div className="flex flex-wrap gap-1">
+                {state.recurringItems.map((item) => (
+                  <span key={item.id} className={`text-[10px] px-1.5 py-0.5 rounded ${
+                    item.type === 'work' ? 'bg-green-900/40 text-green-400' :
+                    item.type === 'invest' ? 'bg-blue-900/40 text-blue-400' :
+                    'bg-red-900/40 text-red-400'
+                  }`}>
+                    {item.icon} {item.name} {item.monthlyIncome >= 0 ? '+' : ''}{item.monthlyIncome.toLocaleString()}/月
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <button
           onClick={nextRound}
@@ -213,6 +250,20 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
   cooldowns: Record<string, number>;
   useCounts: Record<string, number>;
 }) {
+  // 辅助函数：渲染收益/消耗标签
+  function renderGainTags(obj: Record<string, number> | undefined, prefix: string) {
+    if (!obj) return null;
+    return Object.entries(obj)
+      .filter(([, val]) => val !== 0)
+      .map(([key, val]) => (
+        <span key={`${prefix}_${key}`} className={`px-1.5 py-0.5 rounded ${
+          val > 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
+        }`}>
+          {key === 'money' ? '💰' : key === 'health' ? '❤️' : key === 'san' ? '🧠' : key === 'credit' ? '💳' : ''}
+          {val > 0 ? '+' : ''}{key === 'money' ? `$${val}` : String(val)}
+        </span>
+      ));
+  }
   const typeLabels: Record<string, { text: string; color: string }> = {
     fixed: { text: '确定', color: 'text-green-400' },
     random: { text: '概率', color: 'text-yellow-400' },
@@ -282,16 +333,16 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
         {action.cost?.health && action.cost.health > 0 && (
           <span className="bg-red-900/30 text-red-400 px-1.5 py-0.5 rounded">❤️-{action.cost.health}</span>
         )}
-        {action.gain && Object.entries(action.gain).map(([key, val]) => (
-          val !== 0 && (
-            <span key={key} className={`px-1.5 py-0.5 rounded ${
-              (val as number) > 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-            }`}>
-              {key === 'money' ? '💰' : key === 'health' ? '❤️' : key === 'san' ? '🧠' : key === 'credit' ? '💳' : ''}
-              {(val as number) > 0 ? '+' : ''}{key === 'money' ? `$${val}` : val}
-            </span>
-          )
-        ))}
+        {/* 固定收益 */}
+        {renderGainTags(action.gain, 'g')}
+        {/* 基础收益（risky类型） */}
+        {renderGainTags(action.baseGain, 'bg')}
+        {/* 持续性收入标签 */}
+        {'recurring' in (action as unknown as Record<string, unknown>) ? (
+          <span className="bg-yellow-900/40 text-yellow-300 px-1.5 py-0.5 rounded animate-pulse">
+            ✨ 成功后获得持续收入
+          </span>
+        ) : null}
       </div>
 
       {/* 按钮 */}
