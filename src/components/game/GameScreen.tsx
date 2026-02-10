@@ -14,7 +14,7 @@ export function GameScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('action');
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="h-dvh bg-gray-950 text-white flex flex-col overflow-hidden">
       {/* 顶部状态栏 */}
       <StatusBar />
 

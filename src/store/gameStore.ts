@@ -12,6 +12,27 @@ import constantsData from '@/data/constants.json';
 import actionsData from '@/data/actions.json';
 import storiesIndex from '@/data/stories.json';
 
+// 简单的种子随机：基于回合号生成本回合可见的行为ID列表
+function generateVisibleBehaviors(round: number): string[] {
+  const all = getAllBehaviors();
+  const seed = round * 2654435761; // Knuth multiplicative hash
+  function seededRandom(i: number): number {
+    let x = ((seed + i * 6364136223846793005) >>> 0) % 2147483647;
+    x = ((x * 48271) >>> 0) % 2147483647;
+    return (x % 10000) / 10000;
+  }
+  const visible: string[] = [];
+  all.forEach((action, idx) => {
+    const chance = (action as unknown as Record<string, number>).showChance;
+    if (chance === undefined || chance === null || chance >= 1) {
+      visible.push(action.id); // 无showChance字段=必定出现
+    } else if (seededRandom(idx) < chance) {
+      visible.push(action.id);
+    }
+  });
+  return visible;
+}
+
 // 动态加载故事数据
 const storyModules: Record<string, unknown> = {
   story1: require('@/data/stories/story1.json'),
@@ -58,6 +79,7 @@ function createDefaultState(): GameState {
     death: { active: false, type: null, reason: '' },
     startedAt: Date.now(),
     lastSavedAt: Date.now(),
+    visibleBehaviorIds: [],
   };
 }
 
@@ -194,6 +216,7 @@ export const useGameStore = create<GameStore>()(
           roundPhase: 'action',
           roundBehaviors: [],
           roundFinancials: { income: 0, expense: 0 },
+          visibleBehaviorIds: generateVisibleBehaviors(1),
         },
       })),
 
@@ -260,16 +283,23 @@ export const useGameStore = create<GameStore>()(
       getAvailableBehaviors: () => {
         const s = get().state;
         const all = getAllBehaviors();
-        return all.map((action) => {
-          const { unlocked, reason } = checkUnlockCondition(action, s);
-          const { canExecute, reasons } = checkBehaviorExecutable(action, s);
-          return {
-            ...action,
-            unlocked,
-            canExecute: unlocked && canExecute,
-            lockReason: reason || reasons[0] || null,
-          };
-        });
+        const visibleSet = s.visibleBehaviorIds?.length > 0 ? new Set(s.visibleBehaviorIds) : null;
+        return all
+          .filter((action) => {
+            // 如果有随机可见列表，过滤掉不在列表中的行为
+            if (visibleSet && !visibleSet.has(action.id)) return false;
+            return true;
+          })
+          .map((action) => {
+            const { unlocked, reason } = checkUnlockCondition(action, s);
+            const { canExecute, reasons } = checkBehaviorExecutable(action, s);
+            return {
+              ...action,
+              unlocked,
+              canExecute: unlocked && canExecute,
+              lockReason: reason || reasons[0] || null,
+            };
+          });
       },
 
       executeBehavior: (actionId) => {
@@ -546,6 +576,7 @@ export const useGameStore = create<GameStore>()(
             roundPhase: 'action',
             roundBehaviors: [],
             roundFinancials: { income: 0, expense: 0 },
+            visibleBehaviorIds: generateVisibleBehaviors(newRound),
           },
         };
       }),

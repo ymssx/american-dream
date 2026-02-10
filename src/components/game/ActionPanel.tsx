@@ -403,8 +403,8 @@ export function ActionPanel() {
         )}
       </div>
 
-      {/* 结算按钮 */}
-      <div className="p-4 border-t border-gray-800 bg-gray-900/80">
+      {/* 结算按钮 — 固定在底部 */}
+      <div className="flex-shrink-0 p-4 border-t border-gray-800 bg-gray-900 z-10">
         <div className="flex gap-3">
           <div className="flex-1 text-xs text-gray-500">
             SAN: {state.attributes.san}/{state.maxSan} · 已执行 {state.roundBehaviors.length} 个行动
@@ -523,12 +523,17 @@ function ActionCard({ action, onExecute, san, isExecuting, cooldowns, useCounts 
         )}
         {/* 收益标签 */}
         {renderGainSection()}
-        {/* 持续性收入标签 */}
-        {action.recurring ? (
-          <span className="bg-yellow-900/40 text-yellow-300 px-1.5 py-0.5 rounded animate-pulse">
-            ✨ 成功后获得持续收入
-          </span>
-        ) : null}
+        {/* 持续性收入标签 — 显示具体月薪 */}
+        {action.recurring ? (() => {
+          const templates = (actionsData as unknown as Record<string, Record<string, Record<string, unknown>>>).recurringTemplates;
+          const tmpl = templates?.[action.recurring!];
+          const salary = tmpl?.monthlyIncome as number | undefined;
+          return (
+            <span className="bg-yellow-900/40 text-yellow-300 px-1.5 py-0.5 rounded animate-pulse">
+              ✨ 月薪${salary ? `$${salary.toLocaleString()}` : '待定'}
+            </span>
+          );
+        })() : null}
         {/* 门槛要求 */}
         {action.requirements ? (() => {
           const req = action.requirements;

@@ -168,6 +168,9 @@ export interface GameState {
   // 时间戳
   startedAt: number;
   lastSavedAt: number;
+
+  // 每回合可见的行为ID列表（随机刷新）
+  visibleBehaviorIds: string[];
 }
 
 /** 行为数据结构 */
@@ -217,6 +220,7 @@ export interface ActionData {
   recurring?: string;    // 关联的持续性项目模板ID
   quitWork?: boolean;    // 是否是辞职行为
   subGroup?: string;     // 子分组ID（合并面板内的标签筛选）
+  showChance?: number;   // 每回合随机出现概率 0-1，undefined表示必定出现
   tags: string[];
 }
 

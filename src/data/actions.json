@@ -466,6 +466,190 @@
         "skills": 30,
         "influence": 50
       }
+    },
+    "WORK_cashier": {
+      "type": "work",
+      "name": "超市收银员",
+      "icon": "🛒",
+      "description": "Costco/Walmart收银台固定岗位",
+      "monthlyIncome": 3500,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 15,
+      "monthlyCreditChange": 4,
+      "loseChance": 0.07,
+      "loseText": "旺季过了不需要这么多人了。你的排班被悄悄取消了。"
+    },
+    "WORK_carwash": {
+      "type": "work",
+      "name": "洗车行工人",
+      "icon": "🚿",
+      "description": "洗车行正式员工，风吹日晒但稳定",
+      "monthlyIncome": 3000,
+      "monthlyHealthCost": 8,
+      "monthlySanCost": 12,
+      "monthlyCreditChange": 3,
+      "loseChance": 0.06,
+      "loseText": "老板把店卖了。新老板说要用自己人。"
+    },
+    "WORK_hotel": {
+      "type": "work",
+      "name": "酒店前台",
+      "icon": "🏨",
+      "description": "华人旅馆前台接待",
+      "monthlyIncome": 4500,
+      "monthlyHealthCost": 3,
+      "monthlySanCost": 18,
+      "monthlyCreditChange": 8,
+      "loseChance": 0.06,
+      "loseText": "酒店因为防疫原因关门了。前台自然也不需要了。"
+    },
+    "WORK_massage": {
+      "type": "work",
+      "name": "按摩师",
+      "icon": "💆",
+      "description": "华人按摩店技师，手艺活",
+      "monthlyIncome": 5000,
+      "monthlyHealthCost": 10,
+      "monthlySanCost": 15,
+      "monthlyCreditChange": 4,
+      "loseChance": 0.05,
+      "loseText": "店被举报无照经营。关门整顿，你也跟着失业了。"
+    },
+    "WORK_dispatcher": {
+      "type": "work",
+      "name": "外卖调度员",
+      "icon": "📱",
+      "description": "外卖平台调度中心坐班",
+      "monthlyIncome": 5200,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 25,
+      "monthlyCreditChange": 5,
+      "loseChance": 0.08,
+      "loseText": "公司裁员。你的岗位被AI系统替代了。"
+    },
+    "WORK_market": {
+      "type": "work",
+      "name": "华人超市理货员",
+      "icon": "🥬",
+      "description": "华人超市搬货理货",
+      "monthlyIncome": 3200,
+      "monthlyHealthCost": 8,
+      "monthlySanCost": 15,
+      "monthlyCreditChange": 3,
+      "loseChance": 0.06,
+      "loseText": "超市搬迁到更远的地方。你通勤不了只能辞职。"
+    },
+    "WORK_fine_dining": {
+      "type": "work",
+      "name": "高端餐厅服务员",
+      "icon": "🍷",
+      "description": "米其林餐厅服务员，小费丰厚",
+      "monthlyIncome": 8500,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 25,
+      "monthlyCreditChange": 10,
+      "loseChance": 0.1,
+      "loseText": "经理说客人反馈你的英语口音太重。很遗憾你不适合这里。"
+    },
+    "WORK_sorter": {
+      "type": "work",
+      "name": "快递分拣员",
+      "icon": "📦",
+      "description": "FedEx/UPS分拣中心流水线",
+      "monthlyIncome": 4200,
+      "monthlyHealthCost": 10,
+      "monthlySanCost": 18,
+      "monthlyCreditChange": 5,
+      "loseChance": 0.08,
+      "loseText": "旺季过后开始裁临时工。你的合同没被续签。"
+    },
+    "WORK_accounting": {
+      "type": "work",
+      "name": "会计助理",
+      "icon": "📊",
+      "description": "华人会计事务所助理",
+      "monthlyIncome": 7000,
+      "monthlyHealthCost": 3,
+      "monthlySanCost": 20,
+      "monthlyCreditChange": 10,
+      "loseChance": 0.06,
+      "loseText": "报税季结束后事务所缩编了。你是最后进来的，也是最先走的。"
+    },
+    "WORK_pharmacy": {
+      "type": "work",
+      "name": "药房助理",
+      "icon": "💊",
+      "description": "社区药房配药助理",
+      "monthlyIncome": 4500,
+      "monthlyHealthCost": 3,
+      "monthlySanCost": 15,
+      "monthlyCreditChange": 6,
+      "loseChance": 0.05,
+      "loseText": "药房被连锁巨头收购了。原来的员工全部解散重新招聘。"
+    },
+    "INVEST_car_flip": {
+      "type": "invest",
+      "subType": "business",
+      "name": "二手车翻新",
+      "icon": "🚙",
+      "description": "买入便宜二手车修好后高价卖出",
+      "monthlyIncome": 4000,
+      "monthlyCost": 1500,
+      "monthlyHealthCost": 0,
+      "monthlySanCost": 5,
+      "monthlyCreditChange": 3,
+      "loseChance": 0.1,
+      "loseText": "买到了一辆出过重大事故的车。DMV不给过户。",
+      "canSell": true,
+      "sellText": "停止翻车生意"
+    },
+    "INVEST_boba": {
+      "type": "invest",
+      "subType": "business",
+      "name": "奶茶店",
+      "icon": "🧋",
+      "description": "大学城旁的奶茶店，留学生最爱",
+      "monthlyIncome": 8000,
+      "monthlyCost": 3000,
+      "monthlyHealthCost": 0,
+      "monthlySanCost": 5,
+      "monthlyCreditChange": 5,
+      "loseChance": 0.06,
+      "loseText": "租约到期房东涨了两倍房租。利润撑不住了。",
+      "canSell": true,
+      "sellText": "关闭奶茶店"
+    },
+    "INVEST_laundry_own": {
+      "type": "invest",
+      "subType": "business",
+      "name": "自营洗衣房",
+      "icon": "🧺",
+      "description": "独立经营的自助洗衣房",
+      "monthlyIncome": 15000,
+      "monthlyCost": 5000,
+      "monthlyHealthCost": 0,
+      "monthlySanCost": 3,
+      "monthlyCreditChange": 8,
+      "loseChance": 0.03,
+      "loseText": "楼上水管爆裂淹了店面。保险理赔周期要半年。",
+      "canSell": true,
+      "sellText": "出售洗衣房"
+    },
+    "INVEST_amazon_fba": {
+      "type": "invest",
+      "subType": "business",
+      "name": "亚马逊FBA店铺",
+      "icon": "📦",
+      "description": "亚马逊第三方卖家店铺",
+      "monthlyIncome": 6000,
+      "monthlyCost": 2500,
+      "monthlyHealthCost": 0,
+      "monthlySanCost": 8,
+      "monthlyCreditChange": 3,
+      "loseChance": 0.1,
+      "loseText": "账号因为差评太多被亚马逊封了。申诉三次都没通过。",
+      "canSell": true,
+      "sellText": "关闭店铺清仓"
     }
   },
   "actionTypes": {
@@ -1323,7 +1507,7 @@
       },
       {
         "id": "W01",
-        "name": "应聘快餐店",
+        "name": "应聘快餐店 💰$3200/月",
         "nameEn": "Fast Food Application",
         "category": "earn",
         "type": "risky",
@@ -1357,7 +1541,7 @@
       },
       {
         "id": "W02",
-        "name": "应聘仓库管理员",
+        "name": "应聘仓库管理员 💰$4800/月",
         "nameEn": "Warehouse Position",
         "category": "earn",
         "type": "risky",
@@ -1392,7 +1576,7 @@
       },
       {
         "id": "W03",
-        "name": "应聘美甲店",
+        "name": "应聘美甲店 💰$3800/月",
         "nameEn": "Nail Salon Technician",
         "category": "earn",
         "type": "risky",
@@ -1427,7 +1611,7 @@
       },
       {
         "id": "W04",
-        "name": "应聘中餐馆厨师",
+        "name": "应聘中餐馆厨师 💰$6500/月",
         "nameEn": "Chinese Restaurant Chef",
         "category": "earn",
         "type": "risky",
@@ -1466,7 +1650,7 @@
       },
       {
         "id": "W05",
-        "name": "全职跑网约车",
+        "name": "全职跑网约车 💰$5500/月",
         "nameEn": "Full-time Rideshare",
         "category": "earn",
         "type": "risky",
@@ -1501,7 +1685,7 @@
       },
       {
         "id": "W06",
-        "name": "应聘华人公司文员",
+        "name": "应聘华人公司文员 💰$4200/月",
         "nameEn": "Chinese Company Clerk",
         "category": "earn",
         "type": "risky",
@@ -1540,7 +1724,7 @@
       },
       {
         "id": "W07",
-        "name": "面试大厂程序员",
+        "name": "面试大厂程序员 💰$28000/月",
         "nameEn": "Big Tech Interview",
         "category": "earn",
         "type": "risky",
@@ -1583,7 +1767,7 @@
       },
       {
         "id": "W08",
-        "name": "应聘护工",
+        "name": "应聘护工 💰$4000/月",
         "nameEn": "Nurse Aide Application",
         "category": "earn",
         "type": "risky",
@@ -1735,6 +1919,976 @@
           "health_cost"
         ],
         "subGroup": "sacrifice"
+      },
+      {
+        "id": "E15",
+        "name": "洗车店帮工",
+        "nameEn": "Car Wash Attendant",
+        "category": "earn",
+        "type": "fixed",
+        "description": "用高压水枪冲车，每辆3块钱小费。一天洗四十台",
+        "quote": "防水服底下全是汗。但至少比在办公室枯坐强。",
+        "cost": {
+          "san": 20,
+          "health": 8
+        },
+        "gain": {
+          "money": 2800
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "labor"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.7
+      },
+      {
+        "id": "E16",
+        "name": "摆跳蚤市场",
+        "nameEn": "Flea Market Vendor",
+        "category": "earn",
+        "type": "random",
+        "description": "从Goodwill淘二手货，周末去跳蚤市场摆摊倒卖",
+        "quote": "一件旧皮衣花了2块钱买的，标价45块。居然真有人买。",
+        "cost": {
+          "san": 15
+        },
+        "outcomes": [
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 4000
+            },
+            "text": "今天运气好！几件vintage衣服被潮人一扫而光"
+          },
+          {
+            "chance": 0.4,
+            "gain": {
+              "money": 2000
+            },
+            "text": "卖出了一些，勉强回本"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 500
+            },
+            "text": "下了一天雨，几乎没人来。"
+          }
+        ],
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "trade"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.6
+      },
+      {
+        "id": "E17",
+        "name": "遛狗服务",
+        "nameEn": "Dog Walking Service",
+        "category": "earn",
+        "type": "fixed",
+        "description": "有钱人家的狗比你吃得好。但遛它们一小时能赚25块",
+        "quote": "五条狗同时出门，像在指挥一支蹩脚的军队。",
+        "cost": {
+          "san": 10,
+          "health": 3
+        },
+        "gain": {
+          "money": 2000
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "service"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.6
+      },
+      {
+        "id": "E18",
+        "name": "街头卖花",
+        "nameEn": "Street Flower Vendor",
+        "category": "earn",
+        "type": "random",
+        "description": "批发市场5块钱一束，路边卖15块。情人节翻三倍",
+        "quote": "Flower for your girl? ——这句话你一天说两百遍。",
+        "cost": {
+          "san": 15
+        },
+        "outcomes": [
+          {
+            "chance": 0.2,
+            "gain": {
+              "money": 4500
+            },
+            "text": "赶上了情人节！玫瑰卖疯了！"
+          },
+          {
+            "chance": 0.5,
+            "gain": {
+              "money": 2200
+            },
+            "text": "卖出了大半，还行。"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 800,
+              "health": -5
+            },
+            "text": "在太阳底下站了一天，花蔫了，人也蔫了。"
+          }
+        ],
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "trade"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.5
+      },
+      {
+        "id": "E19",
+        "name": "地铁卖水",
+        "nameEn": "Subway Water Vendor",
+        "category": "earn",
+        "type": "fixed",
+        "description": "冰桶装满瓶装水，在地铁站叫卖。一瓶一块钱",
+        "quote": "WATER! ONE DOLLAR! ICE COLD! 你的嗓子比水还冷。",
+        "cost": {
+          "san": 20,
+          "health": 5
+        },
+        "gain": {
+          "money": 1800
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "basic"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.7
+      },
+      {
+        "id": "E20",
+        "name": "刷盘子（唐人街）",
+        "nameEn": "Dishwasher Chinatown",
+        "category": "earn",
+        "type": "fixed",
+        "description": "粤菜馆后厨刷碗，手泡在洗洁精里八个小时",
+        "quote": "老板说做满三个月给你涨50。三个月后他假装忘了。",
+        "cost": {
+          "san": 25,
+          "health": 10
+        },
+        "gain": {
+          "money": 3000
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "labor"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.6
+      },
+      {
+        "id": "E21",
+        "name": "清洁公司帮工",
+        "nameEn": "Cleaning Crew Helper",
+        "category": "earn",
+        "type": "fixed",
+        "description": "跟着清洁队进写字楼擦地板、刷马桶。夜班居多",
+        "quote": "你擦过CEO办公室的落地窗。窗外的夜景很美。然后你去刷了马桶。",
+        "cost": {
+          "san": 20,
+          "health": 8
+        },
+        "gain": {
+          "money": 3200,
+          "credit": 3
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "labor"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.6
+      },
+      {
+        "id": "E22",
+        "name": "帮人搬家（Craigslist）",
+        "nameEn": "Craigslist Mover",
+        "category": "earn",
+        "type": "risky",
+        "description": "Craigslist上接搬家散单，按小时计费",
+        "quote": "对方说只有两个箱子。到了发现是两个冰箱。",
+        "cost": {
+          "san": 25,
+          "health": 12
+        },
+        "baseGain": {
+          "money": 3600
+        },
+        "risk": {
+          "chance": 0.2,
+          "penalty": {
+            "health": -15
+          },
+          "text": "搬重物的时候扭到了腰。对方一看你弯着腰走，假装没看见。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "labor"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.5
+      },
+      {
+        "id": "E23",
+        "name": "做TaskRabbit杂活",
+        "nameEn": "TaskRabbit Odd Jobs",
+        "category": "earn",
+        "type": "random",
+        "description": "在TaskRabbit上接各种零碎活计，修水管换灯泡组装家具",
+        "quote": "客户说 should be easy。拆开包装发现是IKEA最复杂的衣柜。",
+        "cost": {
+          "san": 20,
+          "health": 5
+        },
+        "outcomes": [
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 4000,
+              "skills": 3
+            },
+            "text": "接了几单技术活！客户给了五星好评和额外小费。"
+          },
+          {
+            "chance": 0.4,
+            "gain": {
+              "money": 2500
+            },
+            "text": "跑了几单，赚了些零花钱。"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 1000,
+              "health": -8
+            },
+            "text": "装修的时候不小心砸到自己的脚。客户还投诉你干得慢。"
+          }
+        ],
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "skilled"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.5
+      },
+      {
+        "id": "E24",
+        "name": "夜市烧烤摊帮工",
+        "nameEn": "Night Market BBQ Helper",
+        "category": "earn",
+        "type": "fixed",
+        "description": "华人夜市帮人串串和烤串。烟熏火燎但管饱",
+        "quote": "羊肉串的香味沾在衣服上三天洗不掉。但胃是满的。",
+        "cost": {
+          "san": 25,
+          "health": 10
+        },
+        "gain": {
+          "money": 3500
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "food"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.5
+      },
+      {
+        "id": "E25",
+        "name": "赌场发牌员培训",
+        "nameEn": "Casino Dealer Training",
+        "category": "earn",
+        "type": "risky",
+        "description": "大西洋城赌场招发牌员。培训两周，通过就上岗",
+        "quote": "洗牌的手法比什么都重要。手慢了客人急，手快了老板疑。",
+        "cost": {
+          "san": 35,
+          "health": 5
+        },
+        "baseGain": {
+          "money": 6000,
+          "credit": 5
+        },
+        "risk": {
+          "chance": 0.35,
+          "penalty": {
+            "san": -20
+          },
+          "text": "培训考核没通过。你的手速不够快，经理说下次吧。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 4
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "gig",
+          "service"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.3
+      },
+      {
+        "id": "E26",
+        "name": "私人厨师上门",
+        "nameEn": "Private Chef Service",
+        "category": "earn",
+        "type": "random",
+        "description": "在华人圈子里接私厨单，上门做菜一桌500起",
+        "quote": "今天的菜单是松鼠鳜鱼、佛跳墙和东坡肉。你在人家厨房施展十八般武艺。",
+        "cost": {
+          "san": 20
+        },
+        "outcomes": [
+          {
+            "chance": 0.25,
+            "gain": {
+              "money": 6000,
+              "credit": 5
+            },
+            "text": "客人是某公司高管！吃完直接推荐给了朋友圈！"
+          },
+          {
+            "chance": 0.45,
+            "gain": {
+              "money": 3500
+            },
+            "text": "做了两桌家常菜，客人说好吃。小费一般般。"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 1500,
+              "san": -10
+            },
+            "text": "做砸了一道菜。客人在微信群里说你水平不行。"
+          }
+        ],
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "skilled"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.4
+      },
+      {
+        "id": "E27",
+        "name": "Instacart代购",
+        "nameEn": "Instacart Shopper",
+        "category": "earn",
+        "type": "fixed",
+        "description": "帮人去超市代购送货。按单计费加小费",
+        "quote": "客户要的有机牛油果全卖完了。你拍了照片发过去，对方说那算了。小费也没了。",
+        "cost": {
+          "san": 15,
+          "health": 5
+        },
+        "gain": {
+          "money": 2600
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "delivery"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.6
+      },
+      {
+        "id": "E28",
+        "name": "圣诞老人扮演者",
+        "nameEn": "Mall Santa Claus",
+        "category": "earn",
+        "type": "fixed",
+        "description": "商场招季节性圣诞老人。穿着厚重的红色套装坐一天",
+        "quote": "小朋友坐在你腿上说想要一个iPad。你心想你也想要。",
+        "cost": {
+          "san": 10
+        },
+        "gain": {
+          "money": 3000,
+          "san": 10
+        },
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "gig",
+          "seasonal"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.25
+      },
+      {
+        "id": "E29",
+        "name": "黎明前的装卸工",
+        "nameEn": "Pre-Dawn Loader",
+        "category": "earn",
+        "type": "risky",
+        "description": "凌晨3点到批发市场搬货卸货。天亮前干完",
+        "quote": "搬了200箱蔬菜。腰不是腰了，是一根即将断裂的橡皮筋。",
+        "cost": {
+          "san": 30,
+          "health": 18
+        },
+        "baseGain": {
+          "money": 4500
+        },
+        "risk": {
+          "chance": 0.25,
+          "penalty": {
+            "health": -20
+          },
+          "text": "重箱子从手里滑落砸到了脚。肿了一个星期。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "labor"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.5
+      },
+      {
+        "id": "E30",
+        "name": "代写留学文书",
+        "nameEn": "Ghost Writer - Essays",
+        "category": "earn",
+        "type": "random",
+        "description": "帮留学生写申请文书。一篇500到2000不等",
+        "quote": "你帮一个富二代写「我如何克服困难」的文书。讽刺的是真正经历困难的是你。",
+        "cost": {
+          "san": 15
+        },
+        "outcomes": [
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 5000,
+              "skills": 3
+            },
+            "text": "接到了几个大单！一篇2000刀的MBA文书让你赚翻了。"
+          },
+          {
+            "chance": 0.4,
+            "gain": {
+              "money": 2500
+            },
+            "text": "写了几篇，中规中矩的收入。"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 800,
+              "san": -10
+            },
+            "text": "被客户投诉文笔差要求退款。你很想说这文书比他自己写的好十倍。"
+          }
+        ],
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "requirements": {
+          "skills": 20
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "gig",
+          "creative"
+        ],
+        "subGroup": "gig",
+        "showChance": 0.4
+      },
+      {
+        "id": "W09",
+        "name": "应聘超市收银 💰$3500/月",
+        "nameEn": "Supermarket Cashier",
+        "category": "earn",
+        "type": "risky",
+        "description": "Costco/Walmart收银台。站着八小时，扫码扫到手软",
+        "quote": "哔——哔——哔——这就是你生活的BGM。",
+        "cost": {
+          "san": 20
+        },
+        "baseGain": {
+          "credit": 5
+        },
+        "recurring": "WORK_cashier",
+        "risk": {
+          "chance": 0.25,
+          "penalty": {
+            "san": -10
+          },
+          "text": "多找了钱给客人。主管调了监控说你不适合这份工作。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "service"
+        ],
+        "subGroup": "job",
+        "showChance": 0.6
+      },
+      {
+        "id": "W10",
+        "name": "应聘洗车工 💰$3000/月",
+        "nameEn": "Car Wash Attendant Job",
+        "category": "earn",
+        "type": "risky",
+        "description": "洗车行正式工，比日结稳定还有保险",
+        "quote": "从手洗到精洗到打蜡抛光，你现在闭着眼都能把一辆车擦到发光。",
+        "cost": {
+          "san": 20
+        },
+        "baseGain": {
+          "credit": 3
+        },
+        "recurring": "WORK_carwash",
+        "risk": {
+          "chance": 0.2,
+          "penalty": {
+            "san": -10
+          },
+          "text": "试用期被认为动作太慢。老板说先回去练练。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "labor"
+        ],
+        "subGroup": "job",
+        "showChance": 0.5
+      },
+      {
+        "id": "W11",
+        "name": "应聘酒店前台 💰$4500/月",
+        "nameEn": "Hotel Front Desk",
+        "category": "earn",
+        "type": "risky",
+        "description": "华人旅馆前台接待。要求英文流利，能应对各种客人",
+        "quote": "凌晨两点有人投诉隔壁太吵。你微笑着说I will take care of it，然后去敲了七次门。",
+        "cost": {
+          "san": 25
+        },
+        "baseGain": {
+          "credit": 8
+        },
+        "recurring": "WORK_hotel",
+        "requirements": {
+          "skills": 20
+        },
+        "risk": {
+          "chance": 0.3,
+          "penalty": {
+            "san": -15,
+            "credit": -5
+          },
+          "text": "英语口语没过关。经理说客人反馈听不懂你说什么。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "service"
+        ],
+        "subGroup": "job",
+        "showChance": 0.5
+      },
+      {
+        "id": "W12",
+        "name": "应聘按摩师 💰$5000/月",
+        "nameEn": "Massage Therapist",
+        "category": "earn",
+        "type": "risky",
+        "description": "华人按摩店招人。手劲好就行，证书后面再说",
+        "quote": "每天按十个客人。你的手指已经失去了知觉。但收入还不错。",
+        "cost": {
+          "san": 25
+        },
+        "baseGain": {
+          "credit": 3
+        },
+        "recurring": "WORK_massage",
+        "risk": {
+          "chance": 0.2,
+          "penalty": {
+            "san": -10
+          },
+          "text": "手法太重把客人按疼了。老板扣了你半个月工资。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "service"
+        ],
+        "subGroup": "job",
+        "showChance": 0.5
+      },
+      {
+        "id": "W13",
+        "name": "应聘外卖调度 💰$5200/月",
+        "nameEn": "Delivery Dispatcher",
+        "category": "earn",
+        "type": "risky",
+        "description": "在外卖公司做订单调度。不用风吹日晒，但脑子得转得快",
+        "quote": "同时盯着二十个骑手的位置。你觉得自己像在玩一个地狱难度的策略游戏。",
+        "cost": {
+          "san": 30
+        },
+        "baseGain": {
+          "credit": 5
+        },
+        "recurring": "WORK_dispatcher",
+        "requirements": {
+          "skills": 15
+        },
+        "risk": {
+          "chance": 0.25,
+          "penalty": {
+            "san": -15
+          },
+          "text": "频繁调度失误导致大量超时。主管说你的抗压能力不够。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 4
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "tech"
+        ],
+        "subGroup": "job",
+        "showChance": 0.4
+      },
+      {
+        "id": "W14",
+        "name": "应聘华人超市理货 💰$3200/月",
+        "nameEn": "Chinese Market Stocker",
+        "category": "earn",
+        "type": "risky",
+        "description": "华人超市搬货理货。搬不完的箱子，理不完的货架",
+        "quote": "又一箱老干妈。你现在看到老干妈就想哭。",
+        "cost": {
+          "san": 20
+        },
+        "baseGain": {
+          "credit": 3
+        },
+        "recurring": "WORK_market",
+        "risk": {
+          "chance": 0.2,
+          "penalty": {
+            "san": -10
+          },
+          "text": "试用期效率太低。老板说再观察观察——你知道这意味着什么。"
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "labor"
+        ],
+        "subGroup": "job",
+        "showChance": 0.6
+      },
+      {
+        "id": "W15",
+        "name": "应聘高端餐厅 💰$8500/月",
+        "nameEn": "Fine Dining Server",
+        "category": "earn",
+        "type": "risky",
+        "description": "曼哈顿某米其林二星。小费高但规矩多",
+        "quote": "客人问这瓶酒年份。你一脸自信说2018，其实瞎猜的。",
+        "cost": {
+          "san": 35
+        },
+        "baseGain": {
+          "credit": 10
+        },
+        "recurring": "WORK_fine_dining",
+        "requirements": {
+          "skills": 25,
+          "educationLevel": 1
+        },
+        "risk": {
+          "chance": 0.4,
+          "penalty": {
+            "san": -20,
+            "credit": -5
+          },
+          "text": "上错了菜。经理当着客人面把你骂了一顿。你当晚就被辞退了。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 5
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "service",
+          "high_income"
+        ],
+        "subGroup": "job",
+        "showChance": 0.35
+      },
+      {
+        "id": "W16",
+        "name": "应聘快递分拣 💰$4200/月",
+        "nameEn": "Package Sorter",
+        "category": "earn",
+        "type": "risky",
+        "description": "FedEx/UPS分拣中心。流水线上包裹像瀑布一样",
+        "quote": "一小时分拣800个包裹。你的手速达到了人类极限。",
+        "cost": {
+          "san": 25
+        },
+        "baseGain": {
+          "credit": 5
+        },
+        "recurring": "WORK_sorter",
+        "risk": {
+          "chance": 0.25,
+          "penalty": {
+            "san": -10,
+            "health": -5
+          },
+          "text": "旺季压力太大，你的效率达不到标准。主管给了你最后通牒。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "labor"
+        ],
+        "subGroup": "job",
+        "showChance": 0.5
+      },
+      {
+        "id": "W17",
+        "name": "应聘会计助理 💰$7000/月",
+        "nameEn": "Accounting Assistant",
+        "category": "earn",
+        "type": "risky",
+        "description": "华人会计事务所的助理。报税季忙到飞起",
+        "quote": "Excel表格开了30个标签页。每个数字都关系到别人的身家性命。",
+        "cost": {
+          "san": 30
+        },
+        "baseGain": {
+          "credit": 10
+        },
+        "recurring": "WORK_accounting",
+        "requirements": {
+          "skills": 30,
+          "educationLevel": 1
+        },
+        "risk": {
+          "chance": 0.35,
+          "penalty": {
+            "san": -20,
+            "credit": -5
+          },
+          "text": "CPA考试没过。老板说没证干不了这行，让你考虑其他出路。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 5
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "work",
+          "office",
+          "skilled"
+        ],
+        "subGroup": "job",
+        "showChance": 0.35
+      },
+      {
+        "id": "W18",
+        "name": "应聘药房助理 💰$4500/月",
+        "nameEn": "Pharmacy Technician",
+        "category": "earn",
+        "type": "risky",
+        "description": "社区药房帮忙配药。门槛不高但要细心",
+        "quote": "每天面对一百种药名。你开始能从颜色和形状辨认它们了。",
+        "cost": {
+          "san": 25
+        },
+        "baseGain": {
+          "credit": 5
+        },
+        "recurring": "WORK_pharmacy",
+        "requirements": {
+          "skills": 15
+        },
+        "risk": {
+          "chance": 0.25,
+          "penalty": {
+            "san": -15
+          },
+          "text": "配错了一次药。虽然没出事但药剂师不敢再让你碰处方药。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 4
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "medical"
+        ],
+        "subGroup": "job",
+        "showChance": 0.4
       }
     ],
     "invest": [
@@ -2198,6 +3352,209 @@
           "poker"
         ],
         "subGroup": "gamble_sub"
+      },
+      {
+        "id": "INV08",
+        "name": "二手车翻新倒卖",
+        "nameEn": "Used Car Flipping",
+        "category": "invest",
+        "type": "risky",
+        "description": "低价收二手车，修好了加价卖。眼光是关键",
+        "quote": "花3000买了辆老本田。换了刹车片打了蜡标价8000。第二天就有人来看。",
+        "cost": {
+          "san": 20,
+          "money": 8000
+        },
+        "baseGain": {
+          "credit": 5
+        },
+        "recurring": "INVEST_car_flip",
+        "risk": {
+          "chance": 0.3,
+          "penalty": {
+            "money": -5000,
+            "san": -15
+          },
+          "text": "买回来才发现发动机有大问题。维修费比车价还贵。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 4
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "invest",
+          "trade"
+        ],
+        "subGroup": "invest_sub",
+        "showChance": 0.4
+      },
+      {
+        "id": "INV09",
+        "name": "投资奶茶店",
+        "nameEn": "Boba Tea Shop",
+        "category": "invest",
+        "type": "risky",
+        "description": "在大学城旁边开奶茶店。留学生的钱最好赚",
+        "quote": "冰博客脏脏茶是招牌。排队能排到门外。",
+        "cost": {
+          "san": 20,
+          "money": 25000
+        },
+        "baseGain": {
+          "credit": 8
+        },
+        "recurring": "INVEST_boba",
+        "risk": {
+          "chance": 0.3,
+          "penalty": {
+            "money": -15000,
+            "san": -20
+          },
+          "text": "隔壁开了家价格更低的奶茶店。你的客源被抢了大半。"
+        },
+        "unlock": {
+          "type": "condition",
+          "condition": "money > 30000"
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "invest",
+          "food"
+        ],
+        "subGroup": "invest_sub",
+        "showChance": 0.4
+      },
+      {
+        "id": "INV10",
+        "name": "买断洗衣房",
+        "nameEn": "Laundromat Buyout",
+        "category": "invest",
+        "type": "risky",
+        "description": "直接盘下一家现成的自助洗衣房。现金流稳定",
+        "quote": "上一个老板干了20年退休了。你接手的第一件事是把所有机器都翻新了。",
+        "cost": {
+          "san": 15,
+          "money": 60000
+        },
+        "baseGain": {
+          "credit": 10
+        },
+        "recurring": "INVEST_laundry_own",
+        "risk": {
+          "chance": 0.2,
+          "penalty": {
+            "money": -30000,
+            "san": -20
+          },
+          "text": "接手之后才发现设备老化严重。更换全部洗衣机的费用超出预算。"
+        },
+        "unlock": {
+          "type": "condition",
+          "condition": "money > 80000"
+        },
+        "limit": {
+          "cooldown": 5
+        },
+        "tags": [
+          "invest",
+          "real_estate"
+        ],
+        "subGroup": "invest_sub",
+        "showChance": 0.3
+      },
+      {
+        "id": "INV11",
+        "name": "做代购",
+        "nameEn": "Daigou Business",
+        "category": "invest",
+        "type": "random",
+        "description": "帮国内亲友代购美国货，赚个差价。奢侈品利润最高",
+        "quote": "行李箱里塞了30罐奶粉。海关小哥看你的眼神很微妙。",
+        "cost": {
+          "san": 15,
+          "money": 5000
+        },
+        "outcomes": [
+          {
+            "chance": 0.25,
+            "gain": {
+              "money": 12000,
+              "credit": 3
+            },
+            "text": "一单奢侈品代购赚了大几千！回头客越来越多。"
+          },
+          {
+            "chance": 0.45,
+            "gain": {
+              "money": 7000
+            },
+            "text": "稳定出单，赚了些辛苦钱。"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "money": 2000,
+              "san": -15
+            },
+            "text": "海关扣了你一批货。血本无归还被列入关注名单。"
+          }
+        ],
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "invest",
+          "trade"
+        ],
+        "subGroup": "invest_sub",
+        "showChance": 0.5
+      },
+      {
+        "id": "INV12",
+        "name": "投资电商选品",
+        "nameEn": "Amazon FBA Business",
+        "category": "invest",
+        "type": "risky",
+        "description": "在亚马逊上开店卖货。从义乌进货，发FBA仓库",
+        "quote": "选品选了一个月。最后决定卖手机壳——全世界最卷的品类。",
+        "cost": {
+          "san": 25,
+          "money": 15000
+        },
+        "baseGain": {
+          "credit": 5
+        },
+        "recurring": "INVEST_amazon_fba",
+        "risk": {
+          "chance": 0.35,
+          "penalty": {
+            "money": -10000,
+            "san": -20
+          },
+          "text": "库存积压。亚马逊仓储费吃掉了所有利润。最后清仓甩卖亏了一大笔。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 5
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "invest",
+          "ecommerce"
+        ],
+        "subGroup": "invest_sub",
+        "showChance": 0.35
       }
     ],
     "education": [
@@ -2710,6 +4067,354 @@
           "entertainment",
           "luxury"
         ]
+      },
+      {
+        "id": "SP05",
+        "name": "图书馆躺平",
+        "nameEn": "Library Refuge",
+        "category": "special",
+        "type": "fixed",
+        "description": "公共图书馆是穷人最后的庇护所。有暖气有WiFi有免费报纸",
+        "quote": "你在社科区的角落找了个位子。读了半本《了不起的盖茨比》后睡着了。",
+        "cost": {
+          "san": 0
+        },
+        "gain": {
+          "san": 15,
+          "health": 8
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "rest",
+          "free"
+        ],
+        "showChance": 0.7
+      },
+      {
+        "id": "SP06",
+        "name": "唐人街逛街",
+        "nameEn": "Chinatown Stroll",
+        "category": "special",
+        "type": "fixed",
+        "description": "在唐人街的小巷里闲逛。中药铺的味道让你想起了老家",
+        "quote": "买了一个糯米鸡和一杯港式奶茶。花了6块钱买了片刻的归属感。",
+        "cost": {
+          "money": 300
+        },
+        "gain": {
+          "san": 20,
+          "health": 10
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "entertainment",
+          "cheap"
+        ],
+        "showChance": 0.6
+      },
+      {
+        "id": "SP07",
+        "name": "跑步出汗",
+        "nameEn": "Stress-Relief Run",
+        "category": "special",
+        "type": "fixed",
+        "description": "穿上跑鞋在街区跑几圈。出一身汗什么烦恼都少了一半",
+        "quote": "跑到中央公园的湖边停下来喘气。鸭子们看你的眼神仿佛在说：you good bro?",
+        "cost": {
+          "san": 5
+        },
+        "gain": {
+          "san": 20,
+          "health": 15
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "rest",
+          "health"
+        ],
+        "showChance": 0.6
+      },
+      {
+        "id": "SP08",
+        "name": "打电话回家",
+        "nameEn": "Call Home",
+        "category": "special",
+        "type": "random",
+        "description": "打个越洋电话回家。妈妈总说一切都好让你别操心",
+        "quote": "电话那头沉默了几秒。你妈说吃饱没？你说吃了。其实今天只吃了一顿。",
+        "cost": {
+          "san": 5
+        },
+        "outcomes": [
+          {
+            "chance": 0.5,
+            "gain": {
+              "san": 30,
+              "health": 5
+            },
+            "text": "家里人说都挺好的。你挂了电话心里暖暖的。"
+          },
+          {
+            "chance": 0.3,
+            "gain": {
+              "san": 15
+            },
+            "text": "妈妈又问你什么时候回来。你说快了。"
+          },
+          {
+            "chance": 0.2,
+            "gain": {
+              "san": -10,
+              "health": -5
+            },
+            "text": "爸爸住院了。家里人一直瞒着你。你握着手机的手在发抖。"
+          }
+        ],
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "emotional"
+        ],
+        "showChance": 0.5
+      },
+      {
+        "id": "SP09",
+        "name": "去公园喂鸽子",
+        "nameEn": "Park Pigeon Feeding",
+        "category": "special",
+        "type": "fixed",
+        "description": "买一袋面包屑坐在公园长椅上喂鸽子。什么也不想",
+        "quote": "鸽子围了你一圈。你突然觉得自己是这个城市里最受欢迎的人。",
+        "cost": {
+          "money": 100
+        },
+        "gain": {
+          "san": 15,
+          "health": 5
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "rest",
+          "free"
+        ],
+        "showChance": 0.6
+      },
+      {
+        "id": "SP10",
+        "name": "二手书店淘书",
+        "nameEn": "Used Bookstore Browsing",
+        "category": "special",
+        "type": "fixed",
+        "description": "Strand书店的一美元书架。在旧书里找到别人夹的明信片",
+        "quote": "一本泛黄的《麦田里的守望者》。扉页上有前主人写的名字和一个日期。",
+        "cost": {
+          "money": 200
+        },
+        "gain": {
+          "san": 20,
+          "skills": 3
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "entertainment",
+          "education"
+        ],
+        "showChance": 0.5
+      },
+      {
+        "id": "SP11",
+        "name": "做一顿家乡菜",
+        "nameEn": "Cook Hometown Meal",
+        "category": "special",
+        "type": "fixed",
+        "description": "去华人超市买了食材，做了一顿正宗的家乡菜",
+        "quote": "红烧肉的香味飘满了整个走廊。隔壁的墨西哥大哥闻到了敲门问能不能尝尝。",
+        "cost": {
+          "money": 500
+        },
+        "gain": {
+          "san": 25,
+          "health": 15
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "emotional",
+          "food"
+        ],
+        "showChance": 0.6
+      },
+      {
+        "id": "SP12",
+        "name": "免费瑜伽课",
+        "nameEn": "Free Yoga Class",
+        "category": "special",
+        "type": "fixed",
+        "description": "社区中心的免费瑜伽课。教练说namaste的时候你差点念成拿马杀特",
+        "quote": "做了一个小时的拉伸。身体舒展了，心也舒展了一点点。",
+        "cost": {
+          "san": 5
+        },
+        "gain": {
+          "san": 20,
+          "health": 12
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "rest",
+          "health"
+        ],
+        "showChance": 0.5
+      },
+      {
+        "id": "SP13",
+        "name": "写日记",
+        "nameEn": "Journal Writing",
+        "category": "special",
+        "type": "fixed",
+        "description": "把今天的事情写下来。不知道给谁看，但写完了心里轻松一些",
+        "quote": "「今天又活过了一天。」这是你写得最多的一句话。",
+        "cost": {
+          "san": 0
+        },
+        "gain": {
+          "san": 12,
+          "health": 3
+        },
+        "unlock": {
+          "type": "default"
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "rest",
+          "emotional"
+        ],
+        "showChance": 0.5
+      },
+      {
+        "id": "SP14",
+        "name": "24小时健身房",
+        "nameEn": "24h Gym Workout",
+        "category": "special",
+        "type": "fixed",
+        "description": "办了最便宜的月卡。凌晨三点去撸铁没人跟你抢器械",
+        "quote": "从卧推40磅开始。三个月后推到了135磅。这是你在美国唯一拿得出手的成绩。",
+        "cost": {
+          "money": 600
+        },
+        "gain": {
+          "san": 25,
+          "health": 20
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 1
+        },
+        "tags": [
+          "health",
+          "exercise"
+        ],
+        "showChance": 0.5
+      },
+      {
+        "id": "SP15",
+        "name": "博物馆免费日",
+        "nameEn": "Museum Free Day",
+        "category": "special",
+        "type": "fixed",
+        "description": "大都会博物馆其实是自愿捐款。你给了1块钱然后逛了一整天",
+        "quote": "在莫奈的睡莲前站了半小时。保安以为你睡着了过来拍了拍你。",
+        "cost": {
+          "money": 100
+        },
+        "gain": {
+          "san": 30,
+          "skills": 2
+        },
+        "unlock": {
+          "type": "round",
+          "round": 2
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "entertainment",
+          "culture"
+        ],
+        "showChance": 0.4
+      },
+      {
+        "id": "SP16",
+        "name": "Coney Island一日",
+        "nameEn": "Coney Island Day",
+        "category": "special",
+        "type": "fixed",
+        "description": "坐地铁到终点站。海风、热狗和过山车",
+        "quote": "站在摩天轮最高点的时候你看到了整个布鲁克林。一瞬间觉得这一切都值了。",
+        "cost": {
+          "money": 1200
+        },
+        "gain": {
+          "san": 40,
+          "health": 15
+        },
+        "unlock": {
+          "type": "round",
+          "round": 3
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "entertainment",
+          "outdoor"
+        ],
+        "showChance": 0.4
       }
     ],
     "luxury": [
