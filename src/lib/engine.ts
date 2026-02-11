@@ -323,7 +323,7 @@ export function executeSettlement(state: GameState): SettlementResult {
     const housingLevel = parseInt(state.housingLevel);
     if (housingLevel >= 4) {
       const influenceGain = housingLevel === 4 ? 1 : housingLevel === 5 ? 3 : 5;
-      state.education.influence = Math.min(state.education.influence + influenceGain, 999);
+      state.education.influence = Math.min(state.education.influence + influenceGain, 9999);
       result.recurringEffects.push(`🏠住房影响力+${influenceGain}`);
     }
   }
@@ -449,7 +449,7 @@ export function executeSettlement(state: GameState): SettlementResult {
 
     // 处理影响力变化（慈善/政治类持续项目）
     if (item.monthlyInfluenceChange && item.monthlyInfluenceChange !== 0) {
-      state.education.influence = clamp(state.education.influence + item.monthlyInfluenceChange, 0, 100);
+      state.education.influence = clamp(state.education.influence + item.monthlyInfluenceChange, 0, 9999);
     }
 
     // 生成日志
@@ -470,7 +470,7 @@ export function executeSettlement(state: GameState): SettlementResult {
         if (item.type === 'education' && item.graduateBonus) {
           state.education.level = Math.max(state.education.level, item.graduateBonus.educationLevel);
           state.education.skills = clamp(state.education.skills + item.graduateBonus.skills, 0, 100);
-          state.education.influence = clamp(state.education.influence + item.graduateBonus.influence, 0, 100);
+          state.education.influence = clamp(state.education.influence + item.graduateBonus.influence, 0, 9999);
           state.education.schoolName = item.name;
           state.education.graduated = true;
           // 记录已毕业的学校（通过sourceActionId反查action的recurring模板ID）

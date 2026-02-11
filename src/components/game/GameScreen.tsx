@@ -11,6 +11,7 @@ import { MilestonePopup } from './MilestonePopup';
 import { RandomEventPopup } from './RandomEventPopup';
 import { DilemmaPopup } from './DilemmaPopup';
 import { DiseasePopup } from './DiseasePopup';
+import { LostRecurringPopup } from './LostRecurringPopup';
 
 type Tab = 'action' | 'recurring' | 'asset' | 'log' | 'settings';
 
@@ -60,6 +61,7 @@ export function GameScreen() {
       <MilestonePopup />
       <RandomEventPopup />
       <DiseasePopup />
+      <LostRecurringPopup />
       <DilemmaPopup />    </div>
   );
 }

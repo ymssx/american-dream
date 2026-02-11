@@ -356,9 +356,9 @@ function getOwnedAssets(state: { usedOneTimeBehaviors: string[]; behaviorUseCoun
       const baseId = asset.id.replace('_WIN', '');
       return (state.behaviorUseCount[baseId] || 0) > 0;
     }
-    // 商业/投资：检查recurring中是否有对应sourceActionId
+    // 商业/投资：只通过recurring中是否有对应sourceActionId来判断（倒闭后不再显示）
     if (asset.category === 'business' || asset.category === 'investment') {
-      if (state.recurringItems.some(r => r.sourceActionId === asset.id)) return true;
+      return state.recurringItems.some(r => r.sourceActionId === asset.id);
     }
     // 默认：通过已使用行为或使用次数检测
     if (state.usedOneTimeBehaviors.includes(asset.id)) return true;

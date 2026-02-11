@@ -94,6 +94,7 @@ function createDefaultState(): GameState {
     classLevel: 0,
     pendingRandomEvent: null,
     pendingDiseaseEvent: null,
+    pendingLostRecurring: [],
     pendingDilemma: null,
     // 暗黑系统
     currentWorldNews: [],
@@ -160,6 +161,7 @@ interface GameStore {
   resolveDilemma: (choice: 'A' | 'B') => { text: string; effects: Record<string, number> };
   dismissRandomEvent: () => void;
   dismissDiseaseEvent: () => void;
+  dismissLostRecurring: () => void;
   applyEffects: (effects: Record<string, number>) => void;
 }
 
@@ -404,7 +406,7 @@ export const useGameStore = create<GameStore>()(
               s.education.skills = clamp(s.education.skills + val, 0, 100);
               effectSummary.push(`技能${val >= 0 ? '+' : ''}${val}`);
             } else if (key === 'influence') {
-              s.education.influence = clamp(s.education.influence + val, 0, 100);
+              s.education.influence = clamp(s.education.influence + val, 0, 9999);
               effectSummary.push(`影响力${val >= 0 ? '+' : ''}${val}`);
             } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
               const maxVal = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
@@ -641,6 +643,11 @@ export const useGameStore = create<GameStore>()(
         }
         if (result.lostRecurring.length > 0) {
           result.lostRecurring.forEach(e => summaryParts.push(`⚠️${e}`));
+          // 设置弹窗显示被开除/倒闭的信息（排除毕业的）
+          const lostAlerts = result.lostRecurring.filter(e => !e.includes('毕业了'));
+          if (lostAlerts.length > 0) {
+            s.pendingLostRecurring = lostAlerts;
+          }
         }
 
         if (result.healthChange !== 0) {
@@ -686,7 +693,7 @@ export const useGameStore = create<GameStore>()(
             } else if (key === 'skills') {
               s.education.skills = clamp(s.education.skills + val, 0, 100);
             } else if (key === 'influence') {
-              s.education.influence = clamp(s.education.influence + val, 0, 100);
+              s.education.influence = clamp(s.education.influence + val, 0, 9999);
             } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
               const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
               (s.attributes as unknown as Record<string, number>)[key] = clamp(
@@ -758,9 +765,9 @@ export const useGameStore = create<GameStore>()(
                 s.money += val;
                 s.roundFinancials.income += val;
               } else if (key === 'skills') {
-                s.education.skills = clamp(s.education.skills + val, 0, 100);
+              s.education.skills = clamp(s.education.skills + val, 0, 100);
               } else if (key === 'influence') {
-                s.education.influence = clamp(s.education.influence + val, 0, 100);
+                s.education.influence = clamp(s.education.influence + val, 0, 9999);
               } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
                 const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
                 (s.attributes as unknown as Record<string, number>)[key] = clamp(
@@ -952,6 +959,10 @@ export const useGameStore = create<GameStore>()(
         state: { ...s.state, pendingDiseaseEvent: null },
       })),
 
+      dismissLostRecurring: () => set((s) => ({
+        state: { ...s.state, pendingLostRecurring: [] },
+      })),
+
       resolveDilemma: (choice) => {
         const s = get().state;
         const dilemma = s.pendingDilemma;
@@ -983,10 +994,10 @@ export const useGameStore = create<GameStore>()(
           if (typeof val !== 'number' || val === 0) continue;
           if (key === 'money') {
             s.money += val;
-          } else if (key === 'skills') {
+        } else if (key === 'skills') {
             s.education.skills = clamp(s.education.skills + val, 0, 100);
           } else if (key === 'influence') {
-            s.education.influence = clamp(s.education.influence + val, 0, 100);
+            s.education.influence = clamp(s.education.influence + val, 0, 9999);
           } else if (['health', 'san', 'credit', 'luck'].includes(key)) {
             const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
             (s.attributes as unknown as Record<string, number>)[key] = clamp(
@@ -1016,7 +1027,7 @@ export const useGameStore = create<GameStore>()(
           if (typeof val !== 'number' || val === 0) continue;
           if (key === 'money') s.money += val;
           else if (key === 'skills') s.education.skills = clamp(s.education.skills + val, 0, 100);
-          else if (key === 'influence') s.education.influence = clamp(s.education.influence + val, 0, 100);
+            else if (key === 'influence') s.education.influence = clamp(s.education.influence + val, 0, 9999);
           else if (['health', 'san', 'credit', 'luck'].includes(key)) {
             const maxV = key === 'san' ? s.maxSan : (key === 'credit' ? 850 : 100);
             (s.attributes as unknown as Record<string, number>)[key] = clamp(

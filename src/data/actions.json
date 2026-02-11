@@ -134,7 +134,7 @@
       "monthlyHealthCost": 5,
       "monthlySanCost": 15,
       "monthlyCreditChange": 3,
-      "loseChance": 0.08,
+      "loseChance": 0.04,
       "loseText": "经理说最近生意不好，你被排出了下个月的排班表。"
     },
     "WORK_warehouse": {
@@ -146,7 +146,7 @@
       "monthlyHealthCost": 12,
       "monthlySanCost": 20,
       "monthlyCreditChange": 5,
-      "loseChance": 0.1,
+      "loseChance": 0.05,
       "loseText": "效率评分连续三个月倒数。系统自动生成了你的离职信。"
     },
     "WORK_nail_salon": {
@@ -158,7 +158,7 @@
       "monthlyHealthCost": 8,
       "monthlySanCost": 18,
       "monthlyCreditChange": 4,
-      "loseChance": 0.06,
+      "loseChance": 0.03,
       "loseText": "老板娘说她侄女从国内来了，要把你的位置腾给她。"
     },
     "WORK_kitchen_chef": {
@@ -170,7 +170,7 @@
       "monthlyHealthCost": 15,
       "monthlySanCost": 25,
       "monthlyCreditChange": 5,
-      "loseChance": 0.05,
+      "loseChance": 0.03,
       "loseText": "餐馆因为拖欠税款被查封了。老板跑了，工资也没了。"
     },
     "WORK_uber_driver": {
@@ -182,7 +182,7 @@
       "monthlyHealthCost": 10,
       "monthlySanCost": 22,
       "monthlyCreditChange": 5,
-      "loseChance": 0.08,
+      "loseChance": 0.04,
       "loseText": "因为乘客投诉太多，平台永久封禁了你的账号。"
     },
     "WORK_office_clerk": {
@@ -194,7 +194,7 @@
       "monthlyHealthCost": 3,
       "monthlySanCost": 15,
       "monthlyCreditChange": 8,
-      "loseChance": 0.05,
+      "loseChance": 0.03,
       "loseText": "公司资金链断了。老板在群里发了句'大家各自珍重'就解散了。"
     },
     "WORK_programmer": {
@@ -206,7 +206,7 @@
       "monthlyHealthCost": 15,
       "monthlySanCost": 30,
       "monthlyCreditChange": 10,
-      "loseChance": 0.15,
+      "loseChance": 0.06,
       "loseText": "季度review评级Below Expectations。PIP通知已经在邮箱里了。60天内找不到新岗位就走人。"
     },
     "WORK_nurse_aide": {
@@ -218,7 +218,7 @@
       "monthlyHealthCost": 8,
       "monthlySanCost": 20,
       "monthlyCreditChange": 5,
-      "loseChance": 0.06,
+      "loseChance": 0.04,
       "loseText": "被家属投诉态度不好。主管说这行就是受气的，但还是让你走了。"
     },
     "INVEST_food_truck": {
@@ -232,7 +232,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 5,
       "monthlyCreditChange": 3,
-      "loseChance": 0.08,
+      "loseChance": 0.03,
       "loseText": "卫生局抽检不合格，营业许可被吊销了。",
       "canSell": true,
       "sellText": "关闭煎饼摊"
@@ -248,7 +248,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 0,
       "monthlyCreditChange": 2,
-      "loseChance": 0.05,
+      "loseChance": 0.02,
       "loseText": "售货机被人砸了，维修费比一台新的还贵。",
       "canSell": true,
       "sellText": "抛售售货机"
@@ -264,7 +264,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 3,
       "monthlyCreditChange": 5,
-      "loseChance": 0.04,
+      "loseChance": 0.02,
       "loseText": "水管爆裂淹了整个店面。保险不赔，修缮费用让你血本无归。",
       "canSell": true,
       "sellText": "关闭洗衣房"
@@ -280,7 +280,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 5,
       "monthlyCreditChange": 8,
-      "loseChance": 0.06,
+      "loseChance": 0.03,
       "loseText": "合伙人卷款跑了。你的投资打了水漂。",
       "canSell": true,
       "sellText": "关闭餐馆"
@@ -296,7 +296,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 0,
       "monthlyCreditChange": 10,
-      "loseChance": 0.1,
+      "loseChance": 0.04,
       "loseText": "公司资金链断裂，创始人被SEC调查。你的股权变成废纸。",
       "canSell": true,
       "sellText": "抛售股份"
@@ -312,7 +312,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 8,
       "monthlyCreditChange": 0,
-      "loseChance": 0.12,
+      "loseChance": 0.05,
       "loseText": "交易所跑路了。你的加密资产永久冻结在链上。",
       "canSell": true,
       "sellText": "清仓卖出"
@@ -328,7 +328,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 0,
       "monthlyCreditChange": 3,
-      "loseChance": 0.03,
+      "loseChance": 0.01,
       "loseText": "遇到股灾，基金净值跌去40%。你的投资大幅缩水。",
       "canSell": true,
       "sellText": "赎回基金"
@@ -536,7 +536,7 @@
       "monthlyHealthCost": 5,
       "monthlySanCost": 15,
       "monthlyCreditChange": 4,
-      "loseChance": 0.07,
+      "loseChance": 0.04,
       "loseText": "旺季过了不需要这么多人了。你的排班被悄悄取消了。"
     },
     "WORK_carwash": {
@@ -548,7 +548,7 @@
       "monthlyHealthCost": 8,
       "monthlySanCost": 12,
       "monthlyCreditChange": 3,
-      "loseChance": 0.06,
+      "loseChance": 0.03,
       "loseText": "老板把店卖了。新老板说要用自己人。"
     },
     "WORK_hotel": {
@@ -560,7 +560,7 @@
       "monthlyHealthCost": 3,
       "monthlySanCost": 18,
       "monthlyCreditChange": 8,
-      "loseChance": 0.06,
+      "loseChance": 0.03,
       "loseText": "酒店因为防疫原因关门了。前台自然也不需要了。"
     },
     "WORK_massage": {
@@ -572,7 +572,7 @@
       "monthlyHealthCost": 10,
       "monthlySanCost": 15,
       "monthlyCreditChange": 4,
-      "loseChance": 0.05,
+      "loseChance": 0.03,
       "loseText": "店被举报无照经营。关门整顿，你也跟着失业了。"
     },
     "WORK_dispatcher": {
@@ -584,7 +584,7 @@
       "monthlyHealthCost": 5,
       "monthlySanCost": 25,
       "monthlyCreditChange": 5,
-      "loseChance": 0.08,
+      "loseChance": 0.04,
       "loseText": "公司裁员。你的岗位被AI系统替代了。"
     },
     "WORK_market": {
@@ -596,7 +596,7 @@
       "monthlyHealthCost": 8,
       "monthlySanCost": 15,
       "monthlyCreditChange": 3,
-      "loseChance": 0.06,
+      "loseChance": 0.03,
       "loseText": "超市搬迁到更远的地方。你通勤不了只能辞职。"
     },
     "WORK_fine_dining": {
@@ -608,7 +608,7 @@
       "monthlyHealthCost": 5,
       "monthlySanCost": 25,
       "monthlyCreditChange": 10,
-      "loseChance": 0.1,
+      "loseChance": 0.05,
       "loseText": "经理说客人反馈你的英语口音太重。很遗憾你不适合这里。"
     },
     "WORK_sorter": {
@@ -620,7 +620,7 @@
       "monthlyHealthCost": 10,
       "monthlySanCost": 18,
       "monthlyCreditChange": 5,
-      "loseChance": 0.08,
+      "loseChance": 0.04,
       "loseText": "旺季过后开始裁临时工。你的合同没被续签。"
     },
     "WORK_accounting": {
@@ -632,7 +632,7 @@
       "monthlyHealthCost": 3,
       "monthlySanCost": 20,
       "monthlyCreditChange": 10,
-      "loseChance": 0.06,
+      "loseChance": 0.03,
       "loseText": "报税季结束后事务所缩编了。你是最后进来的，也是最先走的。"
     },
     "WORK_pharmacy": {
@@ -644,8 +644,80 @@
       "monthlyHealthCost": 3,
       "monthlySanCost": 15,
       "monthlyCreditChange": 6,
-      "loseChance": 0.05,
+      "loseChance": 0.03,
       "loseText": "药房被连锁巨头收购了。原来的员工全部解散重新招聘。"
+    },
+    "WORK_construction_foreman": {
+      "type": "work",
+      "name": "工地工长",
+      "icon": "🏗️",
+      "description": "从搬砖升到管人。管理一个小团队，收入翻倍",
+      "monthlyIncome": 9500,
+      "monthlyHealthCost": 10,
+      "monthlySanCost": 18,
+      "monthlyCreditChange": 8,
+      "loseChance": 0.03,
+      "loseText": "工程结束了，新项目还没谈下来。你和你的团队都暂时没活干。"
+    },
+    "WORK_real_estate_agent": {
+      "type": "work",
+      "name": "房产经纪人",
+      "icon": "🏠",
+      "description": "帮人买卖房子赚佣金。收入波动大但上限高",
+      "monthlyIncome": 12000,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 20,
+      "monthlyCreditChange": 10,
+      "loseChance": 0.04,
+      "loseText": "房市突然遇冷，连续三个月零成交。经纪公司开始裁人了。"
+    },
+    "WORK_clinic_manager": {
+      "type": "work",
+      "name": "诊所运营经理",
+      "icon": "🏥",
+      "description": "华人诊所的运营管理。医疗行业稳定且待遇好",
+      "monthlyIncome": 10000,
+      "monthlyHealthCost": 3,
+      "monthlySanCost": 15,
+      "monthlyCreditChange": 12,
+      "loseChance": 0.02,
+      "loseText": "诊所因为医疗事故被起诉了。官司缠身，运营陷入停顿。"
+    },
+    "WORK_trade_company": {
+      "type": "work",
+      "name": "贸易公司经理",
+      "icon": "📦",
+      "description": "中美贸易公司。负责供应链和客户关系",
+      "monthlyIncome": 15000,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 25,
+      "monthlyCreditChange": 12,
+      "loseChance": 0.04,
+      "loseText": "中美关系紧张，公司被列入制裁名单。业务全面停摆。"
+    },
+    "WORK_finance_analyst": {
+      "type": "work",
+      "name": "金融分析师",
+      "icon": "📊",
+      "description": "华尔街小基金公司的初级分析师。高压高薪",
+      "monthlyIncome": 18000,
+      "monthlyHealthCost": 8,
+      "monthlySanCost": 30,
+      "monthlyCreditChange": 15,
+      "loseChance": 0.05,
+      "loseText": "基金业绩连续跑输大盘。合伙人决定缩减团队规模。"
+    },
+    "WORK_hospital_tech": {
+      "type": "work",
+      "name": "医院技术员",
+      "icon": "🔬",
+      "description": "医院检验科/放射科技术员。稳定且有福利",
+      "monthlyIncome": 8000,
+      "monthlyHealthCost": 5,
+      "monthlySanCost": 15,
+      "monthlyCreditChange": 10,
+      "loseChance": 0.02,
+      "loseText": "医院合并重组，你的岗位被合并到另一个城市的分院。"
     },
     "INVEST_car_flip": {
       "type": "invest",
@@ -658,7 +730,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 5,
       "monthlyCreditChange": 3,
-      "loseChance": 0.15,
+      "loseChance": 0.05,
       "loseText": "买到了一辆出过重大事故的车。DMV不给过户。",
       "canSell": true,
       "sellText": "停止翻车生意"
@@ -674,7 +746,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 5,
       "monthlyCreditChange": 5,
-      "loseChance": 0.1,
+      "loseChance": 0.03,
       "loseText": "租约到期房东涨了两倍房租。利润撑不住了。",
       "canSell": true,
       "sellText": "关闭奶茶店"
@@ -690,7 +762,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 3,
       "monthlyCreditChange": 8,
-      "loseChance": 0.08,
+      "loseChance": 0.03,
       "loseText": "楼上水管爆裂淹了店面。保险理赔周期要半年。",
       "canSell": true,
       "sellText": "出售洗衣房"
@@ -706,7 +778,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 8,
       "monthlyCreditChange": 3,
-      "loseChance": 0.15,
+      "loseChance": 0.05,
       "loseText": "账号因为差评太多被亚马逊封了。申诉三次都没通过。",
       "canSell": true,
       "sellText": "关闭店铺清仓"
@@ -722,7 +794,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 5,
       "monthlyCreditChange": 4,
-      "loseChance": 0.12,
+      "loseChance": 0.04,
       "loseText": "卫生检查不合格。连续两次不过就吊销营业执照。",
       "canSell": true,
       "sellText": "关闭甜品店"
@@ -738,7 +810,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 2,
       "monthlyCreditChange": 8,
-      "loseChance": 0.08,
+      "loseChance": 0.03,
       "loseText": "市政府规划修路，你的停车场被征收了。补偿金远低于市场价。",
       "canSell": true,
       "sellText": "出售停车场"
@@ -754,7 +826,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 5,
       "monthlyCreditChange": 6,
-      "loseChance": 0.1,
+      "loseChance": 0.04,
       "loseText": "连续被持枪抢劫。保险拒赔。你决定关门止损。",
       "canSell": true,
       "sellText": "关闭便利店"
@@ -770,7 +842,7 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 3,
       "monthlyCreditChange": 10,
-      "loseChance": 0.08,
+      "loseChance": 0.03,
       "loseText": "租客搬走时把房子砸了个稀烂。维修费加上空租期损失惨重。",
       "canSell": true,
       "sellText": "卖掉公寓"
@@ -786,9 +858,8 @@
       "monthlyHealthCost": 0,
       "monthlySanCost": 8,
       "monthlyCreditChange": 5,
-      "loseChance": 0.12,
-      "loseText": "被邻居举报扰民+非法经营。移民局上门调查，只能关门跑路。",
-      "canSell": true,
+      "loseChance": 0.04,
+      "loseText": "被邻居举报扰民+非法经营。移民局上门调查，只能关门跑路。",      "canSell": true,
       "sellText": "关闭月子中心"
     },
     "LUX_charity_fund": {
@@ -3223,6 +3294,264 @@
         "showChance": 0.4
       },
       {
+        "id": "W19",
+        "name": "应聘工地工长 💰$9500/月",
+        "nameEn": "Construction Foreman",
+        "category": "earn",
+        "type": "risky",
+        "description": "管理一个工地小团队。需要经验和领导力",
+        "quote": "从搬砖的变成管搬砖的。每天嗓子喊到嘶哑，但工资终于体面了。",
+        "cost": {
+          "san": 30
+        },
+        "baseGain": {
+          "credit": 8
+        },
+        "recurring": "WORK_construction_foreman",
+        "requirements": {
+          "skills": 20
+        },
+        "risk": {
+          "chance": 0.3,
+          "penalty": {
+            "san": -15,
+            "credit": -5
+          },
+          "text": "工人不服你管。项目经理觉得你镇不住场面。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 6
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "work",
+          "labor",
+          "high_income"
+        ],
+        "subGroup": "job",
+        "showChance": 0.35
+      },
+      {
+        "id": "W20",
+        "name": "应聘房产经纪人 💰$12000/月",
+        "nameEn": "Real Estate Agent",
+        "category": "earn",
+        "type": "risky",
+        "description": "帮人买卖房产赚佣金。口才和人脉缺一不可",
+        "quote": "带客户看了第十套房。他说这个也不满意。你的笑容已经僵了。",
+        "cost": {
+          "san": 35
+        },
+        "baseGain": {
+          "credit": 10,
+          "influence": 5
+        },
+        "recurring": "WORK_real_estate_agent",
+        "requirements": {
+          "skills": 30,
+          "educationLevel": 1,
+          "credit": 650
+        },
+        "risk": {
+          "chance": 0.35,
+          "penalty": {
+            "san": -20,
+            "credit": -5
+          },
+          "text": "连续三个月没开单。经纪公司说你不适合做销售。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 8
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "work",
+          "sales",
+          "high_income"
+        ],
+        "subGroup": "job",
+        "showChance": 0.3
+      },
+      {
+        "id": "W21",
+        "name": "应聘诊所运营经理 💰$10000/月",
+        "nameEn": "Clinic Operations Manager",
+        "category": "earn",
+        "type": "risky",
+        "description": "华人诊所运营管理。医疗行业稳定待遇好",
+        "quote": "管理整个诊所的日常运营。病人投诉、医生排班、保险对接——你就是这里的大管家。",
+        "cost": {
+          "san": 30
+        },
+        "baseGain": {
+          "credit": 12,
+          "influence": 3
+        },
+        "recurring": "WORK_clinic_manager",
+        "requirements": {
+          "skills": 35,
+          "educationLevel": 2
+        },
+        "risk": {
+          "chance": 0.3,
+          "penalty": {
+            "san": -20,
+            "credit": -5
+          },
+          "text": "和主治医生闹矛盾了。诊所老板选择站在医生那边。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 10
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "work",
+          "medical",
+          "high_income"
+        ],
+        "subGroup": "job",
+        "showChance": 0.25
+      },
+      {
+        "id": "W22",
+        "name": "应聘贸易公司经理 💰$15000/月",
+        "nameEn": "Trade Company Manager",
+        "category": "earn",
+        "type": "risky",
+        "description": "中美贸易公司中层管理。负责供应链和大客户",
+        "quote": "每天在中英文之间无缝切换。集装箱、报关单、清关费——你用两种语言算同一笔账。",
+        "cost": {
+          "san": 35
+        },
+        "baseGain": {
+          "credit": 12,
+          "influence": 5
+        },
+        "recurring": "WORK_trade_company",
+        "requirements": {
+          "skills": 40,
+          "educationLevel": 2,
+          "credit": 680
+        },
+        "risk": {
+          "chance": 0.35,
+          "penalty": {
+            "san": -25,
+            "credit": -10
+          },
+          "text": "一批货被海关扣了。老板认为是你的疏忽导致的。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 12
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "work",
+          "office",
+          "high_income"
+        ],
+        "subGroup": "job",
+        "showChance": 0.2
+      },
+      {
+        "id": "W23",
+        "name": "应聘金融分析师 💰$18000/月",
+        "nameEn": "Financial Analyst",
+        "category": "earn",
+        "type": "risky",
+        "description": "华尔街小基金公司分析师。高压高薪",
+        "quote": "每天盯着Bloomberg终端到凌晨。你的Excel模型比你的命还重要。",
+        "cost": {
+          "san": 40
+        },
+        "baseGain": {
+          "credit": 15,
+          "influence": 5,
+          "skills": 5
+        },
+        "recurring": "WORK_finance_analyst",
+        "requirements": {
+          "skills": 50,
+          "educationLevel": 3,
+          "credit": 700
+        },
+        "risk": {
+          "chance": 0.4,
+          "penalty": {
+            "san": -25,
+            "credit": -10
+          },
+          "text": "你做的模型预测完全跑偏了。基金经理对你失去了信心。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 15
+        },
+        "limit": {
+          "cooldown": 3
+        },
+        "tags": [
+          "work",
+          "finance",
+          "high_income"
+        ],
+        "subGroup": "job",
+        "showChance": 0.15
+      },
+      {
+        "id": "W24",
+        "name": "应聘医院技术员 💰$8000/月",
+        "nameEn": "Hospital Technician",
+        "category": "earn",
+        "type": "risky",
+        "description": "医院检验科/放射科技术员。稳定有福利",
+        "quote": "穿上白大褂的那一刻，你觉得自己终于不再是底层了。虽然做的是机器操作，但毕竟是在医院。",
+        "cost": {
+          "san": 25
+        },
+        "baseGain": {
+          "credit": 10
+        },
+        "recurring": "WORK_hospital_tech",
+        "requirements": {
+          "skills": 25,
+          "educationLevel": 1
+        },
+        "risk": {
+          "chance": 0.25,
+          "penalty": {
+            "san": -15
+          },
+          "text": "操作设备时出了小失误。虽然没造成后果，但主管认为你需要更多培训。"
+        },
+        "unlock": {
+          "type": "round",
+          "round": 6
+        },
+        "limit": {
+          "cooldown": 2
+        },
+        "tags": [
+          "work",
+          "medical",
+          "skilled"
+        ],
+        "subGroup": "job",
+        "showChance": 0.3
+      },
+      {
         "id": "INV01",
         "name": "摆煎饼摊",
         "nameEn": "Food Cart Business",
@@ -4557,8 +4886,7 @@
         },
         "gain": {
           "san": 10,
-          "health": 5,
-          "credit": -25
+          "health": 3
         },
         "unlock": {
           "type": "default"
@@ -4583,7 +4911,7 @@
           "san": 20
         },
         "gain": {
-          "health": 15,
+          "health": 8,
           "money": 500
         },
         "unlock": {
@@ -4611,8 +4939,7 @@
           "money": 800
         },
         "gain": {
-          "san": 25,
-          "health": 10
+          "san": 25
         },
         "unlock": {
           "type": "default"
@@ -4637,7 +4964,7 @@
         },
         "gain": {
           "san": 35,
-          "health": 20
+          "health": 5
         },
         "unlock": {
           "type": "default"
@@ -4663,7 +4990,7 @@
         },
         "gain": {
           "san": 60,
-          "health": 30
+          "health": 8
         },
         "unlock": {
           "type": "round",
@@ -4689,8 +5016,7 @@
           "san": 0
         },
         "gain": {
-          "san": 15,
-          "health": 8
+          "san": 15
         },
         "unlock": {
           "type": "default"
@@ -4716,8 +5042,7 @@
           "money": 300
         },
         "gain": {
-          "san": 20,
-          "health": 10
+          "san": 20
         },
         "unlock": {
           "type": "default"
@@ -4744,7 +5069,7 @@
         },
         "gain": {
           "san": 20,
-          "health": 15
+          "health": 8
         },
         "unlock": {
           "type": "default"
@@ -4817,8 +5142,7 @@
           "money": 100
         },
         "gain": {
-          "san": 15,
-          "health": 5
+          "san": 15
         },
         "unlock": {
           "type": "default"
@@ -4872,7 +5196,7 @@
         },
         "gain": {
           "san": 25,
-          "health": 15
+          "health": 8
         },
         "unlock": {
           "type": "default"
@@ -4899,7 +5223,7 @@
         },
         "gain": {
           "san": 20,
-          "health": 12
+          "health": 5
         },
         "unlock": {
           "type": "round",
@@ -4954,7 +5278,7 @@
         },
         "gain": {
           "san": 25,
-          "health": 20
+          "health": 10
         },
         "unlock": {
           "type": "round",
@@ -5010,7 +5334,7 @@
         },
         "gain": {
           "san": 40,
-          "health": 15
+          "health": 3
         },
         "unlock": {
           "type": "round",

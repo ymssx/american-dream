@@ -48,6 +48,13 @@ export function ActionPanel() {
       // 已解锁但不能执行 > 未解锁
       if (a.unlocked && !b.unlocked) return -1;
       if (!a.unlocked && b.unlocked) return 1;
+      // 在搞钱分类下，按recurring模板月薪从高到低排序
+      if (selectedCategory === 'earn') {
+        const templates = (actionsData as unknown as Record<string, Record<string, Record<string, unknown>>>).recurringTemplates;
+        const aSalary = a.recurring && templates?.[a.recurring] ? (templates[a.recurring].monthlyIncome as number || 0) : (a.gain?.money || 0);
+        const bSalary = b.recurring && templates?.[b.recurring] ? (templates[b.recurring].monthlyIncome as number || 0) : (b.gain?.money || 0);
+        if (aSalary !== bSalary) return bSalary - aSalary;
+      }
       return 0;
     });
 
@@ -252,10 +259,15 @@ export function ActionPanel() {
     const restActions = behaviors
       .filter(b => b.category === 'special' && b.type === 'fixed' && b.canExecute && b.unlocked && !excludedRestIds.has(b.id));
     const results: string[] = [];
+    const actualGains: Record<string, number> = {};
     for (const action of restActions) {
       const result = executeBehavior(action.id);
       if (result.success) {
         results.push(action.name);
+        const actionGains = action.gain || {};
+        for (const [k, v] of Object.entries(actionGains)) {
+          if (typeof v === 'number' && v > 0) actualGains[k] = (actualGains[k] || 0) + v;
+        }
       }
     }
     setShowQuickRest(false);
@@ -264,15 +276,15 @@ export function ActionPanel() {
       setLastResult({
         behavior: { name: '一键休整', icon: '🛋️' },
         narrative: `完成了 ${results.length} 项休整：${results.join('、')}`,
-        effectSummary: Object.entries(activeRestTotals.gains)
+        effectSummary: Object.entries(actualGains)
           .map(([k, v]) => {
             const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
             return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
           }).join(' '),
-        gain: activeRestTotals.gains,
+        gain: actualGains,
       });
     }
-  }, [behaviors, executeBehavior, activeRestTotals, excludedRestIds]);
+  }, [behaviors, executeBehavior, excludedRestIds]);
 
   // ====== 一键搞钱 ======
   // 筛选 earn 分类下 type=fixed、能执行的行为，排除可能致死的
@@ -343,6 +355,7 @@ export function ActionPanel() {
         return true;
       });
     const results: string[] = [];
+    const actualGains: Record<string, number> = {};
     for (const action of earnActions) {
       // 每次执行前再次检查状态，防止连续执行中状态变化导致死亡
       const currentState = useGameStore.getState().state;
@@ -353,6 +366,11 @@ export function ActionPanel() {
       const result = executeBehavior(action.id);
       if (result.success) {
         results.push(action.name);
+        // 累计实际收益
+        const actionGains = action.gain || {};
+        for (const [k, v] of Object.entries(actionGains)) {
+          if (typeof v === 'number' && v > 0) actualGains[k] = (actualGains[k] || 0) + v;
+        }
       }
     }
     setShowQuickEarn(false);
@@ -361,15 +379,15 @@ export function ActionPanel() {
       setLastResult({
         behavior: { name: `打了${results.length}份工`, icon: '💵' },
         narrative: `今天干了 ${results.length} 份零工：${results.join('、')}`,
-        effectSummary: Object.entries(activeEarnTotals.gains)
+        effectSummary: Object.entries(actualGains)
           .map(([k, v]) => {
             const n: Record<string, string> = { health: '体力', san: 'SAN', credit: '信用', money: '资金', skills: '技能', influence: '影响力' };
             return `${n[k] || k}+${k === 'money' ? `$${v}` : v}`;
           }).join(' '),
-        gain: activeEarnTotals.gains,
+        gain: actualGains,
       });
     }
-  }, [behaviors, executeBehavior, activeEarnTotals, excludedEarnIds, state.attributes.health, state.attributes.san]);
+  }, [behaviors, executeBehavior, excludedEarnIds, state.attributes.health, state.attributes.san]);
   const dismissResult = useCallback(() => {
     setLastResult(null);
     // 操作结果弹窗关闭后，再展示暂存的里程碑

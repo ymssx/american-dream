@@ -196,6 +196,9 @@ export interface GameState {
   // 疾病事件弹窗
   pendingDiseaseEvent: PendingDiseaseEvent | null;
 
+  // 被开除/投资倒闭弹窗
+  pendingLostRecurring: string[];
+
   // 抉择事件
   pendingDilemma: DilemmaEvent | null;
 
