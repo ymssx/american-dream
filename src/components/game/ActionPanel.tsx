@@ -590,7 +590,7 @@ export function ActionPanel() {
         </div>
 
         {/* 固定底部按钮 */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
           <button
             onClick={nextRound}
             className="w-full px-8 py-3 bg-red-900 hover:bg-red-800 text-red-100 rounded-lg text-lg font-bold transition-colors border border-red-700/50"
@@ -1065,7 +1065,7 @@ export function ActionPanel() {
       </div>
 
       {/* 结算按钮 — 固定在底部 */}
-      <div className="flex-shrink-0 p-4 border-t border-red-900/30 bg-black/80 z-10">
+      <div className="flex-shrink-0 p-4 border-t border-red-900/30 bg-black/80 z-10" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
         <div className="flex gap-3">
           <div className="flex-1 text-xs text-gray-600">
             🧠 {state.attributes.san}/{state.maxSan} · 已执行 {state.roundBehaviors.length} 个行动

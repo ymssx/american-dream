@@ -81,7 +81,7 @@ export function DeathScreen() {
       </div>
 
       {/* 固定在底部的重新开始按钮 */}
-      <div className="flex-shrink-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm">
+      <div className="flex-shrink-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
         <button
           onClick={resetGame}
           className="w-full px-10 py-4 bg-red-700 hover:bg-red-600 text-white text-xl rounded-lg transition-all font-bold"
