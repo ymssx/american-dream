@@ -32,9 +32,9 @@ export function DeathScreen() {
   const deathInfo = deathReasons[death.type || 'health'] || deathReasons.health;
 
   return (
-    <div className="h-screen bg-black text-white flex flex-col">
+    <div className="bg-black text-white flex flex-col" style={{ height: '100dvh' }}>
       {/* 可滚动的内容区域 */}
-      <div className="flex-1 overflow-y-auto px-6 py-12 pb-28">
+      <div className="flex-1 overflow-y-auto px-6 py-12" style={{ paddingBottom: '120px' }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -80,8 +80,11 @@ export function DeathScreen() {
         </motion.div>
       </div>
 
-      {/* 固定在底部的重新开始按钮 */}
-      <div className="flex-shrink-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
+      {/* 固定在底部的重新开始按钮 - 使用 fixed 定位确保不被 Safari 地址栏遮挡 */}
+      <div
+        className="fixed bottom-0 left-0 right-0 p-4 bg-black border-t border-red-900/40 z-50"
+        style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 1rem))' }}
+      >
         <button
           onClick={resetGame}
           className="w-full px-10 py-4 bg-red-700 hover:bg-red-600 text-white text-xl rounded-lg transition-all font-bold"
