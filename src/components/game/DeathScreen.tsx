@@ -32,12 +32,12 @@ export function DeathScreen() {
   const deathInfo = deathReasons[death.type || 'health'] || deathReasons.health;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center overflow-y-auto px-6 py-12">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        className="max-w-2xl text-center"
+        className="max-w-2xl w-full text-center my-auto"
       >
         <div className="text-6xl mb-6">{deathInfo.icon}</div>
         <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${deathInfo.color}`}>

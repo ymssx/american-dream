@@ -289,19 +289,21 @@ export function ActionPanel() {
   // ====== 一键搞钱 ======
   // 筛选 earn 分类下 type=fixed、能执行的行为，排除可能致死的
   const prepareQuickEarn = useCallback(() => {
-    const earnActions = behaviors
-      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked)
-      .filter(b => {
-        // 排除可能致死的行为
-        const costHealth = (b.cost as Record<string, number>)?.health || 0;
-        const costSan = (b.cost as Record<string, number>)?.san || 0;
-        if (costHealth > 0 && costHealth >= state.attributes.health) return false;
-        if (costSan > 0 && costSan >= state.attributes.san) return false;
-        // 排除健康或SAN消耗过大的（剩余低于20就跳过）
-        if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
-        if (costSan > 0 && state.attributes.san - costSan < 15) return false;
-        return true;
-      });
+    // 模拟累计消耗，确保预览展示的行为全部能执行完
+    const candidates = behaviors
+      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked);
+    let simHealth = state.attributes.health;
+    let simSan = state.attributes.san;
+    const earnActions = candidates.filter(b => {
+      const costHealth = (b.cost as Record<string, number>)?.health || 0;
+      const costSan = (b.cost as Record<string, number>)?.san || 0;
+      if (costHealth > 0 && simHealth - costHealth < 5) return false;
+      if (costSan > 0 && simSan - costSan < 5) return false;
+      // 通过检查则扣减模拟值
+      simHealth -= costHealth;
+      simSan -= costSan;
+      return true;
+    });
     if (earnActions.length === 0) return;
 
     const items: Array<{ id: string; name: string; icon: string; costText: string; gainText: string }> = [];
@@ -343,26 +345,29 @@ export function ActionPanel() {
   }, [behaviors, state.attributes.health, state.attributes.san]);
 
   const executeQuickEarn = useCallback(() => {
-    const earnActions = behaviors
-      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked && !excludedEarnIds.has(b.id))
-      .filter(b => {
-        const costHealth = (b.cost as Record<string, number>)?.health || 0;
-        const costSan = (b.cost as Record<string, number>)?.san || 0;
-        if (costHealth > 0 && costHealth >= state.attributes.health) return false;
-        if (costSan > 0 && costSan >= state.attributes.san) return false;
-        if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
-        if (costSan > 0 && state.attributes.san - costSan < 15) return false;
-        return true;
-      });
+    // 与预览一致，模拟累计消耗来筛选可执行的行为
+    const candidates = behaviors
+      .filter(b => b.category === 'earn' && b.subGroup === 'gig' && b.type === 'fixed' && b.canExecute && b.unlocked && !excludedEarnIds.has(b.id));
+    let simHealth = state.attributes.health;
+    let simSan = state.attributes.san;
+    const earnActions = candidates.filter(b => {
+      const costHealth = (b.cost as Record<string, number>)?.health || 0;
+      const costSan = (b.cost as Record<string, number>)?.san || 0;
+      if (costHealth > 0 && simHealth - costHealth < 5) return false;
+      if (costSan > 0 && simSan - costSan < 5) return false;
+      simHealth -= costHealth;
+      simSan -= costSan;
+      return true;
+    });
     const results: string[] = [];
     const actualGains: Record<string, number> = {};
     for (const action of earnActions) {
-      // 每次执行前再次检查状态，防止连续执行中状态变化导致死亡
+      // 每次执行前再次检查实时状态作为安全兜底
       const currentState = useGameStore.getState().state;
       const costHealth = (action.cost as Record<string, number>)?.health || 0;
       const costSan = (action.cost as Record<string, number>)?.san || 0;
-      if (costHealth > 0 && currentState.attributes.health - costHealth < 15) break;
-      if (costSan > 0 && currentState.attributes.san - costSan < 10) break;
+      if (costHealth > 0 && currentState.attributes.health - costHealth < 5) break;
+      if (costSan > 0 && currentState.attributes.san - costSan < 5) break;
       const result = executeBehavior(action.id);
       if (result.success) {
         results.push(action.name);
@@ -993,12 +998,17 @@ export function ActionPanel() {
             ) : null;
           })()}
           {selectedCategory === 'earn' && (() => {
+            // 模拟累计消耗来计算实际能执行的数量
+            let simH = state.attributes.health;
+            let simS = state.attributes.san;
             const earnCount = behaviors.filter(b => {
               if (b.category !== 'earn' || b.subGroup !== 'gig' || b.type !== 'fixed' || !b.canExecute || !b.unlocked) return false;
               const costHealth = (b.cost as Record<string, number>)?.health || 0;
               const costSan = (b.cost as Record<string, number>)?.san || 0;
-              if (costHealth > 0 && state.attributes.health - costHealth < 20) return false;
-              if (costSan > 0 && state.attributes.san - costSan < 15) return false;
+              if (costHealth > 0 && simH - costHealth < 5) return false;
+              if (costSan > 0 && simS - costSan < 5) return false;
+              simH -= costHealth;
+              simS -= costSan;
               return true;
             }).length;
             return earnCount > 0 ? (
