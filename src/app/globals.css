@@ -5,14 +5,12 @@
   --foreground: #ffffff;
 }
 
-/* 禁止移动端页面整体拖动/弹性滚动 */
+/* 禁止移动端页面整体弹性滚动，但允许内部滚动 */
 html {
-  position: fixed;
   width: 100%;
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  -webkit-overflow-scrolling: auto;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -21,12 +19,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  position: fixed;
   width: 100%;
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  touch-action: none;
 }
 
 /* 允许内部可滚动区域正常滚动 */

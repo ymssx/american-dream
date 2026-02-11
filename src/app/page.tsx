@@ -18,7 +18,7 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="bg-black flex items-center justify-center" style={{ height: '100dvh' }}>
         <div className="text-gray-500 text-lg animate-pulse">Loading...</div>
       </div>
     );

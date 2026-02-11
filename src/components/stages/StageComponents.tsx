@@ -29,7 +29,7 @@ export function StageS00() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen flex items-center justify-center bg-black"
+        className="flex items-center justify-center bg-black" style={{ height: '100dvh' }}
       >
         <button
           onClick={() => setStage('S01')}
@@ -42,7 +42,7 @@ export function StageS00() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-gray-300 flex flex-col items-center justify-center px-6">
+    <div className="bg-black text-gray-300 flex flex-col items-center justify-center px-6 overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <AnimatePresence mode="wait">
         <motion.div
@@ -78,7 +78,7 @@ export function StageS01() {
   const stage = stagesData.S01;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white flex flex-col items-center justify-center px-6">
+    <div className="bg-gradient-to-b from-gray-900 to-black text-white flex flex-col items-center justify-center px-6 overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
@@ -125,7 +125,7 @@ export function StageS02() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
+    <div className="bg-gray-950 text-white px-6 py-12 overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <div className="max-w-4xl mx-auto">
         <motion.h2
@@ -172,7 +172,7 @@ export function StageS02b() {
 
   if (idx >= scenes.length) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="bg-black flex items-center justify-center" style={{ height: '100dvh' }}>
         <button
           onClick={() => setStage('S03')}
           className="px-8 py-4 text-xl bg-red-700 hover:bg-red-600 text-white rounded-lg"
@@ -186,7 +186,7 @@ export function StageS02b() {
   const scene = scenes[idx];
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+    <div className="bg-black text-white flex flex-col items-center justify-center px-6 overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <AnimatePresence mode="wait">
         <motion.div
@@ -219,10 +219,10 @@ export function StageS03() {
   const stage = stagesData.S03;
   const pathData = stage.byPath[state.pathId as keyof typeof stage.byPath];
 
-  if (!pathData) return <div className="min-h-screen bg-black flex items-center justify-center text-white">数据加载中...</div>;
+  if (!pathData) return <div className="bg-black flex items-center justify-center text-white" style={{ height: '100dvh' }}>数据加载中...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
+    <div className="bg-gray-950 text-white px-6 py-12 overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <div className="max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-8 text-gray-400">{stage.title}</h2>
@@ -268,7 +268,7 @@ export function StageS04() {
   if (!pathData) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+    <div className="bg-black text-white flex flex-col items-center justify-center px-6 overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <motion.div
         initial={{ opacity: 0 }}
@@ -303,7 +303,7 @@ export function StageS05() {
 
   if (step >= script.length) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-white">
+    <div className="bg-black flex items-center justify-center text-white" style={{ height: '100dvh' }}>
         <p>开局任务完成，即将进入游戏...</p>
       </div>
     );
@@ -312,7 +312,7 @@ export function StageS05() {
   const current = script[step];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white px-6 py-12 flex flex-col items-center justify-center">
+    <div className="bg-gray-950 text-white px-6 py-12 flex flex-col items-center justify-center overflow-y-auto" style={{ height: '100dvh' }}>
       <SkipButton />
       <div className="max-w-2xl">
         <h2 className="text-2xl font-bold text-center mb-2">{stage.title}</h2>

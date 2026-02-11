@@ -12,7 +12,7 @@ export function StorySelect() {
   const stories = storiesIndex.stories;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 py-12">
+    <div className="bg-black text-white flex flex-col items-center px-4 py-12 overflow-y-auto" style={{ height: '100dvh' }}>
       {/* 标题区域 */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}

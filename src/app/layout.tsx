@@ -20,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="overflow-hidden fixed inset-0">
-      <body className="bg-black text-white antialiased overflow-hidden fixed inset-0">
+    <html lang="zh-CN" className="overflow-hidden">
+      <body className="bg-black text-white antialiased overflow-hidden">
         {children}
       </body>
     </html>
