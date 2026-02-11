@@ -32,56 +32,63 @@ export function DeathScreen() {
   const deathInfo = deathReasons[death.type || 'health'] || deathReasons.health;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center overflow-y-auto px-6 py-12">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-        className="max-w-2xl w-full text-center my-auto"
-      >
-        <div className="text-6xl mb-6">{deathInfo.icon}</div>
-        <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${deathInfo.color}`}>
-          {deathInfo.title}
-        </h1>
-        <p className="text-gray-500 text-sm mb-8">{death.reason}</p>
+    <div className="h-screen bg-black text-white flex flex-col">
+      {/* 可滚动的内容区域 */}
+      <div className="flex-1 overflow-y-auto px-6 py-12 pb-28">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-2xl w-full text-center mx-auto"
+        >
+          <div className="text-6xl mb-6">{deathInfo.icon}</div>
+          <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${deathInfo.color}`}>
+            {deathInfo.title}
+          </h1>
+          <p className="text-gray-500 text-sm mb-8">{death.reason}</p>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 text-left">
-          <div className="text-gray-300 leading-relaxed whitespace-pre-line text-sm">
-            {deathInfo.narrative}
-          </div>
-        </div>
-
-        {/* 统计数据 */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-8">
-          <h3 className="text-gray-400 text-sm mb-3">📊 最终数据</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <div className="text-gray-500">存活</div>
-              <div className="text-white font-bold">{currentRound} 个月</div>
-            </div>
-            <div>
-              <div className="text-gray-500">余额</div>
-              <div className="text-green-400 font-bold">${money.toLocaleString()}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">健康</div>
-              <div className="text-red-400 font-bold">{attributes.health}</div>
-            </div>
-            <div>
-              <div className="text-gray-500">信用</div>
-              <div className="text-blue-400 font-bold">{attributes.credit}</div>
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 text-left">
+            <div className="text-gray-300 leading-relaxed whitespace-pre-line text-sm">
+              {deathInfo.narrative}
             </div>
           </div>
-        </div>
 
+          {/* 统计数据 */}
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-8">
+            <h3 className="text-gray-400 text-sm mb-3">📊 最终数据</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <div className="text-gray-500">存活</div>
+                <div className="text-white font-bold">{currentRound} 个月</div>
+              </div>
+              <div>
+                <div className="text-gray-500">余额</div>
+                <div className="text-green-400 font-bold">${money.toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">健康</div>
+                <div className="text-red-400 font-bold">{attributes.health}</div>
+              </div>
+              <div>
+                <div className="text-gray-500">信用</div>
+                <div className="text-blue-400 font-bold">{attributes.credit}</div>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-gray-600 text-xs">每一次坠落都是下一次起飞前的助跑。</p>
+        </motion.div>
+      </div>
+
+      {/* 固定在底部的重新开始按钮 */}
+      <div className="flex-shrink-0 p-4 bg-black/95 border-t border-red-900/40 backdrop-blur-sm">
         <button
           onClick={resetGame}
-          className="px-10 py-4 bg-red-700 hover:bg-red-600 text-white text-xl rounded-lg transition-all"
+          className="w-full px-10 py-4 bg-red-700 hover:bg-red-600 text-white text-xl rounded-lg transition-all font-bold"
         >
           重新开始
         </button>
-        <p className="text-gray-600 text-xs mt-4">每一次坠落都是下一次起飞前的助跑。</p>
-      </motion.div>
+      </div>
     </div>
   );
 }
